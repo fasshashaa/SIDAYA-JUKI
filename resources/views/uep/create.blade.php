@@ -2,13 +2,16 @@
 @section('content')
 
 <div class="mb-8">
-    <a href="{{ route('uep.index') }}" class="text-sm font-medium text-blue-600 hover:underline flex items-center gap-1 mb-2">
-        ← Kembali ke Daftar UEP
+    <a href="{{ route('uep.index') }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors mb-3">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        Kembali ke Daftar UEP
     </a>
-    <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Tambah Data UEP</h1>
+    <p class="text-xs font-semibold text-indigo-600 tracking-wide uppercase mb-1.5">Formulir Register</p>
+    <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Tambah Data UEP</h1>
+    <p class="text-sm text-slate-500 mt-1">Lengkapi identitas pemilik, profil usaha, dan sumber pembiayaan.</p>
 </div>
 
-<div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 max-w-4xl"
+<div class="bg-white rounded-3xl shadow-sm shadow-slate-200/50 border border-slate-100 p-6 md:p-8 max-w-4xl"
      x-data="{ 
         kecamatan: '{{ old('kecamatan', '') }}',
         desaTerpilih: '{{ old('desa', '') }}',
@@ -46,100 +49,115 @@
         this.selectedPm = data ? data : {}; // Jika tidak ditemukan, set ke objek kosong
     }   }">
 
-    <form action="{{ route('uep.store') }}" method="POST" class="space-y-6">
+    <form action="{{ route('uep.store') }}" method="POST" class="space-y-8">
         @csrf
         <input type="hidden" name="status_verifikasi" value="pending">
         <input type="hidden" name="status_usaha" value="Aktif">
-<input type="hidden" name="nama_lengkap" :value="selectedPm.nama_lengkap">
-<input type="hidden" name="no_wa" :value="selectedPm.no_wa">
-<input type="hidden" name="nama_ibu_kandung" :value="selectedPm.nama_ibu_kandung">
-<input type="hidden" name="nik" :value="selectedPm.nik">
-<input type="hidden" name="no_kk" :value="selectedPm.no_kk">
-        <div>
-    <h4 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-4 border-b border-gray-50 pb-2">I. Identitas Pemilik Usaha</h4>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Pilih Penerima Manfaat *</label>
-            <select name="penerima_manfaat_id" @change="updateFields($event.target.value)" required class="w-full rounded-xl border-gray-200 bg-gray-50/50 p-3">
-                <option value="">-- Pilih Nama Penerima --</option>
-                @foreach($penerimaManfaats as $pm)
-                    <option value="{{ $pm->id }}">{{ $pm->nama_lengkap }}</option>
-                @endforeach
-            </select>
-        </div>
-<div>
-    <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap</label>
-    <input type="text" 
-           :value="selectedPm.nama_lengkap || ''" 
-           readonly 
-           class="w-full rounded-xl border-gray-200 bg-gray-100 p-3">
-</div>
+        <input type="hidden" name="nama_lengkap" :value="selectedPm.nama_lengkap || ''">
+        <input type="hidden" name="no_wa" :value="selectedPm.no_wa || ''">
+        <input type="hidden" name="nama_ibu_kandung" :value="selectedPm.nama_ibu_kandung || ''">
+        <input type="hidden" name="nik" :value="selectedPm.nik || ''">
+        <input type="hidden" name="no_kk" :value="selectedPm.no_kk || ''">
 
-<input type="hidden" name="nama_lengkap" :value="selectedPm.nama_lengkap || ''">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Ibu Kandung</label>
-                <input type="text" name="nama_ibu_kandung" 
-                       :value="selectedPm ? selectedPm.nama_ibu_kandung : ''" 
-                       readonly class="w-full rounded-xl border-gray-200 bg-gray-50/50 p-3">
+        {{-- ============ SECTION I ============ --}}
+        <div>
+            <div class="flex items-center gap-3 mb-5">
+                <span class="w-6 h-6 rounded-full bg-indigo-50 text-indigo-600 text-xs font-bold flex items-center justify-center shrink-0">1</span>
+                <h4 class="text-sm font-bold text-slate-800">Identitas Pemilik Usaha</h4>
             </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">NIK</label>
-                <input type="text" name="nik" 
-                       :value="selectedPm ? selectedPm.nik : ''" 
-                       readonly class="w-full rounded-xl border-gray-200 bg-gray-50/50 p-3">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Nomor KK</label>
-                <input type="text" name="no_kk" 
-                       :value="selectedPm ? selectedPm.no_kk : ''" 
-                       readonly class="w-full rounded-xl border-gray-200 bg-gray-50/50 p-3">
-            </div>
-            <div>
-    <label class="block text-sm font-semibold text-gray-700 mb-2">No. WhatsApp</label>
-    <input type="text" name="no_wa" 
-           :value="selectedPm.no_wa || ''" 
-           readonly class="w-full rounded-xl border-gray-200 bg-gray-100 p-3">
-</div>
-        </div>
-    </div>
-</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Pilih Penerima Manfaat *</label>
+                    <select name="penerima_manfaat_id" @change="updateFields($event.target.value)" required class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all">
+                        <option value="">-- Pilih Nama Penerima --</option>
+                        @foreach($penerimaManfaats as $pm)
+                            <option value="{{ $pm->id }}">{{ $pm->nama_lengkap }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-<div class="pt-4">
-                <h4 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-4 border-b border-gray-50 pb-2">II. Profil & Legalisasi Usaha</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Usaha / Merk Dagang *</label>
-                        <input type="text" name="nama_usaha" required class="w-full rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white focus:border-blue-500 focus:ring-blue-500 text-sm p-3 transition-all" value="{{ old('nama_usaha') }}">
-                        @error('nama_usaha') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Lengkap</label>
+                    <input type="text"
+                           :value="selectedPm.nama_lengkap || ''"
+                           readonly
+                           placeholder="Terisi otomatis setelah memilih penerima"
+                           class="w-full rounded-xl border-slate-200 bg-slate-100/80 text-sm p-3 text-slate-500 placeholder:text-slate-400 cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">No. WhatsApp</label>
+                    <input type="text"
+                           :value="selectedPm.no_wa || ''"
+                           readonly
+                           placeholder="Terisi otomatis setelah memilih penerima"
+                           class="w-full rounded-xl border-slate-200 bg-slate-100/80 text-sm p-3 text-slate-500 placeholder:text-slate-400 cursor-not-allowed">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:col-span-2">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Ibu Kandung</label>
+                        <input type="text"
+                               :value="selectedPm.nama_ibu_kandung || ''"
+                               readonly
+                               class="w-full rounded-xl border-slate-200 bg-slate-100/80 text-sm p-3 text-slate-500 cursor-not-allowed">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Kategori Produk *</label>
-                        <select name="kategori_produk" required class="w-full rounded-xl border-gray-200 bg-gray-50/50 text-sm p-3 focus:border-blue-500 focus:ring-blue-500">
-                            <option value="">-- Pilih Kategori --</option>
-                            <option value="Kuliner / Makanan Olahan" {{ old('kategori_produk') == 'Kuliner / Makanan Olahan' ? 'selected' : '' }}>Kuliner / Makanan Olahan</option>
-                            <option value="Kerajinan / Craft" {{ old('kategori_produk') == 'Kerajinan / Craft' ? 'selected' : '' }}>Kerajinan / Craft</option>
-                            <option value="Fashion / Konveksi" {{ old('kategori_produk') == 'Fashion / Konveksi' ? 'selected' : '' }}>Fashion / Konveksi</option>
-                            <option value="Pertanian / Peternakan" {{ old('kategori_produk') == 'Pertanian / Peternakan' ? 'selected' : '' }}>Pertanian / Peternakan</option>
-                            <option value="Jasa / Service" {{ old('kategori_produk') == 'Jasa / Service' ? 'selected' : '' }}>Jasa / Service</option>
-                        </select>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">NIK</label>
+                        <input type="text"
+                               :value="selectedPm.nik || ''"
+                               readonly
+                               class="w-full rounded-xl border-slate-200 bg-slate-100/80 text-sm p-3 text-slate-500 cursor-not-allowed">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Status Perkembangan *</label>
-                        <select name="status_perkembangan" required class="w-full rounded-xl border-gray-200 bg-gray-50/50 text-sm p-3 focus:border-blue-500 focus:ring-blue-500">
-                            <option value="rintisan" {{ old('status_perkembangan') == 'rintisan' ? 'selected' : '' }}>Rintisan</option>
-                            <option value="berkembang" {{ old('status_perkembangan') == 'berkembang' ? 'selected' : '' }}>Berkembang</option>
-                            <option value="mandiri" {{ old('status_perkembangan') == 'mandiri' ? 'selected' : '' }}>Mandiri</option>
-                        </select>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Nomor KK</label>
+                        <input type="text"
+                               :value="selectedPm.no_kk || ''"
+                               readonly
+                               class="w-full rounded-xl border-slate-200 bg-slate-100/80 text-sm p-3 text-slate-500 cursor-not-allowed">
                     </div>
+                </div>
+            </div>
+        </div>
 
-                      <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Kecamatan *</label>
-                    <select name="kecamatan_usaha" 
-                            x-model="kecamatan" 
+        {{-- ============ SECTION II ============ --}}
+        <div class="pt-6 border-t border-slate-100">
+            <div class="flex items-center gap-3 mb-5">
+                <span class="w-6 h-6 rounded-full bg-indigo-50 text-indigo-600 text-xs font-bold flex items-center justify-center shrink-0">2</span>
+                <h4 class="text-sm font-bold text-slate-800">Profil &amp; Legalisasi Usaha</h4>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Usaha / Merk Dagang *</label>
+                    <input type="text" name="nama_usaha" required class="w-full rounded-xl border-slate-200 bg-slate-50/60 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 text-sm p-3 transition-all" value="{{ old('nama_usaha') }}">
+                    @error('nama_usaha') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Kategori Produk *</label>
+                    <select name="kategori_produk" required class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all">
+                        <option value="">-- Pilih Kategori --</option>
+                        <option value="Kuliner / Makanan Olahan" {{ old('kategori_produk') == 'Kuliner / Makanan Olahan' ? 'selected' : '' }}>Kuliner / Makanan Olahan</option>
+                        <option value="Kerajinan / Craft" {{ old('kategori_produk') == 'Kerajinan / Craft' ? 'selected' : '' }}>Kerajinan / Craft</option>
+                        <option value="Fashion / Konveksi" {{ old('kategori_produk') == 'Fashion / Konveksi' ? 'selected' : '' }}>Fashion / Konveksi</option>
+                        <option value="Pertanian / Peternakan" {{ old('kategori_produk') == 'Pertanian / Peternakan' ? 'selected' : '' }}>Pertanian / Peternakan</option>
+                        <option value="Jasa / Service" {{ old('kategori_produk') == 'Jasa / Service' ? 'selected' : '' }}>Jasa / Service</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Status Perkembangan *</label>
+                    <select name="status_perkembangan" required class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all">
+                        <option value="rintisan" {{ old('status_perkembangan') == 'rintisan' ? 'selected' : '' }}>Rintisan</option>
+                        <option value="berkembang" {{ old('status_perkembangan') == 'berkembang' ? 'selected' : '' }}>Berkembang</option>
+                        <option value="mandiri" {{ old('status_perkembangan') == 'mandiri' ? 'selected' : '' }}>Mandiri</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Kecamatan *</label>
+                    <select name="kecamatan_usaha"
+                            x-model="kecamatan"
                             @change="desaTerpilih = ''"
-                            required 
-                            class="w-full rounded-xl border-gray-200 bg-gray-50/50 text-sm p-3 focus:border-blue-500 focus:ring-blue-500">
+                            required
+                            class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all">
                         <option value="">-- Pilih Kecamatan --</option>
                         <option value="Kedungreja">Kedungreja</option>
                         <option value="Kesugihan">Kesugihan</option>
@@ -166,17 +184,17 @@
                         <option value="Cilacap Utara">Cilacap Utara</option>
                         <option value="Kampung Laut">Kampung Laut</option>
                     </select>
-                    @error('kecamatan') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    @error('kecamatan') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Desa / Kelurahan *</label>
-                    <select name="desa_kelurahan_usaha" 
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Desa / Kelurahan *</label>
+                    <select name="desa_kelurahan_usaha"
                             x-model="desaTerpilih"
                             required
                             :disabled="desas.length === 0"
-                            class="w-full rounded-xl border-gray-200 bg-gray-50/50 text-sm p-3 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed">
-                        
+                            class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+
                         <template x-if="desas.length === 0">
                             <option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>
                         </template>
@@ -184,71 +202,77 @@
                         <template x-if="desas.length > 0">
                             <option value="">-- Pilih Desa --</option>
                         </template>
-                        
+
                         <template x-for="(namaDesa, index) in desas" :key="index">
-                            <option :value="namaDesa" 
+                            <option :value="namaDesa"
                                     x-text="namaDesa"></option>
                         </template>
                     </select>
-                    @error('desa') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    @error('desa') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
-
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Alamat Detail Usaha *</label>
-                        <textarea name="alamat_lengkap" rows="3" required class="w-full rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white focus:border-blue-500 focus:ring-blue-500 text-sm p-3 transition-all" placeholder="Nama jalan, RT/RW, Dusun tempat usaha beroperasi">{{ old('alamat_lengkap') }}</textarea>
-                    </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Alamat Detail Usaha *</label>
+                    <textarea name="alamat_lengkap" rows="3" required class="w-full rounded-xl border-slate-200 bg-slate-50/60 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 text-sm p-3 transition-all" placeholder="Nama jalan, RT/RW, Dusun tempat usaha beroperasi">{{ old('alamat_lengkap') }}</textarea>
                 </div>
             </div>
-<div class="pt-4">
-    <h4 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-4 border-b border-gray-50 pb-2">III. Sumber Pembiayaan Realisasi</h4>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Tahun Realisasi Bantuan *</label>
-            <select name="tahun_realisasi" required class="w-full rounded-xl border-gray-200 bg-gray-50/50 text-sm p-3 focus:border-blue-500 focus:ring-blue-500">
-                @php
-                    $tahunSekarang = date('Y');
-                    $tahunMulai = 2020; // Silakan sesuaikan tahun mulai
-                @endphp
-                @for ($tahun = $tahunSekarang; $tahun >= $tahunMulai; $tahun--)
-                    <option value="{{ $tahun }}" {{ old('tahun_realisasi', $tahunSekarang) == $tahun ? 'selected' : '' }}>
-                        {{ $tahun }}
-                    </option>
-                @endfor
-            </select>
         </div>
 
-        <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Sumber Anggaran *</label>
-            <select name="sumber_anggaran" required class="w-full rounded-xl border-gray-200 bg-gray-50/50 text-sm p-3 focus:border-blue-500 focus:ring-blue-500">
-                <option value="">-- Pilih Sumber Anggaran --</option>
-                <option value="APBN" {{ old('sumber_anggaran') == 'APBN' ? 'selected' : '' }}>APBN</option>
-                <option value="APBD" {{ old('sumber_anggaran') == 'APBD' ? 'selected' : '' }}>APBD</option>
-                <option value="CSR" {{ old('sumber_anggaran') == 'CSR' ? 'selected' : '' }}>CSR</option>
-                <option value="Lainnya" {{ old('sumber_anggaran') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
-            </select>
-        </div>
-        {{-- <div>
-    <label class="block text-sm font-semibold text-gray-700 mb-2">Status Usaha *</label>
-    <select name="status_usaha" required class="w-full rounded-xl border-gray-200 bg-gray-50/50 text-sm p-3 focus:border-blue-500 focus:ring-blue-500">
-        <option value="">-- Pilih Status --</option>
-        <option value="Aktif" {{ old('status_usaha') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
-        <option value="Tidak Aktif" {{ old('status_usaha') == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
-        <option value="Tutup Sementara" {{ old('status_usaha') == 'Tutup Sementara' ? 'selected' : '' }}>Tutup Sementara</option>
-    </select>
-    @error('status_usaha') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
-</div> --}}
-    </div>
-</div>
-
-            <div class="pt-4 flex items-center gap-3">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-all shadow-sm">
-                    Simpan UEP
-                </button>
-                <a href="{{ route('uep.index') }}" class="bg-white hover:bg-gray-50 text-gray-500 font-semibold px-6 py-3 rounded-xl text-sm border border-gray-200 transition-all">
-                    Batal
-                </a>
+        {{-- ============ SECTION III ============ --}}
+        <div class="pt-6 border-t border-slate-100">
+            <div class="flex items-center gap-3 mb-5">
+                <span class="w-6 h-6 rounded-full bg-indigo-50 text-indigo-600 text-xs font-bold flex items-center justify-center shrink-0">3</span>
+                <h4 class="text-sm font-bold text-slate-800">Sumber Pembiayaan Realisasi</h4>
             </div>
-        </form> 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Tahun Realisasi Bantuan *</label>
+                    <select name="tahun_realisasi" required class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all">
+                        @php
+                            $tahunSekarang = date('Y');
+                            $tahunMulai = 2020; // Silakan sesuaikan tahun mulai
+                        @endphp
+                        @for ($tahun = $tahunSekarang; $tahun >= $tahunMulai; $tahun--)
+                            <option value="{{ $tahun }}" {{ old('tahun_realisasi', $tahunSekarang) == $tahun ? 'selected' : '' }}>
+                                {{ $tahun }}
+                            </option>
+                        @endfor
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Sumber Anggaran *</label>
+                    <select name="sumber_anggaran" required class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all">
+                        <option value="">-- Pilih Sumber Anggaran --</option>
+                        <option value="APBN" {{ old('sumber_anggaran') == 'APBN' ? 'selected' : '' }}>APBN</option>
+                        <option value="APBD" {{ old('sumber_anggaran') == 'APBD' ? 'selected' : '' }}>APBD</option>
+                        <option value="CSR" {{ old('sumber_anggaran') == 'CSR' ? 'selected' : '' }}>CSR</option>
+                        <option value="Lainnya" {{ old('sumber_anggaran') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                    </select>
+                </div>
+                {{-- <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Status Usaha *</label>
+                    <select name="status_usaha" required class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all">
+                        <option value="">-- Pilih Status --</option>
+                        <option value="Aktif" {{ old('status_usaha') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                        <option value="Tidak Aktif" {{ old('status_usaha') == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
+                        <option value="Tutup Sementara" {{ old('status_usaha') == 'Tutup Sementara' ? 'selected' : '' }}>Tutup Sementara</option>
+                    </select>
+                    @error('status_usaha') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
+                </div> --}}
+            </div>
+        </div>
+
+        {{-- ============ ACTIONS ============ --}}
+        <div class="pt-4 flex items-center gap-3 border-t border-slate-100">
+            <button type="submit" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors shadow-sm shadow-indigo-600/20 mt-4">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Simpan UEP
+            </button>
+            <a href="{{ route('uep.index') }}" class="bg-white hover:bg-slate-50 text-slate-600 font-semibold px-6 py-3 rounded-xl text-sm border border-slate-200 transition-colors mt-4">
+                Batal
+            </a>
+        </div>
+    </form>
 </div>
 @endsection

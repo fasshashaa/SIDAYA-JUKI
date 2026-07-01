@@ -35,7 +35,7 @@ public function penerimaManfaat() {
 }
 
 public function produk() {
-    return $this->hasMany(Produk::class, 'kube_id');
+    return $this->hasMany(ProdukUmkm::class, 'kube_id');
 }
 public function anggota() {
         return $this->hasMany(PenerimaManfaat::class, 'kube_id');
