@@ -177,7 +177,7 @@
                 "Cilacap Utara": ["Bangunkerto", "Kebonmanis", "Mertasinga", "Gumilir"],
                 "Cilacap Selatan": ["Cilacap", "Sidakaya", "Tambakreja", "Tegalkamulyan", "Sentolokawat"],
                 "Adipala": ["Adipala", "Bunton", "Karanganyar", "Karangbenda", "Penggalang"],
-                "Majenang": ["Bener", "Cilopadang", "Jenang", "Mulyadadi", "Mulyasari","Padangjaya"],
+                "Majenang": ["Bener", "Cilopadang", "Jenang", "Mulyadadi", "Mulyasari", "Padangjaya", "Pangasinan", "Sukamaju", "Tanjungsari"],
                 "Cimanggu": ["Bantarpanjang", "Cimanggu", "Cisumur", "Karangreja"],
                 "Bantarsari": ["Bantarsari", "Binangun", "Rawajaya"],
                 "Cipari": ["Caruy", "Cipari", "Cisuru", "Karangreja", "Kutasari", "Mulyadadi", "Pegadingan", "Serang"],
