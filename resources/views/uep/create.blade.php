@@ -2,14 +2,17 @@
 @section('content')
 
 <div class="mb-8">
-    <a href="{{ route('uep.index') }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors mb-3">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-        Kembali ke Daftar UEP
-    </a>
-    <p class="text-xs font-semibold text-indigo-600 tracking-wide uppercase mb-1.5">Formulir Register</p>
-    <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Tambah Data UEP</h1>
+        <div class="mb-8">
+        <br>
+        <a href="{{ route('uep.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 mb-3 w-fit">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali ke Daftar
+        </a>
+        {{-- <p class="text-xs font-semibold text-blue-500 uppercase tracking-widest mb-1">Data Master</p> --}}
+       <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Tambah Data UEP</h1>
     <p class="text-sm text-slate-500 mt-1">Lengkapi identitas pemilik, profil usaha, dan sumber pembiayaan.</p>
-</div>
+  </div>
+
 
 <div class="bg-white rounded-3xl shadow-sm shadow-slate-200/50 border border-slate-100 p-6 md:p-8 max-w-4xl"
      x-data="{ 
@@ -99,6 +102,7 @@
                         <input type="text"
                                :value="selectedPm.nama_ibu_kandung || ''"
                                readonly
+                                placeholder="Terisi otomatis setelah memilih penerima"
                                class="w-full rounded-xl border-slate-200 bg-slate-100/80 text-sm p-3 text-slate-500 cursor-not-allowed">
                     </div>
                     <div>
@@ -106,6 +110,7 @@
                         <input type="text"
                                :value="selectedPm.nik || ''"
                                readonly
+                                placeholder="Terisi otomatis setelah memilih penerima"
                                class="w-full rounded-xl border-slate-200 bg-slate-100/80 text-sm p-3 text-slate-500 cursor-not-allowed">
                     </div>
                     <div>
@@ -113,6 +118,7 @@
                         <input type="text"
                                :value="selectedPm.no_kk || ''"
                                readonly
+                                placeholder="Terisi otomatis setelah memilih penerima"
                                class="w-full rounded-xl border-slate-200 bg-slate-100/80 text-sm p-3 text-slate-500 cursor-not-allowed">
                     </div>
                 </div>
@@ -264,15 +270,20 @@
         </div>
 
         {{-- ============ ACTIONS ============ --}}
-        <div class="pt-4 flex items-center gap-3 border-t border-slate-100">
-            <button type="submit" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors shadow-sm shadow-indigo-600/20 mt-4">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                Simpan UEP
-            </button>
-            <a href="{{ route('uep.index') }}" class="bg-white hover:bg-slate-50 text-slate-600 font-semibold px-6 py-3 rounded-xl text-sm border border-slate-200 transition-colors mt-4">
-                Batal
-            </a>
-        </div>
+         <div class="sticky bottom-4 z-10">
+                <div class="bg-white/90 backdrop-blur border border-gray-100 shadow-lg shadow-black/5 rounded-2xl p-4 flex items-center gap-3">
+                    <button type="submit" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-all shadow-lg shadow-blue-600/20">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Simpan Baru
+                    </button>
+                    <a href="{{ route('uep.index') }}" class="bg-white hover:bg-gray-50 text-gray-500 font-semibold px-6 py-3 rounded-xl text-sm border border-gray-200 transition-all">
+                        Batal
+                    </a>
+                    {{-- <span class="ml-auto text-xs text-gray-400 hidden sm:flex items-center gap-1.5">
+                        <span class="text-rose-500">*</span> wajib diisi
+                    </span> --}}
+                </div>
+            </div>
     </form>
 </div>
 @endsection

@@ -3,18 +3,17 @@
 <div class="max-w-4xl mx-auto">
 
     {{-- ================= HEADER ================= --}}
-    <div class="mb-6 flex justify-between items-center">
-        <a href="{{ route('penerima-manfaat.index') }}" class="text-sm font-medium text-slate-500 hover:text-indigo-600 flex items-center gap-1.5 w-fit transition-colors">
+      <div class="mb-8">
+        <br>
+        <a href="{{ route('penerima-manfaat.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 mb-3 w-fit">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             Kembali ke Daftar
         </a>
-        {{-- <div class="inline-flex gap-2">
-            <a href="{{ route('penerima-manfaat.edit', $penerima->id) }}" class="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-200 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                Edit Data
-            </a>
-        </div> --}}
+        {{-- <p class="text-xs font-semibold text-blue-500 uppercase tracking-widest mb-1">Data Master</p> --}}
+        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Detail Penerima Manfaat</h1>
+        <p class="text-sm text-gray-500 mt-1">Data Kependudukan dan Domisili Kabupaten Cilacap.</p>
     </div>
+
 
     {{-- ================= MAIN CARD ================= --}}
     <div class="bg-white shadow-sm shadow-slate-200/50 border border-slate-100 rounded-3xl overflow-hidden">

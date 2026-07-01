@@ -3,13 +3,15 @@
 <div class="max-w-4xl mx-auto">
 
     {{-- ============ HEADER ============ --}}
-    <div class="mb-8">
-        <a href="{{ route('uep.index') }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors mb-3">
+      <div class="mb-8">
+        <br>
+        <a href="{{ route('uep.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 mb-3 w-fit">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Kembali ke Daftar UEP
+            Kembali ke Daftar
         </a>
-        <p class="text-xs font-semibold text-indigo-600 tracking-wide uppercase mb-1.5">Detail Usaha</p>
-        <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Detail Data UEP</h1>
+        {{-- <p class="text-xs font-semibold text-blue-500 uppercase tracking-widest mb-1">Data Master</p> --}}
+        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Detail Usaha Ekonomi Produktif</h1>
+        <p class="text-sm text-gray-500 mt-1">Data Usaha Ekonomi Produktif Kabupaten Cilacap.</p>
     </div>
 
     <div class="bg-white shadow-sm shadow-slate-200/50 border border-slate-100 rounded-3xl overflow-hidden">

@@ -4,7 +4,7 @@
     {{-- ================= HEADER ================= --}}
     <div class="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-5">
         <div>
-            <p class="text-xs font-semibold text-indigo-600 tracking-wide uppercase mb-1.5">Data Master</p>
+           <br> {{-- <p class="text-xs font-semibold text-indigo-600 tracking-wide uppercase mb-1.5">Data Master</p> --}}
             <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Katalog Produk UMKM</h1>
             <p class="text-sm text-slate-500 mt-1">Daftar produk yang telah dipublikasikan.</p>
         </div>
@@ -21,12 +21,12 @@
     </div>
 
     {{-- ================= SUCCESS ALERT ================= --}}
-    @if(session('success'))
+    {{-- @if(session('success'))
         <div class="mb-6 p-4 bg-emerald-50 border border-emerald-100 text-emerald-700 text-sm font-medium rounded-2xl flex items-center gap-2.5">
             <svg class="w-5 h-5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             {{ session('success') }}
         </div>
-    @endif
+    @endif --}}
 
 {{-- ================= SUMMARY BAR ================= --}}
 @php
@@ -128,32 +128,44 @@
 
                     {{-- Quick actions overlay --}}
                     <div class="absolute inset-x-0 bottom-0 z-10 p-2 flex justify-end gap-1 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-200">
-                        <a href="{{ route('produk.show', $item->id) }}" class="p-2 bg-white/95 backdrop-blur rounded-lg text-slate-500 hover:text-indigo-600 shadow-sm transition-colors" title="Lihat">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        </a>
-                        <a href="{{ route('produk.edit', $item->id) }}" class="p-2 bg-white/95 backdrop-blur rounded-lg text-slate-500 hover:text-amber-600 shadow-sm transition-colors" title="Edit">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                        </a>
-                        <form action="{{ route('produk.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus produk ini?');" class="inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" title="Hapus" class="p-2 bg-white/95 backdrop-blur rounded-lg text-slate-500 hover:text-rose-600 shadow-sm transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="3 6 5 6 21 6"></polyline>
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                </svg>
-                            </button>
-                        </form>
-                    </div>
+    <!-- Tombol Lihat -->
+    <a href="{{ route('produk.show', $item->id) }}" class="p-2 bg-white/95 backdrop-blur rounded-lg text-slate-500 hover:text-indigo-600 shadow-sm transition-colors" title="Lihat">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+    </a>
+    
+    <!-- Tombol Edit -->
+    <a href="{{ route('produk.edit', $item->id) }}" class="p-2 bg-white/95 backdrop-blur rounded-lg text-slate-500 hover:text-amber-600 shadow-sm transition-colors" title="Edit">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+    </a>
+
+    <!-- Tombol Hapus (Sudah diselaraskan) -->
+    <form action="{{ route('produk.destroy', $item->id) }}" method="POST" id="delete-form-{{ $item->id }}">
+        @csrf
+        @method('DELETE')
+        <button type="button" onclick="confirmDelete({{ $item->id }})" class="p-2 bg-white/95 backdrop-blur rounded-lg text-slate-500 hover:text-rose-600 shadow-sm transition-colors" title="Hapus">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </button>
+    </form>
+</div>
                 </div>
 
                 {{-- Detail Produk --}}
-                <div class="flex-grow p-4">
-                    <p class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider mb-1 truncate">{{ $item->uep->nama_usaha ?? 'Tanpa UEP' }}</p>
-                    <h3 class="font-semibold text-slate-900 line-clamp-1">{{ $item->nama_produk }}</h3>
-                    <p class="text-xs text-slate-400 mt-1 mb-2">{{ $item->kategori }}</p>
-                    <p class="text-indigo-600 font-bold text-sm">Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</p>
-                </div>
+             <div class="flex-grow p-4">
+    <p class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider mb-1 truncate">
+        {{-- Cek apakah relasi uep ada, jika tidak cek kube --}}
+        @if($item->uep_id)
+            {{ $item->uep->nama_usaha ?? 'Tanpa Nama UEP' }}
+        @elseif($item->kube_id)
+            {{ $item->kube->nama_kelompok_kube ?? 'Tanpa Nama KUBE' }}
+        @else
+            Tanpa Pemilik
+        @endif
+    </p>
+    
+    <h3 class="font-semibold text-slate-900 line-clamp-1">{{ $item->nama_produk }}</h3>
+    <p class="text-xs text-slate-400 mt-1 mb-2">{{ $item->kategori }}</p>
+    <p class="text-indigo-600 font-bold text-sm">Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</p>
+</div>
 
                 <div class="px-4 pb-4 pt-3 border-t border-slate-50 flex justify-between items-center">
                     <span class="text-[10px] {{ $item->stok > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600' }} px-2.5 py-1 rounded-full font-bold">
@@ -183,4 +195,35 @@
             </div>
         @endforelse
     </div>
+ <script>
+function confirmDelete(id) {
+    Swal.fire({
+        title: 'Hapus Produk?',
+        text: "Data akan dihapus permanen.",
+        icon: 'warning',
+        width: '300px', // Sedikit lebih ramping
+        padding: '1.5rem', // Padding dikurangi agar tidak mepet
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#f1f5f9',
+        confirmButtonText: 'Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+        customClass: {
+            popup: 'rounded-3xl shadow-xl border border-gray-100',
+            icon: 'mb-4', // Memberi jarak bawah pada ikon
+            title: 'text-lg font-bold text-gray-800', // Ukuran title disesuaikan
+            htmlContainer: 'text-xs text-gray-500 m-0', // Margin 0 agar tidak mepet
+            actions: 'mt-6 w-full', // Memastikan area tombol punya ruang
+            confirmButton: 'bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-5 py-2 text-xs font-semibold shadow-sm mx-1',
+            cancelButton: 'bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl px-5 py-2 text-xs font-semibold shadow-sm mx-1'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('delete-form-' + id).submit();
+        }
+    });
+}
+</script>
 @endsection

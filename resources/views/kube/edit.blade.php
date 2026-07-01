@@ -1,8 +1,18 @@
 @extends('layouts.app')
 @section('content')
 
-    <div class="max-w-4xl mx-auto py-10 sm:px-6 lg:px-8">
-        <h2 class="text-2xl font-bold mb-6">Edit Data Kelompok KUBE</h2>
+ <div class="mb-8">
+        <br>
+        <a href="{{ route('kube.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 mb-3 w-fit">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali ke Daftar
+        </a>
+        {{-- <p class="text-xs font-semibold text-blue-500 uppercase tracking-widest mb-1">Data Master</p> --}}
+        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Ubah Data Kelompok Usaha Bersama</h1>
+        <p class="text-sm text-gray-500 mt-1">Perbarui Data Kelompok Usaha Bersama Kabupaten Cilacap.</p>
+    </div>
+
+
 
         <form action="{{ route('kube.update', $kube->id) }}" method="POST" class="bg-white p-6 rounded-lg shadow-md">
             @csrf
@@ -100,9 +110,16 @@
     <p class="text-xs text-blue-600 mt-2">Pastikan data sudah diperiksa sebelum mengubah status menjadi Disetujui/Ditolak.</p>
 </div>
 
-            <div class="mt-8 flex justify-end">
-                <a href="{{ route('kube.index') }}" class="mr-4 px-6 py-3 bg-gray-200 rounded-xl hover:bg-gray-300">Batal</a>
-                <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold">Update Data</button>
+           <div class="sticky bottom-4 z-10">
+                <div class="bg-white/90 backdrop-blur border border-gray-100 shadow-lg shadow-black/5 rounded-2xl p-4 flex items-center gap-3">
+                    <button type="submit" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-all shadow-lg shadow-blue-600/20">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Perbarui Data
+                    </button>
+                    <a href="{{ route('kube.index') }}" class="bg-white hover:bg-gray-50 text-gray-500 font-semibold px-6 py-3 rounded-xl text-sm border border-gray-200 transition-all">
+                        Batal
+                    </a>
+                </div>
             </div>
         </form>
     </div>
