@@ -1,11 +1,15 @@
 @extends('layouts.app')
 @section('content')
 
-    <div class="max-w-4xl mx-auto py-10 sm:px-6 lg:px-8">
-        <a href="{{ route('uep.index') }}" class="text-sm font-medium text-blue-600 hover:underline flex items-center gap-1 mb-2">
-            ← Kembali ke Daftar UEP
+    <div class="mb-8">
+        <br>
+        <a href="{{ route('uep.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 mb-3 w-fit">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali ke Daftar
         </a>
-        <h2 class="text-2xl font-bold mb-6">Edit Data UEP</h2>
+        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Edit Usaha Ekonomi Produktif</h1>
+        <p class="text-sm text-gray-500 mt-1">Perbarui data Usaha Ekonomi Produktif.</p>
+    </div>
 
         <form action="{{ route('uep.update', $uep->id) }}" method="POST" class="bg-white p-6 rounded-lg shadow-md"
               x-data="{
@@ -155,19 +159,29 @@
                 <p class="text-xs text-blue-600 mt-2">Pastikan data sudah diperiksa sebelum mengubah status menjadi Disetujui/Ditolak.</p>
             </div>
 
-            <div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 mt-6">
-                <label class="block text-sm font-bold text-blue-900 mb-2">Status Usaha *</label>
+            <div class="bg-orange-50/50 p-6 rounded-2xl border border-orange-100 mt-6">
+                <label class="block text-sm font-bold text-orange-900 mb-2">Status Usaha *</label>
                 <select name="status_usaha" class="w-full rounded-xl border-blue-200 bg-white text-sm p-3 focus:border-blue-500 focus:ring-blue-500">
                     <option value="Aktif" {{ old('status_usaha', $uep->status_usaha) == 'Aktif' ? 'selected' : '' }}>Aktif</option>
                     <option value="Tidak Aktif" {{ old('status_usaha', $uep->status_usaha) == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
                     <option value="Tutup Sementara" {{ old('status_usaha', $uep->status_usaha) == 'Tutup Sementara' ? 'selected' : '' }}>Tutup Sementara</option>
                 </select>
-                <p class="text-xs text-blue-600 mt-2">Pastikan data sudah diperiksa sebelum mengubah status menjadi Disetujui/Ditolak.</p>
+                <p class="text-xs text-orange-600 mt-2">Pastikan data sudah diperiksa sebelum mengubah status menjadi Disetujui/Ditolak.</p>
             </div>
 
-            <div class="mt-8 flex justify-end">
-                <a href="{{ route('uep.index') }}" class="mr-4 px-6 py-3 bg-gray-200 rounded-xl hover:bg-gray-300">Batal</a>
-                <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold">Update Data</button>
+          <div class="sticky bottom-4 z-10">
+                <div class="bg-white/90 backdrop-blur border border-gray-100 shadow-lg shadow-black/5 rounded-2xl p-4 flex items-center gap-3">
+                    <button type="submit" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-all shadow-lg shadow-blue-600/20">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Perbarui Data
+                    </button>
+                    <a href="{{ route('uep.index') }}" class="bg-white hover:bg-gray-50 text-gray-500 font-semibold px-6 py-3 rounded-xl text-sm border border-gray-200 transition-all">
+                        Batal
+                    </a>
+                    {{-- <span class="ml-auto text-xs text-gray-400 hidden sm:flex items-center gap-1.5">
+                        <span class="text-rose-500">*</span> wajib diisi
+                    </span> --}}
+                </div>
             </div>
         </form>
     </div>

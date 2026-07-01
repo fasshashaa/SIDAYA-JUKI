@@ -2,11 +2,11 @@
 
 @section('content')
     <div class="mb-8">
+        <br>
         <a href="{{ route('penerima-manfaat.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 mb-3 w-fit">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             Kembali ke Daftar
         </a>
-        <p class="text-xs font-semibold text-blue-500 uppercase tracking-widest mb-1">Data Master</p>
         <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Edit Penerima Manfaat</h1>
         <p class="text-sm text-gray-500 mt-1">Perbarui data kependudukan atau wilayah jika terdapat perubahan data master.</p>
     </div>
@@ -155,9 +155,9 @@
                     <a href="{{ route('penerima-manfaat.index') }}" class="bg-white hover:bg-gray-50 text-gray-500 font-semibold px-6 py-3 rounded-xl text-sm border border-gray-200 transition-all">
                         Batal
                     </a>
-                    <span class="ml-auto text-xs text-gray-400 hidden sm:flex items-center gap-1.5">
+                    {{-- <span class="ml-auto text-xs text-gray-400 hidden sm:flex items-center gap-1.5">
                         <span class="text-rose-500">*</span> wajib diisi
-                    </span>
+                    </span> --}}
                 </div>
             </div>
         </form>

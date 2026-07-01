@@ -73,16 +73,22 @@ public function create()
 public function edit($id)
 {
     $produk = \App\Models\ProdukUmkm::findOrFail($id);
-    $ueps = \App\Models\Uep::all();
-    return view('produk.edit', compact('produk', 'ueps'));
+    
+    // Ambil data UEP dan KUBE
+    $ueps = \App\Models\Uep::all(); // Sesuaikan nama modelnya
+    $kubes = \App\Models\Kube::all(); // Sesuaikan nama modelnya
+
+    // Kirim ke view
+    return view('produk.edit', compact('produk', 'ueps', 'kubes'));
 }
 
 public function update(Request $request, $id)
 {
     $produk = \App\Models\ProdukUmkm::findOrFail($id);
 
+    // Perbaikan Validasi: Hapus uep_id dari sini karena kita akan mengisinya secara manual nanti
     $validated = $request->validate([
-        'uep_id'           => 'required|exists:ueps,id',
+        'pemilik_id'       => 'required', // Tetap butuh ini
         'nama_produk'      => 'required|string|max:255',
         'kategori'         => 'required|string',
         'harga_jual'       => 'required|numeric',
@@ -91,19 +97,35 @@ public function update(Request $request, $id)
         'foto_produk'      => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
     ]);
 
-    // Jika ada foto baru, hapus foto lama dan simpan yang baru
-    if ($request->hasFile('foto_produk')) {
-        if ($produk->foto_produk) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($produk->foto_produk);
-        }
-        $validated['foto_produk'] = $request->file('foto_produk')->store('produk', 'public');
+    // Pecah nilai pemilik_id
+    $pemilik = explode('_', $request->pemilik_id);
+    $jenis = $pemilik[0]; 
+    $pemilik_id = $pemilik[1];
+
+    // Ambil semua data input kecuali yang tidak perlu
+    $data = $request->except(['pemilik_id', 'foto_produk']);
+
+    // Set relasi berdasarkan jenis
+    if ($jenis === 'uep') {
+        $data['uep_id'] = $pemilik_id;
+        $data['kube_id'] = null; // KUBE harus null kalau UEP dipilih
+    } else {
+        $data['kube_id'] = $pemilik_id;
+        $data['uep_id'] = null; // UEP harus null kalau KUBE dipilih
     }
 
-    $produk->update($validated);
+    // Handle foto
+    if ($request->hasFile('foto_produk')) {
+        if ($produk->foto_produk) {
+            \Storage::disk('public')->delete($produk->foto_produk);
+        }
+        $data['foto_produk'] = $request->file('foto_produk')->store('produk', 'public');
+    }
 
-    return redirect()->route('produk.index')->with('success', 'Produk berhasil diupdate!');
+    $produk->update($data);
+
+    return redirect()->route('produk.index')->with('success', 'Produk berhasil diperbarui!');
 }
-
 public function destroy($id)
 {
     $produk = \App\Models\ProdukUmkm::findOrFail($id);

@@ -4,7 +4,8 @@
     {{-- ================= HEADER ================= --}}
     <div class="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-5">
         <div>
-            <p class="text-xs font-semibold text-indigo-600 tracking-wide uppercase mb-1.5">Dinsos PPPA &middot; Kabupaten Cilacap</p>
+            <br>
+            {{-- <p class="text-xs font-semibold text-indigo-600 tracking-wide uppercase mb-1.5">Dinsos PPPA &middot; Kabupaten Cilacap</p> --}}
             <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Kelompok KUBE</h1>
             <p class="text-sm text-slate-500 mt-1">Daftar Kelompok Usaha Bersama binaan Dinsos PPPA Cilacap.</p>
         </div>
@@ -88,10 +89,10 @@
             <table class="w-full text-left border-collapse text-sm">
                 <thead>
                     <tr class="border-b border-slate-100 text-slate-400 text-xs font-semibold uppercase tracking-wide">
-                        <th class="p-4 pl-6 font-semibold">Nama Kelompok</th>
-                        <th class="p-4 font-semibold">Ketua</th>
+                        <th class="p-4 pl-6 font-semibold">Nama KUBE</th>
+                        <th class="p-4 font-semibold">Ketua KUBE</th>
                         <th class="p-4 font-semibold text-center">Anggota</th>
-                        <th class="p-4 font-semibold">Lokasi</th>
+                        <th class="p-4 font-semibold">Wilayah Usaha</th>
                         <th class="p-4 font-semibold">Status</th>
                         <th class="p-4 font-semibold">Aksi</th>
                     </tr>

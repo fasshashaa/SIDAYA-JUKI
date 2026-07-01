@@ -1,6 +1,18 @@
 @extends('layouts.app')
 @section('content')
 
+ <div class="mb-8">
+        <br>
+        <a href="{{ route('kube.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 mb-3 w-fit">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali ke Daftar
+        </a>
+        {{-- <p class="text-xs font-semibold text-blue-500 uppercase tracking-widest mb-1">Data Master</p> --}}
+        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Tambah Data Kelompok Usaha Bersama</h1>
+        <p class="text-sm text-gray-500 mt-1">Tambah Data Kelompok Usaha Bersama Kabupaten Cilacap.</p>
+    </div>
+
+
 <div class="max-w-4xl mx-auto"
     x-data="{ 
         pms: {{ $pms->toJson() }},
@@ -42,15 +54,7 @@
     }">
 
     {{-- ============ HEADER ============ --}}
-    <div class="mb-8">
-        <a href="{{ route('kube.index') }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors mb-3">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Kembali ke Daftar KUBE
-        </a>
-        <p class="text-xs font-semibold text-indigo-600 tracking-wide uppercase mb-1.5">Formulir Register</p>
-        <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Tambah Kelompok KUBE</h1>
-        <p class="text-sm text-slate-500 mt-1">Lengkapi data kelompok, profil usaha, dan informasi pendukung.</p>
-    </div>
+   
 
     <form action="{{ route('kube.store') }}" method="POST" class="space-y-6">
         @csrf
@@ -65,7 +69,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Kelompok KUBE *</label>
-                    <input type="text" name="nama_kelompok_kube" value="{{ old('nama_kelompok_kube') }}" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" required>
+                    <input type="text"  placeholder="Masukkan Nama Kelompok Usaha Bersama" name="nama_kelompok_kube" value="{{ old('nama_kelompok_kube') }}" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" required>
                     @error('nama_kelompok_kube') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
@@ -92,12 +96,12 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Jenis Usaha *</label>
-                    <input type="text" name="jenis_usaha_kube" value="{{ old('jenis_usaha_kube') }}" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" required>
+                    <input type="text" placeholder="Masukkan Jenis Usaha" name="jenis_usaha_kube" value="{{ old('jenis_usaha_kube') }}" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" required>
                     @error('jenis_usaha_kube') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">No. Telp KUBE</label>
-                    <input type="text" name="no_telp_kube" value="{{ old('no_telp_kube') }}" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all">
+                    <input type="number" maxlength="13" placeholder="Masukkan Nomor Telepon" name="no_telp_kube" value="{{ old('no_telp_kube') }}" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all">
                 </div>
 
                 <div>
@@ -199,15 +203,20 @@
         </div>
 
         {{-- ============ ACTIONS ============ --}}
-        <div class="pt-2 flex items-center gap-3">
-            <button type="submit" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors shadow-sm shadow-indigo-600/20">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                Simpan KUBE
-            </button>
-            <a href="{{ route('kube.index') }}" class="bg-white hover:bg-slate-50 text-slate-600 font-semibold px-6 py-3 rounded-xl text-sm border border-slate-200 transition-colors">
-                Batal
-            </a>
-        </div>
+         <div class="sticky bottom-4 z-10">
+                <div class="bg-white/90 backdrop-blur border border-gray-100 shadow-lg shadow-black/5 rounded-2xl p-4 flex items-center gap-3">
+                    <button type="submit" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-all shadow-lg shadow-blue-600/20">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Simpan Baru
+                    </button>
+                    <a href="{{ route('kube.index') }}" class="bg-white hover:bg-gray-50 text-gray-500 font-semibold px-6 py-3 rounded-xl text-sm border border-gray-200 transition-all">
+                        Batal
+                    </a>
+                    {{-- <span class="ml-auto text-xs text-gray-400 hidden sm:flex items-center gap-1.5">
+                        <span class="text-rose-500">*</span> wajib diisi
+                    </span> --}}
+                </div>
+            </div>
     </form>
 </div>
 @endsection

@@ -4,11 +4,12 @@
 
     {{-- ================= HEADER ================= --}}
     <div class="mb-8">
+        <br>
         <a href="{{ route('produk.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 mb-3 w-fit">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             Kembali ke Katalog
         </a>
-        <p class="text-xs font-semibold text-blue-500 uppercase tracking-widest mb-1">Data Master</p>
+        {{-- <p class="text-xs font-semibold text-blue-500 uppercase tracking-widest mb-1">Data Master</p> --}}
         <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Edit Produk</h1>
         <p class="text-sm text-gray-500 mt-1">Perbarui informasi produk <span class="font-semibold text-gray-700">{{ $produk->nama_produk }}</span>.</p>
     </div>
@@ -18,28 +19,41 @@
         @method('PUT')
 
         {{-- ================= SECTION: MITRA UEP ================= --}}
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
-                </div>
-                <div>
-                    <h3 class="text-sm font-bold text-gray-900">Mitra UEP</h3>
-                    <p class="text-xs text-gray-400">Usaha ekonomi produktif pemilik produk ini</p>
-                </div>
-            </div>
-
-            <div class="space-y-2">
-                <label class="text-xs font-bold text-gray-500 uppercase">Mitra UEP</label>
-                <select name="uep_id" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
-                    @foreach($ueps as $uep)
-                        <option value="{{ $uep->id }}" {{ $produk->uep_id == $uep->id ? 'selected' : '' }}>
-                            {{ $uep->nama_usaha }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+ <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-6">
+    <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
+        <div>
+            <h3 class="text-sm font-bold text-gray-900">Pemilik Produk</h3>
+            <p class="text-xs text-gray-400">Pilih mitra UEP atau kelompok KUBE sebagai pemilik</p>
+        </div>
+    </div>
+
+    <div class="space-y-2">
+        <label class="text-xs font-bold text-gray-500 uppercase">Pilih Pemilik Produk <span class="text-rose-500">*</span></label>
+        
+        <select name="pemilik_id" id="pemilik_select" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
+            <option value="" disabled>-- Pilih UEP atau KUBE --</option>
+            
+            <optgroup label="Daftar UEP">
+                @foreach($ueps as $uep)
+                    <option value="uep_{{ $uep->id }}" {{ ($produk->uep_id == $uep->id) ? 'selected' : '' }}>
+                        [UEP] {{ $uep->nama_usaha }} - {{ $uep->penerimaManfaat->nama_lengkap ?? 'Tanpa Pemilik' }}
+                    </option>
+                @endforeach
+            </optgroup>
+
+            <optgroup label="Daftar KUBE">
+                @foreach($kubes as $kube)
+                    <option value="kube_{{ $kube->id }}" {{ ($produk->kube_id == $kube->id) ? 'selected' : '' }}>
+                        [KUBE] {{ $kube->nama_kelompok_kube }} - Ketua: {{ $kube->ketua->nama_lengkap ?? 'Tanpa Ketua' }}
+                    </option>
+                @endforeach
+            </optgroup>
+        </select>
+    </div>
+</div>
 
         {{-- ================= SECTION: INFORMASI PRODUK ================= --}}
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
@@ -135,14 +149,19 @@
 
         {{-- ================= ACTIONS ================= --}}
         <div class="sticky bottom-4 z-10">
-            <div class="bg-white/90 backdrop-blur border border-gray-100 shadow-lg shadow-black/5 rounded-2xl p-4 flex items-center justify-end gap-3">
-                <a href="{{ route('produk.index') }}" class="px-6 py-3 rounded-xl text-gray-600 font-semibold hover:bg-gray-100 transition-colors">Batal</a>
-                <button type="submit" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-lg shadow-blue-600/20 transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    Update Produk
-                </button>
+                <div class="bg-white/90 backdrop-blur border border-gray-100 shadow-lg shadow-black/5 rounded-2xl p-4 flex items-center gap-3">
+                    <button type="submit" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-all shadow-lg shadow-blue-600/20">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Perbarui Data
+                    </button>
+                    <a href="{{ route('produk.index') }}" class="bg-white hover:bg-gray-50 text-gray-500 font-semibold px-6 py-3 rounded-xl text-sm border border-gray-200 transition-all">
+                        Batal
+                    </a>
+                    {{-- <span class="ml-auto text-xs text-gray-400 hidden sm:flex items-center gap-1.5">
+                        <span class="text-rose-500">*</span> wajib diisi
+                    </span> --}}
+                </div>
             </div>
-        </div>
     </form>
 </div>
 

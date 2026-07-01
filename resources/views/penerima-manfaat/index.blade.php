@@ -4,7 +4,8 @@
     {{-- ================= HEADER ================= --}}
     <div class="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-5">
         <div>
-            <p class="text-xs font-semibold text-indigo-600 tracking-wide uppercase mb-1.5">Dinsos PPPA &middot; Kabupaten Cilacap</p>
+            <br>
+            {{-- <p class="text-xs font-semibold text-indigo-600 tracking-wide uppercase mb-1.5">Dinsos PPPA &middot; Kabupaten Cilacap</p> --}}
             <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Penerima Manfaat</h1>
             <p class="text-sm text-slate-500 mt-1">Daftar Penerima Manfaat binaan Dinsos PPPA Kabupaten Cilacap.</p>
         </div>

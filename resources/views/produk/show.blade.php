@@ -1,12 +1,30 @@
 @extends('layouts.app')
 @section('content')
-<div class="max-w-4xl mx-auto">
+<div class="max-w-6xl mx-auto px-4 py-8">
+<div class="mb-8 flex items-center justify-between">
+    <a href="{{ route('produk.index') }}" 
+       class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Kembali ke Katalog
+    </a>
 
+    <div class="flex items-center gap-2">
+        <a href="{{ route('produk.edit', $produk->id) }}" 
+           class="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-semibold px-4 py-2 rounded-xl text-sm border border-gray-200 shadow-sm transition-all active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+            Edit Produk
+        </a>
+    </div>
+</div>
     {{-- ================= HEADER ================= --}}
-    <div class="mb-6 flex items-center justify-between">
+    {{-- <div class="mb-6 flex items-center justify-between">
         <a href="{{ route('produk.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 w-fit">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Kembali ke Katalog
+            Kembali ke Katalog  
         </a>
         <div class="inline-flex gap-2">
             <a href="{{ route('produk.edit', $produk->id) }}" class="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-600 font-semibold px-4 py-2.5 rounded-xl text-sm border border-gray-200 transition-all">
@@ -14,7 +32,7 @@
                 Edit Produk
             </a>
         </div>
-    </div>
+    </div> --}}
 
     {{-- ================= MAIN CARD ================= --}}
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden grid md:grid-cols-2">

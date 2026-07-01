@@ -4,7 +4,7 @@
     {{-- ============ HEADER ============ --}}
     <div class="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-5">
         <div>
-            <p class="text-xs font-semibold text-indigo-600 tracking-wide uppercase mb-1.5">Dinas Sosial &middot; Kabupaten Cilacap</p>
+        <br>
             <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Kelolaan UEP</h1>
             <p class="text-sm text-slate-500 mt-1">Daftar Usaha Ekonomi Produktif yang terdaftar dan terverifikasi.</p>
         </div>
