@@ -89,7 +89,7 @@ public function create()
     public function store(Request $request)
 {
     
-    
+    // dd($request->all()); // Debug: Tampilkan semua data yang dikirimkan
 try {
         $kube = \App\Models\Uep::create([
             'nama_usaha' => $request->nama_usaha,
