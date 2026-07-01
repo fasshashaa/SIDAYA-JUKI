@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Uep;
 use Illuminate\Http\Request;
+use App\Models\ProdukUmkm;
 
 class ProdukUmkmController extends Controller
 {
@@ -58,9 +59,10 @@ public function create()
 public function edit($id)
 {
     $produk = \App\Models\ProdukUmkm::findOrFail($id);
-    $ueps = \App\Models\Uep::all(); // Untuk dropdown UEP
+    $ueps = \App\Models\Uep::all();
     return view('produk.edit', compact('produk', 'ueps'));
 }
+
 public function update(Request $request, $id)
 {
     $produk = \App\Models\ProdukUmkm::findOrFail($id);
@@ -68,28 +70,26 @@ public function update(Request $request, $id)
     $validated = $request->validate([
         'uep_id'           => 'required|exists:ueps,id',
         'nama_produk'      => 'required|string|max:255',
-        'kategori'         => 'required|string|max:100',
-        'harga_jual'       => 'required|numeric|min:0',
-        'stok'             => 'required|integer|min:0',
+        'kategori'         => 'required|string',
+        'harga_jual'       => 'required|numeric',
+        'stok'             => 'required|integer',
         'status_publikasi' => 'required|in:Ditampilkan,Draft',
         'foto_produk'      => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
     ]);
 
-    $data = $validated;
-
-    // Logika Ganti Foto
+    // Jika ada foto baru, hapus foto lama dan simpan yang baru
     if ($request->hasFile('foto_produk')) {
-        // Hapus foto lama jika ada
         if ($produk->foto_produk) {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($produk->foto_produk);
         }
-        $data['foto_produk'] = $request->file('foto_produk')->store('produk', 'public');
+        $validated['foto_produk'] = $request->file('foto_produk')->store('produk', 'public');
     }
 
-    $produk->update($data);
+    $produk->update($validated);
 
-    return redirect()->route('produk.index')->with('success', 'Produk berhasil diperbarui!');
+    return redirect()->route('produk.index')->with('success', 'Produk berhasil diupdate!');
 }
+
 public function destroy($id)
 {
     $produk = \App\Models\ProdukUmkm::findOrFail($id);
@@ -102,5 +102,10 @@ public function destroy($id)
     $produk->delete();
 
     return redirect()->route('produk.index')->with('success', 'Produk berhasil dihapus!');
+}
+public function show($id)
+{
+    $produk = \App\Models\ProdukUmkm::with('uep')->findOrFail($id);
+    return view('produk.show', compact('produk'));
 }
 }

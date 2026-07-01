@@ -13,8 +13,15 @@ class KubeController extends Controller
     /**
      * Menampilkan daftar Kelompok KUBE Binaan Dinsos Cilacap.
      */
-  public function index()
+  public function index(Request $request)
 {
+    $query = \App\Models\Kube::query();
+    
+    if($request->has('status')) {
+        $query->where('status', $request->status);
+    }
+    
+    $kubes = $query->get();
     // Mengambil semua KUBE beserta data ketua dan hitungan anggotanya
     $kubes = \App\Models\Kube::with(['ketua', 'anggota'])->get();
     return view('kube.index', compact('kubes'));

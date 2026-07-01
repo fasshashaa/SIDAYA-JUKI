@@ -81,7 +81,8 @@ Route::get('/kube/{kube}', [KubeController::class, 'show'])->name('kube.show');
 Route::delete('/kube/{kube}', [KubeController::class, 'destroy'])->name('kube.destroy');
     // Produk UMKM
   Route::resource('produk', ProdukUmkmController::class);
-
+  // routes/web.php
+Route::get('/verifikasi', [App\Http\Controllers\DashboardController::class, 'verifikasi'])->name('verifikasi.index');
     // Laporan Kegiatan
     Route::resource('laporan-kegiatan', LaporanKegiatanController::class);
 
