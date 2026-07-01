@@ -505,19 +505,21 @@
             </nav>
 
             <!-- Mini brand footer in sidebar -->
-            <div x-show="sidebarOpen" x-cloak class="px-4 pb-5 pt-2 flex-shrink-0">
+            {{-- <div x-show="sidebarOpen" x-cloak class="px-4 pb-5 pt-2 flex-shrink-0">
                 <div class="rounded-xl bg-white/5 border border-white/10 p-3.5 backdrop-blur-sm">
                     <p class="text-[10.5px] text-white/40 leading-relaxed">Dinas Sosial PPPA<br>Kabupaten Cilacap</p>
                 </div>
-            </div>
+            </div> --}}
         </aside>
 
         <!-- Main content: margin menyesuaikan status sidebar -->
         <main class="main-content flex-1 pt-16 p-10 main-bg min-h-screen overflow-y-auto"
               :class="sidebarOpen ? 'ml-64' : 'ml-[78px]'">
-           @yield('content')
-        </main>
-    </div>
+        {{-- Konten hanya yield satu kali di sini --}}
+            @yield('content')
 
+        </main>
+    </div> <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @include('components.alert')
 </body>
 </html>
