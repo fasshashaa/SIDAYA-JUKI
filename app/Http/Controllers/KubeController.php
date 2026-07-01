@@ -35,13 +35,13 @@ class KubeController extends Controller
 }
 public function store(Request $request)
 {
-  
+//   dd($request->all());
 try {
         $kube = \App\Models\Kube::create([
             'nama_kelompok_kube'        => $request->nama_kelompok_kube,
             'ketua_penerima_manfaat_id' => $request->ketua_penerima_manfaat_id,
-            'kecamatan_kube'            => $request->kecamatan, // Mengambil dari data dd() kamu
-            'desa_kube'                 => $request->desa,      // Mengambil dari data dd() kamu
+            'kecamatan_kube'            => $request->kecamatan_kube, // Mengambil dari data dd() kamu
+            'desa_kube'                 => $request->desa_kube,      // Mengambil dari data dd() kamu
             'jenis_usaha_kube'          => $request->jenis_usaha_kube,
             'no_telp_kube'              => $request->no_telp_kube,
             'alamat_lengkap_kube'       => $request->alamat_lengkap_kube,

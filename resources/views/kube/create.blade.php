@@ -1,12 +1,13 @@
 @extends('layouts.app')
 @section('content')
+
 <div class="max-w-4xl mx-auto"
     x-data="{ 
         pms: {{ $pms->toJson() }},
         selectedKetua: null,
-        kecamatan: '{{ old('kecamatan', '') }}',
-        desaTerpilih: '{{ old('desa', '') }}',
- listWilayah: {
+        kecamatan: '{{ old('kecamatan_kube', '') }}',
+        desaTerpilih: '{{ old('desa_kube', '') }}',
+        listWilayah: {
             'Cilacap Tengah': ['Donan', 'Gunungsimping', 'Kutawaru', 'Lomanis', 'Sidanegara'],
             'Cilacap Utara': ['Bangunkerto', 'Kebonmanis', 'Mertasinga', 'Trisula', 'Gumilir'],
             'Cilacap Selatan': ['Cilacap', 'Sidakaya', 'Tambakreja', 'Tegalkamulyan', 'Sentolokawat'],
@@ -16,7 +17,7 @@
             'Bantarsari': ['Bantarsari', 'Binangun', 'Cikedondong', 'Kamulyan', 'Kedungwringin', 'Rawajaya'],
             'Kedungreja': ['Bangunreja', 'Bojongsari', 'Ciklapa', 'Jatisari', 'Kaliwuri', 'Kedungreja', 'Rebamulya', 'Sidanegara', 'Tambakreja'],
             'Kesugihan': ['Bulupayung', 'Ciwuni', 'Dengkeng', 'Karangjengkol', 'Karangkandri', 'Kesugihan', 'Kuris', 'Menganti', 'Slarang'],
-            'Binangus': ['Alangamba', 'Bangkal', 'Binangun', 'Karangnangka', 'Kepudang', 'Pasuruhan', 'Pekuncen', 'Sidayu', 'Widarapayung'],
+            'Binangun': ['Alangamba', 'Bangkal', 'Binangun', 'Karangnangka', 'Kepudang', 'Pasuruhan', 'Pekuncen', 'Sidayu', 'Widarapayung'],
             'Nusawungu': ['Banjareja', 'Banjarwaru', 'Danasri', 'Jedug', 'Karangpakis', 'Karangsembung', 'Kedungbenda', 'Nusawungu', 'Purwosari'],
             'Kroya': ['Bajing', 'Buntu', 'Karangmangu', 'Kroya', 'Merwung', 'Mujur', 'Pucungkidul', 'Pekuncen', 'Sikampuh'],
             'Maos': ['Glempang', 'Karangkemiri', 'Klapagada', 'Maos Kidul', 'Maos Lor', 'Mergangsan', 'Panisian', 'Punthuk'],
@@ -28,7 +29,7 @@
             'Wanareja': ['Adimulya', 'Bantar', 'Cigintung', 'Cilongkrang', 'Jatisari', 'Majingklak', 'Malabar', 'Palugon', 'Wanareja'],
             'Dayeuhluhur': ['Bingkeng', 'Cigerendeng', 'Cilumping', 'Dayeuhluhur', 'Hanum', 'Kutaagung', 'Matenggeng', 'Samping'],
             'Sampang': ['Karangtengah', 'Ketanggung', 'Nusajati', 'Pakuwon', 'Sampang', 'Sidasari'],
-            'Ciapri': ['Caruy', 'Cipari', 'Cisuru', 'Karangreja', 'Kutasari', 'Mulyadadi', 'Pegadingan', 'Serang'],
+            'Cipari': ['Caruy', 'Cipari', 'Cisuru', 'Karangreja', 'Kutasari', 'Mulyadadi', 'Pegadingan', 'Serang'],
             'Patimuan': ['Bulupayung', 'Cinyawang', 'Patimuan', 'Purwodadi', 'Rawaapu', 'Sidamukti'],
             'Kampung Laut': ['Klaces', 'Panikel', 'Ujungalor', 'Ujunggagak']
         },
@@ -40,54 +41,73 @@
         }
     }">
 
-    <h1 class="text-3xl font-bold mb-6">Tambah Kelompok KUBE</h1>
+    {{-- ============ HEADER ============ --}}
+    <div class="mb-8">
+        <a href="{{ route('kube.index') }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors mb-3">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali ke Daftar KUBE
+        </a>
+        <p class="text-xs font-semibold text-indigo-600 tracking-wide uppercase mb-1.5">Formulir Register</p>
+        <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Tambah Kelompok KUBE</h1>
+        <p class="text-sm text-slate-500 mt-1">Lengkapi data kelompok, profil usaha, dan informasi pendukung.</p>
+    </div>
 
     <form action="{{ route('kube.store') }}" method="POST" class="space-y-6">
         @csrf
 
-        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-            <h4 class="text-sm font-bold text-blue-600 uppercase mb-4 border-b pb-2">Data Kelompok</h4>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {{-- ============ SECTION 1: DATA KELOMPOK ============ --}}
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm shadow-slate-200/50 border border-slate-100">
+            <div class="flex items-center gap-3 mb-5">
+                <span class="w-6 h-6 rounded-full bg-indigo-50 text-indigo-600 text-xs font-bold flex items-center justify-center shrink-0">1</span>
+                <h4 class="text-sm font-bold text-slate-800">Data Kelompok</h4>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                    <label class="font-semibold text-sm">Nama Kelompok KUBE *</label>
-                    <input type="text" name="nama_kelompok_kube" class="w-full mt-2 p-3 border rounded-xl bg-gray-50" required>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Kelompok KUBE *</label>
+                    <input type="text" name="nama_kelompok_kube" value="{{ old('nama_kelompok_kube') }}" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" required>
+                    @error('nama_kelompok_kube') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
-                    <label class="font-semibold text-sm">Pilih Ketua KUBE *</label>
-                    <select name="ketua_penerima_manfaat_id" @change="updateKetua($event.target.value)" class="w-full mt-2 p-3 border rounded-xl bg-gray-50" required>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Pilih Ketua KUBE *</label>
+                    <select name="ketua_penerima_manfaat_id" @change="updateKetua($event.target.value)" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" required>
                         <option value="">-- Pilih Ketua --</option>
                         @foreach($pms as $pm)
                             <option value="{{ $pm->id }}">{{ $pm->nama_lengkap }}</option>
                         @endforeach
                     </select>
+                    @error('ketua_penerima_manfaat_id') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
+                </div>
+            </div>
+        </div>
+
+        {{-- ============ SECTION 2: PROFIL USAHA & TEKNIS ============ --}}
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm shadow-slate-200/50 border border-slate-100">
+            <div class="flex items-center gap-3 mb-5">
+                <span class="w-6 h-6 rounded-full bg-indigo-50 text-indigo-600 text-xs font-bold flex items-center justify-center shrink-0">2</span>
+                <h4 class="text-sm font-bold text-slate-800">Profil Usaha &amp; Teknis</h4>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Jenis Usaha *</label>
+                    <input type="text" name="jenis_usaha_kube" value="{{ old('jenis_usaha_kube') }}" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" required>
+                    @error('jenis_usaha_kube') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">No. Telp KUBE</label>
+                    <input type="text" name="no_telp_kube" value="{{ old('no_telp_kube') }}" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all">
                 </div>
 
-              <input type="hidden" name="kecamatan_kube" x-model="kecamatan">
-                <input type="hidden" name="desa_kube" x-model="desaTerpilih">
-                        </div>
-
-        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-            <h4 class="text-sm font-bold text-blue-600 uppercase mb-4 border-b pb-2">Profil Usaha & Teknis</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="font-semibold text-sm">Jenis Usaha *</label>
-                    <input type="text" name="jenis_usaha_kube" class="w-full mt-2 p-3 border rounded-xl" required>
-                </div>
-                <div>
-                    <label class="font-semibold text-sm">No. Telp KUBE</label>
-                    <input type="text" name="no_telp_kube" class="w-full mt-2 p-3 border rounded-xl">
-                </div>
-  
- <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Kecamatan *</label>
-                    <select name="kecamatan_kube" 
-                            x-model="kecamatan" 
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Kecamatan *</label>
+                    <select name="kecamatan_kube"
+                            x-model="kecamatan"
                             @change="desaTerpilih = ''"
-                            required 
-                            class="w-full rounded-xl border-gray-200 bg-gray-50/50 text-sm p-3 focus:border-blue-500 focus:ring-blue-500">
-                                 <option value="">-- Pilih Kecamatan --</option>
+                            required
+                            class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all">
+                        <option value="">-- Pilih Kecamatan --</option>
                         <option value="Kedungreja">Kedungreja</option>
                         <option value="Kesugihan">Kesugihan</option>
                         <option value="Adipala">Adipala</option>
@@ -113,17 +133,17 @@
                         <option value="Cilacap Utara">Cilacap Utara</option>
                         <option value="Kampung Laut">Kampung Laut</option>
                     </select>
-                    @error('kecamatan') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    @error('kecamatan_kube') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Desa / Kelurahan *</label>
-                    <select name="desa_kube" 
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Desa / Kelurahan *</label>
+                    <select name="desa_kube"
                             x-model="desaTerpilih"
                             required
                             :disabled="desas.length === 0"
-                            class="w-full rounded-xl border-gray-200 bg-gray-50/50 text-sm p-3 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed">
-                        
+                            class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+
                         <template x-if="desas.length === 0">
                             <option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>
                         </template>
@@ -131,50 +151,63 @@
                         <template x-if="desas.length > 0">
                             <option value="">-- Pilih Desa --</option>
                         </template>
-                        
+
                         <template x-for="(namaDesa, index) in desas" :key="index">
-                            <option :value="namaDesa" 
+                            <option :value="namaDesa"
                                     x-text="namaDesa"></option>
                         </template>
                     </select>
-                    @error('desa') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    @error('desa_kube') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
-
 
                 <div class="md:col-span-2">
-                    <label class="font-semibold text-sm">Alamat Lengkap *</label>
-                    <textarea name="alamat_lengkap_kube" class="w-full mt-2 p-3 border rounded-xl" rows="3"></textarea>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Alamat Lengkap *</label>
+                    <textarea name="alamat_lengkap_kube" rows="3" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" placeholder="Nama jalan, RT/RW, Dusun tempat kelompok berada" required>{{ old('alamat_lengkap_kube') }}</textarea>
+                    @error('alamat_lengkap_kube') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
-                
             </div>
-            <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-    <h4 class="text-sm font-bold text-blue-600 uppercase mb-4 border-b pb-2">Informasi Pendukung</h4>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div>
-    <label class="font-semibold text-sm">Jumlah Anggota *</label>
-    <input type="number" name="jumlah_anggota" class="w-full mt-2 p-3 border rounded-xl bg-gray-50" required placeholder="Masukkan jumlah anggota">
-</div>
-        <div>
-            <label class="font-semibold text-sm">Tahun Realisasi *</label>
-            <input type="number" name="tahun_realisasi" value="{{ date('Y') }}" class="w-full mt-2 p-3 border rounded-xl bg-gray-50" required>
         </div>
 
-        <div>
-            <label class="font-semibold text-sm">Sumber Anggaran *</label>
-            <select name="sumber_anggaran" class="w-full mt-2 p-3 border rounded-xl bg-gray-50" required>
-                <option value="APBD">APBD</option>
-                <option value="APBN">APBN</option>
-                <option value="Mandiri">Mandiri</option>
-            </select>
+        {{-- ============ SECTION 3: INFORMASI PENDUKUNG ============ --}}
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm shadow-slate-200/50 border border-slate-100">
+            <div class="flex items-center gap-3 mb-5">
+                <span class="w-6 h-6 rounded-full bg-indigo-50 text-indigo-600 text-xs font-bold flex items-center justify-center shrink-0">3</span>
+                <h4 class="text-sm font-bold text-slate-800">Informasi Pendukung</h4>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Jumlah Anggota *</label>
+                    <input type="number" name="jumlah_anggota" value="{{ old('jumlah_anggota') }}" min="1" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" required placeholder="Masukkan jumlah anggota">
+                    @error('jumlah_anggota') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Tahun Realisasi *</label>
+                    <input type="number" name="tahun_realisasi" value="{{ old('tahun_realisasi', date('Y')) }}" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Sumber Anggaran *</label>
+                    <select name="sumber_anggaran" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" required>
+                        <option value="APBD" {{ old('sumber_anggaran') == 'APBD' ? 'selected' : '' }}>APBD</option>
+                        <option value="APBN" {{ old('sumber_anggaran') == 'APBN' ? 'selected' : '' }}>APBN</option>
+                        <option value="Mandiri" {{ old('sumber_anggaran') == 'Mandiri' ? 'selected' : '' }}>Mandiri</option>
+                    </select>
+                </div>
+
+                <input type="hidden" name="status_verifikasi" value="pending">
+            </div>
         </div>
 
-        <input type="hidden" name="status_verifikasi" value="pending">
-        
-    </div>
-</div>
+        {{-- ============ ACTIONS ============ --}}
+        <div class="pt-2 flex items-center gap-3">
+            <button type="submit" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors shadow-sm shadow-indigo-600/20">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Simpan KUBE
+            </button>
+            <a href="{{ route('kube.index') }}" class="bg-white hover:bg-slate-50 text-slate-600 font-semibold px-6 py-3 rounded-xl text-sm border border-slate-200 transition-colors">
+                Batal
+            </a>
         </div>
-
-        <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold">Simpan KUBE</button>
     </form>
 </div>
 @endsection
