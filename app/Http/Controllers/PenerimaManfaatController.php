@@ -7,6 +7,12 @@ use Illuminate\Support\Facades\DB;
 
 class PenerimaManfaatController extends Controller
 {
+    public function show($id)
+{
+    // Mengambil data penerima manfaat berdasarkan ID
+    $penerima = \App\Models\PenerimaManfaat::findOrFail($id);
+    return view('penerima-manfaat.show', compact('penerima'));
+}
     public function index()
     {
         // Ubah nama variabel agar konsisten dengan View index.blade.php
@@ -30,6 +36,7 @@ class PenerimaManfaatController extends Controller
             'kecamatan' => 'required|string',
             'desa' => 'required|string',
             'alamat_detail' => 'required|string',
+            'status_verifikasi' => 'required|in:pending,disetujui,ditolak',
         ]);
 
         $validated['created_at'] = now();
@@ -59,6 +66,7 @@ class PenerimaManfaatController extends Controller
             'kecamatan' => 'required|string',
             'desa' => 'required|string',
             'alamat_detail' => 'required|string',
+            'status_verifikasi' => 'required|in:pending,disetujui,ditolak',
         ]);
 
         $validated['updated_at'] = now();

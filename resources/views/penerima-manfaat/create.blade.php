@@ -1,4 +1,6 @@
-<x-app-layout>
+@extends('layouts.app')
+
+@section('content')
     <div class="mb-8">
         <a href="{{ route('penerima-manfaat.index') }}" class="text-sm font-medium text-blue-600 hover:underline flex items-center gap-1 mb-2">
             ← Kembali ke Daftar
@@ -45,6 +47,7 @@
          
         <form action="{{ route('penerima-manfaat.store') }}" method="POST" class="space-y-6">
             @csrf
+            <input type="hidden" name="status_verifikasi" value="pending">
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -154,4 +157,4 @@
             </div>
         </form>
     </div>
-</x-app-layout>
+@endsection

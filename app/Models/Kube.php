@@ -9,15 +9,40 @@ class Kube extends Model
 {
     protected $table = 'kube';
 
-    protected $fillable = [
-        'ketua_penerima_manfaat_id', 'nama_kelompok_kube', 'jenis_usaha_kube', 
-        'no_telp_kube', 'kecamatan_kube', 'desa_kube', 'alamat_lengkap_kube', 
-        'jumlah_anggota', 'tahun_realisasi', 'sumber_anggaran'
-    ];
+// app/Models/Kube.php
+protected $fillable = [
+    'ketua_penerima_manfaat_id',
+    'nama_kelompok_kube',
+    'jenis_usaha_kube',
+    'no_telp_kube',
+    'kecamatan_kube',
+    'desa_kube',
+    'alamat_lengkap_kube',
+    'jumlah_anggota',
+    'tahun_realisasi',
+    'sumber_anggaran',
+    'status_verifikasi'
+];
 
-    // Balikan relasi ketua ke model Penerima Manfaat
-    public function ketua(): BelongsTo
-    {
+
+
+public function user() {
+    return $this->belongsTo(User::class);
+}
+
+public function penerimaManfaat() {
+    return $this->hasMany(PenerimaManfaat::class, 'id'); // Pastikan FK-nya benar
+}
+
+public function produk() {
+    return $this->hasMany(Produk::class, 'kube_id');
+}
+public function anggota() {
+        return $this->hasMany(PenerimaManfaat::class, 'kube_id');
+    }
+
+    // Relasi: KUBE punya satu ketua
+    public function ketua() {
         return $this->belongsTo(PenerimaManfaat::class, 'ketua_penerima_manfaat_id');
     }
 }

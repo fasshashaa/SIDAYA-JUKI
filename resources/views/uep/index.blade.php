@@ -1,4 +1,6 @@
-<x-app-layout>
+@extends('layouts.app')
+@section('content')
+
     <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Kelolaan UEP</h1>
@@ -32,17 +34,26 @@
                         <th class="p-4 pl-6">Nama Usaha / Pemilik</th>
                         <th class="p-4">Kategori Produk</th>
                         <th class="p-4">Wilayah Usaha</th>
-                        <th class="p-4">Status</th>
-                        <th class="p-4 pr-6 text-right">Aksi</th>
+                        <th class="p-4">Perkembangan</th>
+                          <th class="p-4">Verifikasi</th>
+                          <th class="p-4">Status</th>
+                        <th class="p-4">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50 text-gray-700 font-medium">
                     @forelse($ueps as $item)
                         <tr class="hover:bg-gray-50/50 transition-colors">
-                            <td class="p-4 pl-6">
-                                <div class="font-bold text-gray-900">{{ $item->nama_usaha }}</div>
-                                <div class="text-xs text-gray-400 mt-0.5">{{ $item->nama_lengkap }} • NIK {{ substr($item->nik, 0, 4) }}...</div>
-                            </td>
+                         <td class="p-4 pl-6">
+    <div class="font-bold text-gray-900">{{ $item->nama_usaha }}</div>
+    
+    @if($item->penerimaManfaat)
+        <div class="text-xs text-gray-400 mt-0.5">
+            {{ $item->penerimaManfaat->nama_lengkap }} • NIK {{ substr($item->nik, 0, 4) }}...
+        </div>
+    @else
+        <div class="text-xs text-red-400 mt-0.5">Data Penerima Tidak Ditemukan</div>
+    @endif
+</td>
                             <td class="p-4">
                                 <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-xs font-semibold">{{ $item->kategori_produk }}</span>
                             </td>
@@ -59,6 +70,25 @@
                                     <span class="bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full text-xs font-bold">Rintisan</span>
                                 @endif
                             </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+    @if($item->status_verifikasi == 'disetujui')
+        <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Disetujui</span>
+    @elseif($item->status_verifikasi == 'ditolak')
+        <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">Ditolak</span>
+    @else
+        <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-full">Pending</span>
+    @endif
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+    @if($item->status_usaha == 'Aktif')
+        <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Aktif</span>
+    @elseif($item->status_verifikasi == 'Tidak Aktif')
+        <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">Tidak Aktif</span>
+    @else
+        <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-full">Tutup Sementara</span>
+    @endif
+</td>
+
                             <td class="p-4 pr-6 text-right">
     <div class="inline-flex gap-2">
         <!-- Lihat Detail -->
@@ -96,4 +126,4 @@
             </table>
         </div>
     </div>
-</x-app-layout>
+@endsection

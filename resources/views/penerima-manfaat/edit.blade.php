@@ -1,4 +1,6 @@
-<x-app-layout>
+@extends('layouts.app')
+
+@section('content')
     <div class="mb-8">
         <a href="{{ route('penerima-manfaat.index') }}" class="text-sm font-medium text-blue-600 hover:underline flex items-center gap-1 mb-2">
             ← Kembali ke Daftar
@@ -11,7 +13,7 @@
         <form action="{{ route('penerima-manfaat.update', $penerima->id) }}" method="POST" class="space-y-6">
             @csrf
             @method('PUT')
-
+<input type="hidden" name="status_verifikasi" value="{{ $penerima->status_verifikasi }}">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Nama Lengkap -->
                 <div>
@@ -90,7 +92,15 @@
                     @error('alamat_detail') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
             </div>
-
+<div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 mt-6">
+    <label class="block text-sm font-bold text-blue-900 mb-2">Status Verifikasi *</label>
+    <select name="status_verifikasi" class="w-full rounded-xl border-blue-200 bg-white text-sm p-3 focus:border-blue-500 focus:ring-blue-500">
+        <option value="pending" {{ old('status_verifikasi', $penerima->status_verifikasi) == 'pending' ? 'selected' : '' }}>Pending</option>
+        <option value="disetujui" {{ old('status_verifikasi', $penerima->status_verifikasi) == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
+        <option value="ditolak" {{ old('status_verifikasi', $penerima->status_verifikasi) == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+    </select>
+    <p class="text-xs text-blue-600 mt-2">Pastikan data sudah diperiksa sebelum mengubah status menjadi Disetujui/Ditolak.</p>
+</div>
             <div class="pt-4 flex items-center gap-3">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-all shadow-sm">
                     Perbarui Data
@@ -166,4 +176,4 @@
         });
     });
 </script>
-</x-app-layout>
+@endsection

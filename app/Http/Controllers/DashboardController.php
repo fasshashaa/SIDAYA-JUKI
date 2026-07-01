@@ -2,43 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use App\Models\PenerimaManfaat;
+use App\Models\Uep;
+use App\Models\Kube;
+use App\Models\Produk;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    public function index()
-    {
-        // 1. Menghitung Metrik Total Utama dari tabel yang sudah ada
-        $totalPenerima = DB::table('penerima_manfaats')->count();
-        
-        // Cek tabel 'ueps' (atau sesuaikan jika nama tabel uep kamu juga tunggal/berbeda)
-        $totalUEP = Schema::hasTable('ueps') ? DB::table('ueps')->count() : 0; 
+   public function index()
+{
+    $user = auth()->user();
 
-        // MEMAKAI TABEL 'kube' (Sesuai migration kamu)
-        $totalKUBE = DB::table('kube')->count();
+    // Data statistik untuk Admin/Verifikator
+    $data = [
+        'totalPM' => \App\Models\PenerimaManfaat::count(),
+        'totalUEP' => \App\Models\Uep::count(),
+        'totalKUBE' => \App\Models\Kube::count(),
+        'totalProduk' => \App\Models\Produk::count(),
+        // Ringkasan data menunggu verifikasi 
+        'pendingVerifikasi' => \App\Models\PenerimaManfaat::where('status_verifikasi', 'pending')->count() 
+                               + \App\Models\Uep::where('status_verifikasi', 'pending')->count()
+                               + \App\Models\Kube::where('status_verifikasi', 'pending')->count(),
+    ];
 
-        // 2. Mengambil Data Sebaran Kecamatan Teratas
-        $sebaranKecamatan = DB::table('penerima_manfaats')
-            ->select('kecamatan', DB::raw('count(*) as total'))
-            ->groupBy('kecamatan')
-            ->orderBy('total', 'desc')
-            ->take(5)
-            ->get();
-
-        // 3. Mengambil Aktivitas Registrasi Terakhir
-        $aktivitasTerbaru = DB::table('penerima_manfaats')
-            ->orderBy('created_at', 'desc')
-            ->take(4)
-            ->get();
-
-        return view('dashboard', compact(
-            'totalPenerima', 
-            'totalUEP', 
-            'totalKUBE', 
-            'sebaranKecamatan', 
-            'aktivitasTerbaru'
-        ));
-    }
+    return view('dashboard', compact('user', 'data'));
+}
 }
