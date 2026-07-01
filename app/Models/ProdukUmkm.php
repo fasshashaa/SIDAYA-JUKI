@@ -17,12 +17,15 @@ class ProdukUmkm extends Model
         'deskripsi_produk', 
         'whatsapp_sales', 
         'status_publikasi', 
-        'foto_produk'
+        'foto_produk',
+        'kube_id'
     ];
 
-    // Relasi ke UEP (jika diperlukan)
-    public function uep()
-    {
-        return $this->belongsTo(Uep::class, 'uep_id');
-    }
+   public function uep() {
+    return $this->belongsTo(Uep::class);
+}
+
+public function kube() {
+    return $this->belongsTo(Kube::class);
+}
 }

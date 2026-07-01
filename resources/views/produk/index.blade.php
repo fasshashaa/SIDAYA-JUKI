@@ -148,12 +148,22 @@
                 </div>
 
                 {{-- Detail Produk --}}
-                <div class="flex-grow p-4">
-                    <p class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider mb-1 truncate">{{ $item->uep->nama_usaha ?? 'Tanpa UEP' }}</p>
-                    <h3 class="font-semibold text-slate-900 line-clamp-1">{{ $item->nama_produk }}</h3>
-                    <p class="text-xs text-slate-400 mt-1 mb-2">{{ $item->kategori }}</p>
-                    <p class="text-indigo-600 font-bold text-sm">Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</p>
-                </div>
+             <div class="flex-grow p-4">
+    <p class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider mb-1 truncate">
+        {{-- Cek apakah relasi uep ada, jika tidak cek kube --}}
+        @if($item->uep_id)
+            {{ $item->uep->nama_usaha ?? 'Tanpa Nama UEP' }}
+        @elseif($item->kube_id)
+            {{ $item->kube->nama_kelompok_kube ?? 'Tanpa Nama KUBE' }}
+        @else
+            Tanpa Pemilik
+        @endif
+    </p>
+    
+    <h3 class="font-semibold text-slate-900 line-clamp-1">{{ $item->nama_produk }}</h3>
+    <p class="text-xs text-slate-400 mt-1 mb-2">{{ $item->kategori }}</p>
+    <p class="text-indigo-600 font-bold text-sm">Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</p>
+</div>
 
                 <div class="px-4 pb-4 pt-3 border-t border-slate-50 flex justify-between items-center">
                     <span class="text-[10px] {{ $item->stok > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600' }} px-2.5 py-1 rounded-full font-bold">

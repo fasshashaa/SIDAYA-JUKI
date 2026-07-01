@@ -19,9 +19,9 @@ class ProdukUmkmController extends Controller
 }
 public function store(Request $request)
 {
-    // 1. Validasi Input
+    // 1. Validasi Input (Ganti pemilik_select jadi pemilik_id sesuai nama di HTML)
     $validated = $request->validate([
-        'uep_id'           => 'required|exists:ueps,id',
+        'pemilik_id'       => 'required', 
         'nama_produk'      => 'required|string|max:255',
         'kategori'         => 'required|string|max:100',
         'harga_jual'       => 'required|numeric|min:0',
@@ -32,29 +32,43 @@ public function store(Request $request)
         'foto_produk'      => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
     ]);
 
-    // 2. Persiapan Data
-    $data = $validated;
+    // 2. Pecah nilai pemilik_id (yang isinya "kube_6" atau "uep_1")
+    $pemilik = explode('_', $request->pemilik_id);
+    $jenis = $pemilik[0]; 
+    $id    = $pemilik[1];
 
-    // 3. Logika Upload Foto
-    if ($request->hasFile('foto_produk')) {
-        $path = $request->file('foto_produk')->store('produk', 'public');
-        $data['foto_produk'] = $path;
+    // 3. Persiapan Data (Gunakan $validated agar lebih aman)
+    $data = $validated;
+    
+    // Hapus pemilik_id dari $data karena di DB tidak ada kolom bernama itu
+    unset($data['pemilik_id']);
+    
+    // Set foreign key
+    if ($jenis === 'uep') {
+        $data['uep_id'] = $id;
+        $data['kube_id'] = null;
+    } else {
+        $data['kube_id'] = $id;
+        $data['uep_id'] = null;
     }
 
-    // 4. Simpan ke Database
-    // Menggunakan $validated (bukan $request->all()) agar lebih aman
+    // 4. Logika Upload Foto
+    if ($request->hasFile('foto_produk')) {
+        $data['foto_produk'] = $request->file('foto_produk')->store('produk', 'public');
+    }
+
+    // 5. Simpan ke Database
     \App\Models\ProdukUmkm::create($data);
 
-    // 5. Redirect dengan pesan sukses
     return redirect()->route('produk.index')
                      ->with('success', 'Produk berhasil ditambahkan!');
 }
 
 public function create()
 {
-    // Mengambil semua data UEP untuk dropdown
-    $ueps = \App\Models\Uep::all(); 
-    return view('produk.create', compact('ueps'));
+    $ueps = \App\Models\Uep::all();
+    $kubes = \App\Models\Kube::all();
+    return view('produk.create', compact('ueps', 'kubes'));
 }
 public function edit($id)
 {

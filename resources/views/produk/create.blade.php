@@ -17,35 +17,33 @@
         @csrf
 
         {{-- ================= SECTION: MITRA UEP ================= --}}
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
-                </div>
-                <div>
-                    <h3 class="text-sm font-bold text-gray-900">Mitra UEP</h3>
-                    <p class="text-xs text-gray-400">Pilih usaha ekonomi produktif pemilik produk ini</p>
-                </div>
-            </div>
+      <div class="space-y-2">
+    <label class="text-xs font-bold text-gray-500 uppercase">Pilih Pemilik Produk <span class="text-rose-500">*</span></label>
+    
+    <select name="pemilik_id" id="pemilik_select" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
+        <option value="" disabled selected>-- Pilih UEP atau KUBE --</option>
+        
+        <optgroup label="Daftar UEP">
+            @foreach($ueps as $uep)
+                <option value="uep_{{ $uep->id }}" 
+                        data-wa="{{ $uep->no_wa ?? '' }}" 
+                        data-kategori="{{ $uep->kategori_produk ?? '' }}">
+                    [UEP] {{ $uep->nama_usaha }} - {{ $uep->penerimaManfaat->nama_lengkap ?? 'Tanpa Pemilik' }}
+                </option>
+            @endforeach
+        </optgroup>
 
-            <div class="space-y-2">
-                <label class="text-xs font-bold text-gray-500 uppercase">Pilih Mitra UEP <span class="text-rose-500">*</span></label>
-                <select name="uep_id" id="uep_select" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
-                    <option value="" disabled selected>-- Pilih UEP Pemilik Produk --</option>
-                    @foreach($ueps as $uep)
-                        <option value="{{ $uep->id }}"
-                                data-wa="{{ $uep->no_wa ?? '' }}"
-                                data-kategori="{{ $uep->kategori_produk ?? '' }}">
-                            {{ $uep->nama_usaha }} - {{ $uep->penerimaManfaat->nama_lengkap ?? 'Tanpa Pemilik' }}
-                        </option>
-                    @endforeach
-                </select>
-                <p class="text-xs text-gray-400 flex items-center gap-1.5 pt-1">
-                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    Kategori & nomor WhatsApp akan terisi otomatis dari data UEP yang dipilih
-                </p>
-            </div>
-        </div>
+        <optgroup label="Daftar KUBE">
+            @foreach($kubes as $kube)
+                <option value="kube_{{ $kube->id }}" 
+                        data-wa="{{ $kube->no_telp_kube ?? '' }}" 
+                        data-kategori="Kelompok Usaha">
+                    [KUBE] {{ $kube->nama_kelompok_kube }} - Ketua: {{ $kube->ketua->nama_lengkap ?? 'Tanpa Ketua' }}
+                </option>
+            @endforeach
+        </optgroup>
+    </select>
+</div>
 
         {{-- ================= SECTION: INFORMASI PRODUK ================= --}}
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
@@ -166,7 +164,7 @@
 </div>
 
 <script>
-document.getElementById('uep_select').addEventListener('change', function() {
+document.getElementById('pemilik_select').addEventListener('change', function() {
     // Ambil option yang terpilih
     let selectedOption = this.options[this.selectedIndex];
 
@@ -240,5 +238,30 @@ document.getElementById('uep_select').addEventListener('change', function() {
         placeholder.classList.remove('hidden');
     };
 })();
+document.getElementById('pemilik_select').addEventListener('change', function() {
+    // 1. Ambil option yang terpilih
+    const selectedOption = this.options[this.selectedIndex];
+    
+    // 2. Ambil data dari atribut data-*
+    const wa = selectedOption.getAttribute('data-wa');
+    const kategori = selectedOption.getAttribute('data-kategori');
+    
+    // 3. Isi ke input yang sudah ada (menggunakan ID yang sudah kamu punya di form)
+    // Pastikan ID di input HTML kamu adalah 'kategori_input' dan 'wa_input'
+    const inputKategori = document.getElementById('kategori_input');
+    const inputWa = document.getElementById('wa_input');
+    
+    if (inputKategori) inputKategori.value = kategori || '';
+    if (inputWa) inputWa.value = wa || '';
+    
+    // 4. Logika opsional: buat kategori readonly jika yang dipilih adalah KUBE
+    if (selectedOption.value.startsWith('kube_')) {
+        inputKategori.readOnly = true;
+        inputKategori.classList.add('bg-gray-100'); // Memberi tanda visual
+    } else {
+        inputKategori.readOnly = false;
+        inputKategori.classList.remove('bg-gray-100');
+    }
+});
 </script>
 @endsection
