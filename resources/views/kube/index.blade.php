@@ -10,28 +10,32 @@
             <p class="text-sm text-slate-500 mt-1">Daftar Kelompok Usaha Bersama binaan Dinsos PPPA Cilacap.</p>
         </div>
        <div class="flex items-center gap-2 mb-4">
-    <div class="relative" x-data="{ open: false }">
-        <button @click="open = !open" type="button" class="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-200 transition-all shadow-sm">
-            Ekspor
-        </button>
-        <div x-show="open" @click.away="open = false" x-cloak class="absolute left-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-50">
-            <a href="{{ route('kube.export.excel') }}" class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-indigo-600">Excel</a>
-            <a href="{{ route('kube.export.pdf') }}" class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-indigo-600">PDF</a>
+   <div class="relative" x-data="{ open: false }">
+            <button @click="open = !open" type="button" class="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-200 transition-all shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Ekspor
+            </button>
+            <div x-show="open" @click.away="open = false" x-cloak class="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-50 animate-in fade-in zoom-in duration-200">
+                <a href="{{ route('kube.export.excel') }}" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-slate-50">Excel</a>
+                <a href="{{ route('kube.export.pdf') }}" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-slate-50">PDF</a>
+            </div>
         </div>
-    </div>
 
-    <form action="{{ route('kube.import') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <input type="file" name="file" onchange="this.form.submit()" class="hidden" id="kube-import">
-        <label for="kube-import" class="cursor-pointer inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-200 transition-all shadow-sm">
-            Import
-        </label>
-    </form>
-
+        {{-- Tombol Import (File Input) --}}
+        <form action="{{ route('kube.import') }}" method="POST" enctype="multipart/form-data" class="relative">
+            @csrf
+            <input type="file" name="file" onchange="this.form.submit()" class="hidden" id="file-upload">
+            <label for="file-upload" class="cursor-pointer inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-200 transition-all shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                Import
+            </label>
+        </form>
+     @if(auth()->user()->role === 'super_admin')
             <a href="{{ route('kube.create') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-sm shadow-indigo-600/20">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Tambah Kelompok Baru
             </a>
+             @endif
         </div>
     </div>
 
@@ -167,15 +171,17 @@
                                 @endif
                             </td>
 
-                           <td class="p-4 relative">
-     <div x-data="{ open: false }" class="relative inline-block text-left">
-        <button @click="open = !open" @click.away="open = false" 
-                class="text-gray-400 hover:text-gray-600 focus:outline-none">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                       <td class="p-4 pr-6 text-right relative">
+    <div x-data="{ open: false, isTop: false }" 
+         @click.away="open = false" 
+         class="relative inline-block text-left">
+        
+        <button @click="open = !open; isTop = (window.innerHeight - $el.getBoundingClientRect().top) < 200" 
+                class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-all">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 13a1 1 0 100-2 1 1 0 000 2zM12 6a1 1 0 100-2 1 1 0 000 2zM12 20a1 1 0 100-2 1 1 0 000 2z"/>
             </svg>
         </button>
-
 
         <div x-show="open" 
              x-cloak
@@ -191,7 +197,7 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                 Ubah
             </a>
-            
+                 @if(auth()->user()->role === 'super_admin')
             <form id="delete-form-{{ $kube->id }}" action="{{ route('kube.destroy', $kube->id) }}" method="POST">
     @csrf 
     @method('DELETE')
@@ -201,6 +207,7 @@
         Hapus
     </button>
 </form>
+ @endif
         </div>
     </div>
 </td>
@@ -216,10 +223,12 @@
                                         <p class="text-sm font-semibold text-slate-600">Belum ada data kelompok KUBE</p>
                                         <p class="text-xs text-slate-400 mt-1">Tambahkan kelompok baru untuk mulai mengelola data.</p>
                                     </div>
+                                         @if(auth()->user()->role === 'super_admin')
                                     <a href="{{ route('kube.create') }}" class="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                                         Tambah Kelompok Baru
                                     </a>
+                                     @endif
                                 </div>
                             </td>
                         </tr>

@@ -491,10 +491,21 @@
                                     </a>
                                 </div>
                             </div>
+                             @if(auth()->user()->role === 'super_admin')
+                            <div class="group-panel w-full" :class="(open || !sidebarOpen) && 'is-open'">
+                                <div class="space-y-1.5">
+                                  <a href="{{ route('settings.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('settings.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
+                                    <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
+                                    <span x-show="sidebarOpen" x-cloak>Pengaturan Sistem</span>
+                                    <template x-if="!sidebarOpen"><span class="rail-tooltip">Pengaturan Sistem</span></template>
+                                </a>
+                                </div>
+                            </div>
+                             @endif
                         </div>
                     </div>
                 @endif
-
+     {{-- @if(auth()->user()->role === 'super_admin')
                 <div class="sidebar-divider my-4"></div>
 
                 <a href="{{ route('settings.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('settings.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
@@ -503,7 +514,7 @@
                     <template x-if="!sidebarOpen"><span class="rail-tooltip">Pengaturan Sistem</span></template>
                 </a>
             </nav>
-
+ @endif --}}
             <!-- Mini brand footer in sidebar -->
             {{-- <div x-show="sidebarOpen" x-cloak class="px-4 pb-5 pt-2 flex-shrink-0">
                 <div class="rounded-xl bg-white/5 border border-white/10 p-3.5 backdrop-blur-sm">

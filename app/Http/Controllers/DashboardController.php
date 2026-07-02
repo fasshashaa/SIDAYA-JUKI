@@ -15,15 +15,23 @@ class DashboardController extends Controller
 public function index()
 {
     $user = auth()->user();
-    $data = [];
+    
+    // Inisialisasi default array agar tidak terjadi error "Undefined index"
+    $data = [
+        'pendingVerifikasi' => 0,
+        'targetRoute'       => '#',
+        'totalPM'           => 0,
+        'totalUEP'          => 0,
+        'totalKUBE'         => 0,
+        'totalProduk'       => 0,
+        'recentActivities'  => [],
+    ];
 
-    // 1. Data untuk Admin & SuperAdmin
     if ($user->role === 'admin' || $user->role === 'super_admin') {
         $pendingPM    = \App\Models\PenerimaManfaat::where('status_verifikasi', 'pending')->count();
         $pendingUEP   = \App\Models\Uep::where('status_verifikasi', 'pending')->count();
         $pendingKUBE  = \App\Models\Kube::where('status_verifikasi', 'pending')->count();
 
-        // Menentukan target route untuk tombol verifikasi
         $targetRoute = 'penerima-manfaat.index';
         if ($pendingPM > 0)      $targetRoute = 'penerima-manfaat.index';
         elseif ($pendingUEP > 0) $targetRoute = 'uep.index';
@@ -39,23 +47,22 @@ public function index()
             'recentActivities'  => \App\Models\Activity::latest()->take(5)->get(),
         ];
 
-        // Tambahan khusus Superadmin
         if ($user->role === 'super_admin') {
             $data['totalUser'] = \App\Models\User::count();
         }
-    } 
-    // 2. Data untuk User (Masyarakat)
-    else {
+    } else {
+        // Data Khusus User (Masyarakat)
         $data = [
-            'totalPending'   => \App\Models\PenerimaManfaat::where('user_id', $user->id)->where('status_verifikasi', 'pending')->count(),
-            'totalDisetujui' => \App\Models\PenerimaManfaat::where('user_id', $user->id)->where('status_verifikasi', 'disetujui')->count(),
-            'totalDitolak'   => \App\Models\PenerimaManfaat::where('user_id', $user->id)->where('status_verifikasi', 'ditolak')->count(),
+            'totalPM'        => \App\Models\PenerimaManfaat::where('user_id', $user->id)->count(),
+            'totalUEP'       => \App\Models\Uep::where('user_id', $user->id)->count(),
+            'totalKUBE'      => \App\Models\Kube::where('user_id', $user->id)->count(),
             'totalProduk'    => \App\Models\ProdukUmkm::where('user_id', $user->id)->count(),
             'recentActivities' => \App\Models\Activity::where('user_id', $user->id)->latest()->take(5)->get(),
+            // User tidak butuh pendingVerifikasi, beri nilai 0 saja
+            'pendingVerifikasi' => 0, 
+            'targetRoute'       => '#',
         ];
     }
-    // Tambahkan ini di DashboardController
-$data['recentActivities'] = \App\Models\Activity::latest()->take(5)->get();
 
     return view('dashboard', compact('user', 'data'));
 }

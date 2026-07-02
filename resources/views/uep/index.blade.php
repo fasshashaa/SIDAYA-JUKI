@@ -10,29 +10,32 @@
         </div>
        <div class="flex items-center gap-2">
     {{-- Dropdown Ekspor --}}
-    <div class="relative" x-data="{ open: false }">
-        <button @click="open = !open" type="button" class="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-200 transition-all shadow-sm">
-            Ekspor
-        </button>
-        <div x-show="open" @click.away="open = false" x-cloak class="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-50">
-            <a href="{{ route('uep.export.excel') }}" class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50">Excel</a>
-            <a href="{{ route('uep.export.pdf') }}" class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50">PDF</a>
+   <div class="relative" x-data="{ open: false }">
+            <button @click="open = !open" type="button" class="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-200 transition-all shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Ekspor
+            </button>
+            <div x-show="open" @click.away="open = false" x-cloak class="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-50 animate-in fade-in zoom-in duration-200">
+                <a href="{{ route('uep.export.excel') }}" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-slate-50">Excel</a>
+                <a href="{{ route('uep.export.pdf') }}" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-slate-50">PDF</a>
+            </div>
         </div>
-    </div>
 
-    {{-- Import --}}
-    <form action="{{ route('uep.import') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <input type="file" name="file" onchange="this.form.submit()" class="hidden" id="uep-upload">
-        <label for="uep-upload" class="cursor-pointer inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-200 transition-all shadow-sm">
-            Import
-        </label>
-    </form>
-
+        {{-- Tombol Import (File Input) --}}
+        <form action="{{ route('uep.import') }}" method="POST" enctype="multipart/form-data" class="relative">
+            @csrf
+            <input type="file" name="file" onchange="this.form.submit()" class="hidden" id="file-upload">
+            <label for="file-upload" class="cursor-pointer inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-200 transition-all shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                Import
+            </label>
+        </form>
+     @if(auth()->user()->role === 'super_admin')
             <a href="{{ route('uep.create') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-sm shadow-indigo-600/20">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Tambah Usaha
             </a>
+             @endif
         </div>
     </div>
 
@@ -230,7 +233,7 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                 Edit
             </a>
-            
+                 @if(auth()->user()->role === 'super_admin')
             <form id="delete-form-{{ $item->id }}" action="{{ route('uep.destroy', $item->id) }}" method="POST">
     @csrf 
     @method('DELETE')
@@ -240,6 +243,7 @@
         Hapus
     </button>
 </form>
+ @endif
         </div>
     </div>
 </td>
@@ -255,10 +259,12 @@
                                         <p class="text-sm font-semibold text-slate-600">Belum ada data register mitra UEP</p>
                                         <p class="text-xs text-slate-400 mt-1">Tambahkan usaha baru untuk mulai mengelola data.</p>
                                     </div>
+                                         @if(auth()->user()->role === 'super_admin')
                                     <a href="{{ route('uep.create') }}" class="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                                         Tambah Usaha Baru
                                     </a>
+                                     @endif
                                 </div>
                             </td>
                         </tr>
