@@ -10,6 +10,8 @@ use App\Http\Controllers\UepController;
 use App\Http\Controllers\ProdukUmkmController;
 use App\Http\Controllers\LaporanKegiatanController;
 use App\Http\Controllers\KubeController;
+use App\Http\Controllers\SuperAdmin\UserController;
+use App\Http\Controllers\ActivityController;;
 
 // ==========================================
 // PUBLIC ROUTES & API WILAYAH (Bebas OTP & Auth)
@@ -30,8 +32,15 @@ Route::get('/get-desa/{kecamatan}', function ($kecamatan) {
         ->pluck('nama_desa')
         ->toArray();
 
+
     return response()->json($desa);
 })->name('get-desa');
+
+
+
+Route::get('/activities', [App\Http\Controllers\ActivityController::class, 'index'])
+    ->name('activities.index')
+    ->middleware('auth');
 Route::get('/get-desa/{kecamatan}', [App\Http\Controllers\UepController::class, 'getDesa']);
 Route::put('/uep/{id}', [UepController::class, 'update'])->name('uep.update');
 Route::get('/uep/{id}', [UepController::class, 'show'])->name('uep.show');
@@ -42,7 +51,7 @@ require __DIR__.'/auth.php';
 // ==========================================
 // PROTECTED ROUTES (Wajib Login & Lolos OTP)
 // ==========================================
-Route::middleware(['auth', 'verified.otp'])->group(function () {
+Route::middleware(['auth', 'verified.otp', 'check.status'])->group(function () {
     
     // 1. Dashboard Utama
     Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -88,12 +97,23 @@ Route::post('/kube', [KubeController::class, 'store'])->name('kube.store');
 Route::get('/kube/{kube}/edit', [KubeController::class, 'edit'])->name('kube.edit');
 Route::put('/kube/{kube}', [KubeController::class, 'update'])->name('kube.update');
 Route::get('/kube/{kube}', [KubeController::class, 'show'])->name('kube.show');
-
-
 // Tambahkan rute destroy secara manual di sini
 Route::delete('/kube/{kube}', [KubeController::class, 'destroy'])->name('kube.destroy');
+
+
+Route::middleware(['auth', 'EnsureIsSuperAdmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
+    Route::resource('users', UserController::class)->except(['show', 'edit', 'update']);
+    Route::resource('users', UserController::class);
+    Route::put('users/{id}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
+});
     // Produk UMKM
   Route::resource('produk', ProdukUmkmController::class);
+
+  Route::middleware(['auth', 'EnsureIsSuperAdmin'])->prefix('superadmin')->group(function () {
+    Route::get('/users', [UserController::class, 'index'])->name('superadmin.users.index');
+    Route::put('/users/{id}/role', [UserController::class, 'updateRole'])->name('superadmin.users.updateRole');
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('superadmin.users.destroy');
+});
  
   // routes/web.php
 Route::get('/verifikasi', [App\Http\Controllers\DashboardController::class, 'verifikasi'])->name('verifikasi.index');

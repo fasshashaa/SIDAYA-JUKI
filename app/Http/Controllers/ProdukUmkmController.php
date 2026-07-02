@@ -60,6 +60,15 @@ public function store(Request $request)
     // 5. Simpan ke Database
     \App\Models\ProdukUmkm::create($data);
 
+    $validated['user_id'] = auth()->id();
+    $produk = \App\Models\ProdukUmkm::create($validated);
+
+    // Catat Log
+    \App\Models\Activity::create([
+        'user_id'     => auth()->id(),
+        'causer_name' => auth()->user()->name,
+        'description' => 'Menambahkan data Produk UMKM baru: ' . $validated['nama_produk'],
+    ]);
     return redirect()->route('produk.index')
                      ->with('success', 'Produk berhasil ditambahkan!');
 }

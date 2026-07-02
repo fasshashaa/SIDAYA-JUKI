@@ -39,32 +39,46 @@ class KubeController extends Controller
 }
 public function store(Request $request)
 {
-//   dd($request->all());
-try {
-        $kube = \App\Models\Kube::create([
-            'nama_kelompok_kube'        => $request->nama_kelompok_kube,
-            'ketua_penerima_manfaat_id' => $request->ketua_penerima_manfaat_id,
-            'kecamatan_kube'            => $request->kecamatan_kube, // Mengambil dari data dd() kamu
-            'desa_kube'                 => $request->desa_kube,      // Mengambil dari data dd() kamu
-            'jenis_usaha_kube'          => $request->jenis_usaha_kube,
-            'no_telp_kube'              => $request->no_telp_kube,
-            'alamat_lengkap_kube'       => $request->alamat_lengkap_kube,
-            'tahun_realisasi'           => $request->tahun_realisasi,
-            'sumber_anggaran'           => $request->sumber_anggaran,
-            'status_verifikasi'         => $request->status_verifikasi,
-            'jumlah_anggota'            => $request->jumlah_anggota,
-        ]);
+    // 1. Validasi semua data yang masuk dari form
+    $validated = $request->validate([
+        'nama_kelompok_kube'        => 'required|string|max:255',
+        'ketua_penerima_manfaat_id' => 'required|integer',
+        'kecamatan_kube'            => 'required|string',
+        'desa_kube'                 => 'required|string',
+        'jenis_usaha_kube'          => 'required|string',
+        'no_telp_kube'              => 'nullable|string',
+        'alamat_lengkap_kube'       => 'required|string',
+        'tahun_realisasi'           => 'required|integer',
+        'sumber_anggaran'           => 'required|string',
+        'status_verifikasi'         => 'required|string',
+        'jumlah_anggota'            => 'required|integer',
+    ]);
 
-        // Jika berhasil, update anggota
+    try {
+        // 2. Tambahkan user_id ke array yang sudah divalidasi
+        $validated['user_id'] = auth()->id();
+
+        // 3. Simpan KUBE (Hanya sekali!)
+        $kube = \App\Models\Kube::create($validated);
+
+        // 4. Update anggota (Update relasi jika ada anggota yang dipilih)
         if ($request->has('anggota_ids')) {
             \App\Models\PenerimaManfaat::whereIn('id', $request->anggota_ids)
                 ->update(['kube_id' => $kube->id]);
         }
 
-       return redirect()->route('kube.index')->with('success', 'Kelompok KUBE berhasil didaftarkan!');
+        // 5. Catat Log Aktivitas
+        \App\Models\Activity::create([
+            'user_id'     => auth()->id(),
+            'causer_name' => auth()->user()->name,
+            'description' => 'Menambahkan data KUBE baru: ' . $validated['nama_kelompok_kube'],
+        ]);
+
+        return redirect()->route('kube.index')->with('success', 'Kelompok KUBE berhasil didaftarkan!');
 
     } catch (\Exception $e) {
-        return back()->withErrors(['error' => 'Gagal menyimpan: ' . $e->getMessage()]);
+        // Jika ada error database, tampilkan pesannya
+        return back()->withErrors(['error' => 'Gagal menyimpan: ' . $e->getMessage()])->withInput();
     }
 }
 public function destroy($id)

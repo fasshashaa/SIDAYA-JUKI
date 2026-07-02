@@ -330,7 +330,7 @@
     <header class="main-content app-header border-b border-slate-100/80 fixed top-0 right-0 h-16 z-20 flex items-center justify-between px-6"
              :class="sidebarOpen ? 'left-64' : 'left-[78px]'">
         <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 dark:text-slate-500">
-            <span class="hidden md:inline">{{ now()->translatedFormat('l, d F Y') }}</span>
+            {{-- <span class="hidden md:inline">{{ now()->translatedFormat('l, d F Y') }}</span> --}}
         </div>
 
         <div class="flex items-center gap-3">
@@ -411,7 +411,7 @@
             <div class="p-6 flex flex-col items-center border-b border-white/5 flex-shrink-0">
                 <img src="{{ asset('img/Logo_sdy.png') }}" class="object-contain mb-3 transition-all duration-300" :class="sidebarOpen ? 'w-20 h-20' : 'w-10 h-10'">
                 <h2 x-show="sidebarOpen" x-cloak class="text-white font-display font-extrabold text-lg tracking-tight whitespace-nowrap">SIDAYA</h2>
-                <p x-show="sidebarOpen" x-cloak class="text-white/40 text-xs font-medium uppercase tracking-widest whitespace-nowrap mb-2">Dashboard Admin</p>
+                <p x-show="sidebarOpen" x-cloak class="text-white/40 text-xs font-medium uppercase tracking-widest whitespace-nowrap mb-2"></p>
                 <span x-show="sidebarOpen" x-cloak class="badge-live"><span class="dot"></span>SISTEM AKTIF</span>
             </div>
 
@@ -484,7 +484,7 @@
 
                             <div class="group-panel w-full" :class="(open || !sidebarOpen) && 'is-open'">
                                 <div class="space-y-1.5">
-                                    <a href="#" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold" :class="!sidebarOpen && 'justify-center px-0'">
+                                    <a href="{{ route('superadmin.users.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold" :class="!sidebarOpen && 'justify-center px-0'">
                                         <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></span>
                                         <span x-show="sidebarOpen" x-cloak>User Management</span>
                                         <template x-if="!sidebarOpen"><span class="rail-tooltip">User Management</span></template>

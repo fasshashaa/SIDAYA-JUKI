@@ -91,40 +91,45 @@ public function create()
     /**
      * Menyimpan Data Baru UEP
      */
-    public function store(Request $request)
+   public function store(Request $request)
 {
-    
-    // dd($request->all()); // Debug: Tampilkan semua data yang dikirimkan
-try {
-        $kube = \App\Models\Uep::create([
-            'nama_usaha' => $request->nama_usaha,
-            'penerima_manfaat_id' => $request->penerima_manfaat_id ?? null,
-            'nik' => $request->nik,
-            'no_kk' => $request->no_kk,
-            'nama_lengkap' => $request->nama_lengkap,
-            'nama_ibu_kandung' => $request->nama_ibu_kandung,
-            'no_wa' => $request->no_wa,
-            'kecamatan_usaha' => $request->kecamatan_usaha,
-            'desa_kelurahan_usaha' => $request->desa_kelurahan_usaha,
-            'alamat_lengkap' => $request->alamat_lengkap,
-            'kategori_produk' => $request->kategori_produk,
-           'status_usaha' => $request->status_usaha,
-            'status_perkembangan' => $request->status_perkembangan,
-            'tahun_realisasi' => $request->tahun_realisasi,
-            'sumber_anggaran' => $request->sumber_anggaran,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+    // 1. Validasi: Hanya aturan yang ditulis di sini
+    $validated = $request->validate([
+        'nama_usaha'           => 'required|string|max:255',
+        'penerima_manfaat_id'  => 'nullable|integer',
+        'nik'                  => 'required|numeric|digits:16',
+        'no_kk'                => 'required|numeric|digits:16',
+        'nama_lengkap'         => 'required|string|max:255',
+        'nama_ibu_kandung'     => 'required|string|max:255',
+        'no_wa'                => 'nullable|string',
+        'kecamatan_usaha'      => 'required|string',
+        'desa_kelurahan_usaha' => 'required|string',
+        'alamat_lengkap'       => 'required|string',
+        'kategori_produk'      => 'required|string',
+        'status_usaha'         => 'required|string',
+        'status_perkembangan'  => 'required|string',
+        'tahun_realisasi'      => 'required|integer',
+        'sumber_anggaran'      => 'required|string',
+    ]);
 
-      
-        return redirect()->route('uep.index')->with('success', 'Data UEP Berhasil Disimpan!');
-    
+    // 2. Tambahkan user_id secara manual
+    $validated['user_id'] = auth()->id();
 
-    } catch (\Exception $e) {
-        return back()->withErrors(['error' => 'Gagal menyimpan: ' . $e->getMessage()]);
-    }
+    // 3. Simpan ke Database
+    // Tidak perlu created_at/updated_at karena Eloquent otomatis mengisinya
+    $uep = \App\Models\Uep::create($validated);
+
+    // 4. Catat Aktivitas
+    \App\Models\Activity::create([
+        'user_id'     => auth()->id(),
+        'causer_name' => auth()->user()->name,
+        'description' => 'Menambahkan data UEP baru: ' . $validated['nama_usaha'],
+    ]);
+
+    // 5. Redirect
+    return redirect()->route('uep.index')->with('success', 'Data UEP Berhasil Disimpan!');
 }
-   
+
     public function getDesa($kecamatan)
 {
     // Sesuaikan data ini dengan daftar desa di kecamatan Anda

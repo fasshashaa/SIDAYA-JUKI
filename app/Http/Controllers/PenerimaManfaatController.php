@@ -9,6 +9,7 @@ use App\Imports\PenerimaManfaatImport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\PenerimaManfaat;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Activity;
 
 class PenerimaManfaatController extends Controller
 {
@@ -43,12 +44,16 @@ class PenerimaManfaatController extends Controller
             'alamat_detail' => 'required|string',
             'status_verifikasi' => 'required|in:pending,disetujui,ditolak',
         ]);
-
+        $validated['user_id'] = auth()->id();
         $validated['created_at'] = now();
         $validated['updated_at'] = now();
 
         DB::table('penerima_manfaats')->insert($validated);
-
+Activity::create([
+        'user_id'     => auth()->id(),
+        'causer_name' => auth()->user()->name,
+        'description' => 'Menambahkan data Penerima Manfaat baru: ' . $request->nama_lengkap,
+    ]);
         return redirect()->route('penerima-manfaat.index')->with('success', 'Data berhasil ditambahkan!');
     }
 

@@ -168,16 +168,14 @@
                             </td>
 
                            <td class="p-4 relative">
-    <div x-data="{ open: false, isTop: false }" 
-         @click.away="open = false" 
-         class="relative inline-block text-left">
-        
-        <button @click="open = !open; isTop = (window.innerHeight - $el.getBoundingClientRect().top) < 200" 
-                class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-all">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 13a1 1 0 100-2 1 1 0 000 2zM12 6a1 1 0 100-2 1 1 0 000 2zM12 20a1 1 0 100-2 1 1 0 000 2z"/>
+     <div x-data="{ open: false }" class="relative inline-block text-left">
+        <button @click="open = !open" @click.away="open = false" 
+                class="text-gray-400 hover:text-gray-600 focus:outline-none">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z"/>
             </svg>
         </button>
+
 
         <div x-show="open" 
              x-cloak

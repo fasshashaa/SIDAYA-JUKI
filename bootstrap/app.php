@@ -12,14 +12,20 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Daftarkan semua alias middleware kustom proyek SIDAYA di sini
+        // Gabungkan semua middleware ke dalam satu deklarasi alias
         $middleware->alias([
-            'verified.otp' => \App\Http\Middleware\EnsureOtpIsVerified::class,
-            'role'         => \App\Http\Middleware\CheckRole::class, 
-                   'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'EnsureIsSuperAdmin' => \App\Http\Middleware\EnsureIsSuperAdmin::class,
+            'verified.otp'       => \App\Http\Middleware\EnsureOtpIsVerified::class,
+            'role'               => \App\Http\Middleware\RoleMiddleware::class, // Pilih salah satu yang aktif (disarankan RoleMiddleware)
+            'check.status'       => \App\Http\Middleware\CheckUserStatus::class,
+            
         ]);
+
+        
     })
+    
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })
     ->create();
+    

@@ -216,7 +216,15 @@
                     Aman
                 </span> --}}
             </div>
-
+@if ($errors->any())
+    <div class="mb-4 text-sm text-red-600">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
             <form action="#" method="POST">
                 @csrf
                 <div class="mb-5">
