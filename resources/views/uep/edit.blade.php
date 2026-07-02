@@ -200,7 +200,7 @@
             "Adipala": ["Adipala", "Bunton", "Karanganyar", "Karangbenda", "Penggalang"],
             "Majenang": ["Bener", "Cilopadang", "Jenang", "Mulyadadi", "Mulyasari"],
             "Cimanggu": ["Bantarpanjang", "Cimanggu", "Cisumur", "Karangreja"],
-            "Bantarsari": ["Bantarsari", "Binangun", "Rawajaya"],
+            "Bantarsari": ["Bantarsari", "Binangun", "Rawajaya", "Kedungwringin"],
             "Cipari": ["Caruy", "Cipari", "Cisuru", "Karangreja", "Kutasari", "Mulyadadi", "Pegadingan", "Serang"],
             "Kedungreja": ["Bangunreja", "Bojongsari", "Ciklapa", "Jatisari", "Kaliwuri", "Kedungreja", "Rebamulya", "Sidanegara", "Tambakreja"],
             "Kesugihan": ["Bulupayung", "Ciwuni", "Dengkeng", "Karangjengkol", "Karangkandri", "Kesugihan", "Kuris", "Menganti", "Slarang"],
