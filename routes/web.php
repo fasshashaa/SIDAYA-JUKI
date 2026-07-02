@@ -57,16 +57,29 @@ Route::middleware(['auth', 'verified.otp'])->group(function () {
     // 3. Modul Data Utama SIDAYA (Clean URL tanpa prefix)
     
     // Penerima Manfaat
-    Route::get('penerima-manfaat/{id}/pdf', [PenerimaManfaatController::class, 'generatePdf'])->name('penerima-manfaat.pdf');
+    // Route::get('penerima-manfaat/{id}/pdf', [PenerimaManfaatController::class, 'generatePdf'])->name('penerima-manfaat.pdf');
+    Route::post('penerima-manfaat/import', [PenerimaManfaatController::class, 'import'])->name('penerima-manfaat.import');
+Route::get('penerima-manfaat/export/pdf', [PenerimaManfaatController::class, 'exportPdf'])->name('penerima-manfaat.export.pdf');
+Route::get('penerima-manfaat/export/excel', [PenerimaManfaatController::class, 'exportExcel'])->name('penerima-manfaat.export.excel');
     Route::resource('penerima-manfaat', PenerimaManfaatController::class);
     Route::get('/penerima-manfaat/{id}', [PenerimaManfaatController::class, 'show'])->name('penerima-manfaat.show');
     Route::get('/penerima-manfaat', [PenerimaManfaatController::class, 'index'])->name('penerima-manfaat.index');
     Route::get('/penerima-manfaat/{id}/edit', [PenerimaManfaatController::class, 'edit'])->name('penerima-manfaat.edit');
     Route::delete('/penerima-manfaat/{id}', [PenerimaManfaatController::class, 'destroy'])->name('penerima-manfaat.destroy');
     
+    Route::prefix('uep')->group(function () {
+    Route::get('/export/excel', [UepController::class, 'exportExcel'])->name('uep.export.excel');
+    Route::get('/export/pdf', [UepController::class, 'exportPdf'])->name('uep.export.pdf');
+    Route::post('/import', [UepController::class, 'import'])->name('uep.import');
+});
     // UEP (Usaha Ekonomi Produktif)
     Route::resource('uep', UepController::class);
 
+    Route::prefix('kube')->group(function () {
+    Route::get('/export/excel', [KubeController::class, 'exportExcel'])->name('kube.export.excel');
+    Route::get('/export/pdf', [KubeController::class, 'exportPdf'])->name('kube.export.pdf');
+    Route::post('/import', [KubeController::class, 'import'])->name('kube.import');
+});
     // KUBE (Kelompok Usaha Bersama)
 // Hapus atau ganti resource menjadi deklarasi rute manual untuk KUBE
 Route::get('/kube', [KubeController::class, 'index'])->name('kube.index');
@@ -81,6 +94,7 @@ Route::get('/kube/{kube}', [KubeController::class, 'show'])->name('kube.show');
 Route::delete('/kube/{kube}', [KubeController::class, 'destroy'])->name('kube.destroy');
     // Produk UMKM
   Route::resource('produk', ProdukUmkmController::class);
+ 
   // routes/web.php
 Route::get('/verifikasi', [App\Http\Controllers\DashboardController::class, 'verifikasi'])->name('verifikasi.index');
     // Laporan Kegiatan

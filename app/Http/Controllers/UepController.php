@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Uep;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\PenerimaManfaat;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\UepExport;
+use App\Imports\UepImport;
 
 class UepController extends Controller
 {
@@ -142,4 +147,29 @@ try {
 
         return response()->json($desas);
     }
+
+    public function exportExcel()
+{
+    return Excel::download(new UepExport, 'data-uep.xlsx');
+}
+
+public function exportPdf()
+{
+    $data = Uep::all();
+    $pdf = PDF::loadView('uep.pdf', compact('data'))
+               ->setPaper('a4', 'landscape'); // Mengubah ke mode landscape
+    return $pdf->download('data-uep.pdf');
+}
+
+public function import(Request $request)
+{
+    $request->validate(['file' => 'required|mimes:xlsx,xls']);
+
+    try {
+        Excel::import(new UepImport, $request->file('file'));
+        return back()->with('success', 'Data UEP berhasil diimpor!');
+    } catch (\Exception $e) {
+        return back()->with('error', 'Gagal impor: ' . $e->getMessage());
+    }
+}
 }

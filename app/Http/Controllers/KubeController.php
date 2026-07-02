@@ -7,6 +7,10 @@ use App\Models\PenerimaManfaat; // Pastikan Anda sudah memiliki Model Kube
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\KubeExport;
+use App\Imports\KubeImport;
 
 class KubeController extends Controller
 {
@@ -168,6 +172,27 @@ public function edit($id)
     // Memuat data kube beserta relasi ketuanya
     $kube = \App\Models\Kube::with('ketua')->findOrFail($id);
     return view('kube.show', compact('kube'));
+}
+public function exportExcel()
+{
+    return Excel::download(new KubeExport, 'data-kube.xlsx');
+}
+
+public function exportPdf()
+{
+    // Mengambil data dengan eager loading agar tidak terjadi N+1 query
+    $data = Kube::with('ketuaPenerimaManfaat')->get();
+    
+    $pdf = \PDF::loadView('kube.pdf', compact('data'))
+               ->setPaper('a4', 'landscape'); 
+               
+    return $pdf->download('data-kube-'.date('Y-m-d').'.pdf');
+}
+public function import(Request $request)
+{
+    $request->validate(['file' => 'required|mimes:xlsx,xls']);
+    Excel::import(new KubeImport, $request->file('file'));
+    return back()->with('success', 'Data KUBE berhasil diimpor!');
 }
 }
 

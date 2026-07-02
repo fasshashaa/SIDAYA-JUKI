@@ -9,8 +9,17 @@ class PenerimaManfaat extends Model
 {
    protected $table = 'penerima_manfaats';
 
-    protected $fillable = ['nama_lengkap', 'nik', 'no_wa', 'kecamatan', 'desa'];
-
+  protected $fillable = [
+        'nik', 
+        'nama_lengkap', 
+        'nama_ibu_kandung', 
+        'no_kk', 
+        'no_wa', 
+        'kecamatan', 
+        'desa', 
+        'alamat_detail', 
+        'status_verifikasi'
+    ];
     // Hubungan ke data UEP (Satu orang bisa punya beberapa UEP)
     public function uep(): HasMany
     {

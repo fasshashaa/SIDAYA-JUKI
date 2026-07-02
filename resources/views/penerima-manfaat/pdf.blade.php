@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 11px; color: #333; }
+        
+        /* Kop Surat */
+        .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+        .title { font-size: 16px; font-weight: bold; text-transform: uppercase; margin: 0; }
+        .address { font-size: 9px; margin-top: 5px; }
+
+        /* Tabel */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 8px; text-align: center; font-size: 10px; }
+        td { border: 1px solid #dee2e6; padding: 6px; font-size: 10px; }
+        tr:nth-child(even) { background-color: #fcfcfc; }
+
+        /* Tanda Tangan */
+        .footer { margin-top: 30px; width: 100%; }
+        .signature-box { float: right; width: 180px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="title">Laporan Data Penerima Manfaat</div>
+        <div class="title">Dinas Sosial PPPA Kabupaten Cilacap</div>
+        <div class="address"> Jl. Bromo Timur No.13, Sidakaya Dua, Sidakaya, Kec. Cilacap Sel., Kabupaten Cilacap, Jawa Tengah 53223</div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama Lengkap</th>
+                <th>Nama Ibu Kandung</th>
+                <th>NIK</th>
+                <th>No. KK</th>
+                <th>Kecamatan</th>
+                <th>Desa</th>
+                <th>Alamat</th>
+                <th>No. WA</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($data as $index => $item)
+            <tr>
+                <td style="text-align: center;">{{ $index + 1 }}</td>
+                <td>{{ $item->nama_lengkap }}</td>
+                <td>{{ $item->nama_ibu_kandung }}</td>
+                <td>{{ $item->nik }}</td>
+                <td>{{ $item->no_kk }}</td>
+                <td>{{ $item->kecamatan }}</td>
+                <td>{{ $item->desa }}</td>
+                <td>{{ $item->alamat_detail }}</td>
+                <td>{{ $item->no_wa ?? '-' }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <div class="signature-box">
+            <p>Cilacap, {{ date('d F Y') }}</p>
+            <br><br><br>
+            <p><strong>( _______________________ )</strong></p>
+            <p>Kepala Dinas</p>
+        </div>
+    </div>
+
+</body>
+</html>

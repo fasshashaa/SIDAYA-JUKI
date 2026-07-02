@@ -1,25 +1,44 @@
 @extends('layouts.app')
 @section('content')
 
-    {{-- ================= HEADER ================= --}}
-    <div class="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-5">
-        <div>
-            <br>
-            {{-- <p class="text-xs font-semibold text-indigo-600 tracking-wide uppercase mb-1.5">Dinsos PPPA &middot; Kabupaten Cilacap</p> --}}
-            <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Penerima Manfaat</h1>
-            <p class="text-sm text-slate-500 mt-1">Daftar Penerima Manfaat binaan Dinsos PPPA Kabupaten Cilacap.</p>
-        </div>
-        <div class="flex items-center gap-3">
-            <button type="button" class="hidden sm:inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-medium px-4 py-2.5 rounded-xl text-sm border border-slate-200 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+{{-- ================= HEADER ================= --}}
+<div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+    <div>
+        <br>
+        <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Penerima Manfaat</h1>
+        <p class="text-sm text-slate-500 mt-1">Daftar Penerima Manfaat binaan Dinsos PPPA Kabupaten Cilacap.</p>
+    </div>
+
+    <div class="flex items-center gap-2">
+        {{-- Tombol Ekspor (Dropdown) --}}
+        <div class="relative" x-data="{ open: false }">
+            <button @click="open = !open" type="button" class="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-200 transition-all shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 Ekspor
             </button>
-            <a href="{{ route('penerima-manfaat.create') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-sm shadow-indigo-600/20">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                Tambah Penerima Manfaat
-            </a>
+            <div x-show="open" @click.away="open = false" x-cloak class="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-50 animate-in fade-in zoom-in duration-200">
+                <a href="{{ route('penerima-manfaat.export.excel') }}" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-slate-50">Excel</a>
+                <a href="{{ route('penerima-manfaat.export.pdf') }}" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-slate-50">PDF</a>
+            </div>
         </div>
+
+        {{-- Tombol Import (File Input) --}}
+        <form action="{{ route('penerima-manfaat.import') }}" method="POST" enctype="multipart/form-data" class="relative">
+            @csrf
+            <input type="file" name="file" onchange="this.form.submit()" class="hidden" id="file-upload">
+            <label for="file-upload" class="cursor-pointer inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-200 transition-all shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                Import
+            </label>
+        </form>
+
+        {{-- Tombol Tambah --}}
+        <a href="{{ route('penerima-manfaat.create') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-all shadow-md shadow-indigo-600/20 active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Tambah Baru
+        </a>
     </div>
+</div>
 
     {{-- ================= SUCCESS ALERT ================= --}}
     {{-- @if(session('success'))

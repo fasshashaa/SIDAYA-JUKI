@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Exports\PenerimaManfaatExport;
+use App\Imports\PenerimaManfaatImport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\PenerimaManfaat;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PenerimaManfaatController extends Controller
 {
@@ -92,4 +97,30 @@ class PenerimaManfaatController extends Controller
 
         return response()->json($desas);
     }
+public function exportPdf() 
+{
+    // Ambil SEMUA data
+    $data = \App\Models\PenerimaManfaat::all(); 
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('penerima-manfaat.pdf', compact('data'))
+    ->setPaper('a4', 'landscape');
+    return $pdf->stream('laporan-seluruh-penerima.pdf');
+}
+public function exportExcel()
+{
+    return Excel::download(new PenerimaManfaatExport, 'Data_Penerima_Manfaat_' . date('Y-m-d') . '.xlsx');
+}
+// Di PenerimaManfaatController.php
+public function import(Request $request) // Diubah dari 'import' ke 'importExcel'
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls,csv'
+    ]);
+
+    try {
+        Excel::import(new PenerimaManfaatImport, $request->file('file'));
+        return back()->with('success', 'Data berhasil diimpor!');
+    } catch (\Exception $e) {
+        return back()->with('error', 'Gagal: ' . $e->getMessage());
+    }
+}
 }

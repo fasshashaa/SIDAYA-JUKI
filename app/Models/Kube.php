@@ -45,4 +45,9 @@ public function anggota() {
     public function ketua() {
         return $this->belongsTo(PenerimaManfaat::class, 'ketua_penerima_manfaat_id');
     }
+    public function ketuaPenerimaManfaat()
+    {
+        // Pastikan nama modelnya benar (misal: App\Models\PenerimaManfaat)
+        return $this->belongsTo(PenerimaManfaat::class, 'ketua_penerima_manfaat_id');
+    }
 }

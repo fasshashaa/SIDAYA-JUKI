@@ -9,11 +9,25 @@
             <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Kelompok KUBE</h1>
             <p class="text-sm text-slate-500 mt-1">Daftar Kelompok Usaha Bersama binaan Dinsos PPPA Cilacap.</p>
         </div>
-        <div class="flex items-center gap-3">
-            <button type="button" class="hidden sm:inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-medium px-4 py-2.5 rounded-xl text-sm border border-slate-200 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                Ekspor
-            </button>
+       <div class="flex items-center gap-2 mb-4">
+    <div class="relative" x-data="{ open: false }">
+        <button @click="open = !open" type="button" class="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-200 transition-all shadow-sm">
+            Ekspor
+        </button>
+        <div x-show="open" @click.away="open = false" x-cloak class="absolute left-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-50">
+            <a href="{{ route('kube.export.excel') }}" class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-indigo-600">Excel</a>
+            <a href="{{ route('kube.export.pdf') }}" class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-indigo-600">PDF</a>
+        </div>
+    </div>
+
+    <form action="{{ route('kube.import') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <input type="file" name="file" onchange="this.form.submit()" class="hidden" id="kube-import">
+        <label for="kube-import" class="cursor-pointer inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-semibold px-4 py-2.5 rounded-xl text-sm border border-slate-200 transition-all shadow-sm">
+            Import
+        </label>
+    </form>
+
             <a href="{{ route('kube.create') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-sm shadow-indigo-600/20">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Tambah Kelompok Baru
