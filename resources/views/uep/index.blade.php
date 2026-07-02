@@ -231,13 +231,15 @@
                 Edit
             </a>
             
-            <form action="{{ route('uep.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
-                @csrf @method('DELETE')
-                <button type="submit" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                    Hapus
-                </button>
-            </form>
+            <form id="delete-form-{{ $item->id }}" action="{{ route('uep.destroy', $item->id) }}" method="POST">
+    @csrf 
+    @method('DELETE')
+    
+    <button type="button" onclick="confirmDelete({{ $item->id }})" class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        Hapus
+    </button>
+</form>
         </div>
     </div>
 </td>
@@ -265,4 +267,35 @@
             </table>
         </div>
     </div>
+        <script>
+function confirmDelete(id) {
+    Swal.fire({
+        title: 'Hapus Data Usaha Ekonomi Produktif?',
+        text: "Data akan dihapus permanen.",
+        icon: 'warning',
+        width: '300px', // Sedikit lebih ramping
+        padding: '1.5rem', // Padding dikurangi agar tidak mepet
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#f1f5f9',
+        confirmButtonText: 'Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+        customClass: {
+            popup: 'rounded-3xl shadow-xl border border-gray-100',
+            icon: 'mb-4', // Memberi jarak bawah pada ikon
+            title: 'text-lg font-bold text-gray-800', // Ukuran title disesuaikan
+            htmlContainer: 'text-xs text-gray-500 m-0', // Margin 0 agar tidak mepet
+            actions: 'mt-6 w-full', // Memastikan area tombol punya ruang
+            confirmButton: 'bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-5 py-2 text-xs font-semibold shadow-sm mx-1',
+            cancelButton: 'bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl px-5 py-2 text-xs font-semibold shadow-sm mx-1'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('delete-form-' + id).submit();
+        }
+    });
+}
+</script>
 @endsection
