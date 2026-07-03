@@ -205,20 +205,22 @@
             background: #fff; border-radius: 16px;
             border: 1px solid #D9EBF0; overflow: hidden;
             cursor: pointer; transition: border-color 0.2s, transform 0.2s;
+            text-decoration: none; display: block; color: inherit;
         }
         .produk-card:hover { border-color: #0E7C9E; transform: translateY(-4px); }
         .card-img {
             height: 140px;
             display: flex; align-items: center; justify-content: center;
             font-size: 36px;
+            background-size: cover; background-position: center;
         }
-        .card-img-g { background: #E3F3F7; }
-        .card-img-o { background: #DFF6FA; }
-        .card-img-b { background: #E5EEFB; }
+        .card-img-g { background-color: #E3F3F7; }
+        .card-img-o { background-color: #DFF6FA; }
+        .card-img-b { background-color: #E5EEFB; }
         .card-body { padding: 18px; }
         .card-cat { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: #0E7C9E; margin-bottom: 6px; }
         .card-title { font-size: 15px; font-weight: 700; color: #0A1F38; margin: 0 0 6px; }
-        .card-desc { font-size: 12.5px; color: #5A7A8C; line-height: 1.6; margin: 0 0 14px; }
+        .card-desc { font-size: 12.5px; color: #5A7A8C; line-height: 1.6; margin: 0 0 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .card-foot { display: flex; align-items: center; justify-content: space-between; }
         .card-loc { font-size: 11px; color: #8FA8B8; }
         .card-arrow {
@@ -227,36 +229,88 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 13px; color: #0E7C9E; font-weight: 600;
         }
+        .produk-empty {
+            grid-column: 1 / -1;
+            text-align: center; padding: 48px 20px;
+            color: #8FA8B8; font-size: 13px;
+            border: 1px dashed #CDE6EC; border-radius: 16px;
+            background: #fff;
+        }
 
-        /* ── LAPORAN CARDS ── */
-        .laporan-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-        @media (max-width: 700px) { .laporan-grid { grid-template-columns: 1fr; } }
-        .laporan-card {
-            background: #fff; border-radius: 14px;
-            border: 1px solid #D9EBF0;
-            padding: 18px; display: flex; gap: 14px; align-items: flex-start;
-            transition: border-color 0.2s;
+        /* ── SEBARAN BANTUAN (CHART) ── */
+        .chart-card {
+            background: linear-gradient(180deg, #ffffff 0%, #FBFEFF 100%);
+            border: 1px solid #E1EFF3; border-radius: 20px;
+            padding: 32px 28px 24px;
+            box-shadow: 0 1px 2px rgba(10,31,56,0.03), 0 12px 32px -16px rgba(14,124,158,0.18);
+            position: relative; overflow: hidden;
         }
-        .laporan-card:hover { border-color: #0E7C9E; }
-        .lap-date {
-            min-width: 52px; height: 52px; border-radius: 10px;
-            background: #0A1F38; flex-shrink: 0;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
+        .chart-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, #0E7C9E, #5FD9E8, #8FB8E8);
         }
-        .lap-day { font-size: 18px; font-weight: 800; color: #5FD9E8; line-height: 1; }
-        .lap-mon { font-size: 9px; color: rgba(95,217,232,0.5); letter-spacing: 0.06em; text-transform: uppercase; }
-        .lap-title { font-size: 14px; font-weight: 700; color: #0A1F38; margin: 0 0 4px; }
-        .lap-desc { font-size: 12.5px; color: #5A7A8C; margin: 0 0 10px; line-height: 1.5; }
-        .lap-tag {
-            display: inline-flex; align-items: center; gap: 4px;
-            font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 50px;
+        .chart-head {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 14px; margin-bottom: 22px;
         }
-        .tag-g { background: #E3F3F7; color: #0B2A4A; }
-        .tag-o { background: #DFF6FA; color: #0E7C9E; }
-        .tag-b { background: #E5EEFB; color: #1A4DB8; }
-        .tag-p { background: #EDEAFB; color: #5A2AB8; }
-        .tag-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; }
+        .chart-legend { display: flex; gap: 18px; flex-wrap: wrap; }
+        .chart-legend-item {
+            display: flex; align-items: center; gap: 7px;
+            font-size: 12px; font-weight: 600; color: #3E5A6C;
+        }
+        .chart-legend-swatch {
+            width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0;
+        }
+        .chart-total-badge {
+            display: flex; flex-direction: column; align-items: flex-end;
+        }
+        .chart-total-num { font-size: 22px; font-weight: 800; color: #0A1F38; line-height: 1.1; }
+        .chart-total-lbl { font-size: 10px; color: #8FA8B8; letter-spacing: 0.06em; text-transform: uppercase; }
+        .chart-canvas-wrap { position: relative; }
+
+        /* ── VISI MISI ── */
+        .vm-grid {
+            display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 28px; align-items: stretch;
+        }
+        @media (max-width: 900px) { .vm-grid { grid-template-columns: 1fr; } }
+        .vm-visi-card {
+            background: linear-gradient(155deg, #0A1F38 0%, #0B2A4A 55%, #0E4A63 100%);
+            border-radius: 20px; padding: 36px 32px;
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .vm-visi-card::after {
+            content: ''; position: absolute; top: -60px; right: -60px;
+            width: 200px; height: 200px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(95,217,232,0.16) 0%, rgba(95,217,232,0) 70%);
+        }
+        .vm-visi-quote {
+            font-size: 34px; color: rgba(95,217,232,0.5); font-weight: 800;
+            line-height: 0.5; margin-bottom: 14px;
+        }
+        .vm-visi-label {
+            display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em;
+            text-transform: uppercase; color: #5FD9E8; margin-bottom: 14px;
+        }
+        .vm-visi-text {
+            font-size: 18px; line-height: 1.65; color: #EAF4F7; font-weight: 500;
+            font-style: italic; position: relative; z-index: 1;
+        }
+        .vm-misi-list { display: flex; flex-direction: column; gap: 14px; }
+        .vm-misi-item {
+            background: #fff; border: 1px solid #D9EBF0; border-radius: 14px;
+            padding: 18px 20px; display: flex; gap: 16px; align-items: flex-start;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .vm-misi-item:hover { border-color: #0E7C9E; transform: translateX(2px); }
+        .vm-misi-num {
+            flex-shrink: 0; width: 34px; height: 34px; border-radius: 10px;
+            background: #E3F3F7; color: #0E7C9E;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 800;
+        }
+        .vm-misi-title { font-size: 14px; font-weight: 700; color: #0A1F38; margin: 0 0 4px; }
+        .vm-misi-desc { font-size: 12.5px; color: #5A7A8C; line-height: 1.6; margin: 0; }
 
         /* ── FOOTER ── */
         .footer-wrap {
@@ -293,12 +347,56 @@
 </head>
 <body style="background:#F4FAFB; margin:0;">
 
+    @php
+        use Illuminate\Support\Facades\DB;
+        use App\Models\Uep;
+        use App\Models\Kube;
+        use App\Models\PenerimaManfaat;
+        use App\Models\ProdukUmkm;
+        use App\Models\Activity;
+
+        // ===== STATS BAR (data asli) =====
+        $totalUepAktif = Uep::where('status_verifikasi', 'disetujui')
+            ->where('status_usaha', 'Aktif')
+            ->count();
+
+        $totalUepTerverifikasi = Uep::where('status_verifikasi', 'disetujui')->count();
+
+        // Jumlah kecamatan unik dari tabel wilayah_desas (data wilayah asli)
+        $totalKecamatan = DB::table('wilayah_desas')->distinct()->count('kecamatan_nama');
+        if ($totalKecamatan === 0) {
+            // fallback kalau tabel wilayah_desas belum terisi
+            $totalKecamatan = Uep::distinct()->count('kecamatan_usaha');
+        }
+
+        $totalPenerimaManfaat = PenerimaManfaat::count();
+
+        $tingkatAktif = $totalUepTerverifikasi > 0
+            ? round(($totalUepAktif / $totalUepTerverifikasi) * 100)
+            : 0;
+
+        // ===== SEBARAN BANTUAN (data asli untuk grafik) =====
+        $totalPM = $totalPenerimaManfaat;
+        $totalUEP = Uep::where('status_verifikasi', 'disetujui')->count();
+        $totalKUBE = Kube::where('status_verifikasi', 'disetujui')->count();
+
+        // ===== PRODUK UNGGULAN (data asli, yang ditampilkan & masih ada stok) =====
+        $produkUnggulan = ProdukUmkm::with(['uep', 'kube'])
+            ->where('status_publikasi', 'Ditampilkan')
+            ->where('stok', '>', 0)
+            ->latest()
+            ->take(3)
+            ->get();
+
+        $cardImgClasses = ['card-img-g', 'card-img-o', 'card-img-b'];
+    @endphp
+
     <!-- Navbar -->
     <nav class="nav-wrap">
         <div class="nav-inner">
             <div class="nav-logo">
            
-                 <img src="{{ asset('img/dinsos.png') }}" alt="Logo Dinsos" style="width:42px;height:42px;object-fit:contain;"> 
+                 <img src="{{ asset('img/Logo_sdy.png') }}" alt="Logo Dinsos" style="width:42px;height:42px;object-fit:contain;"> 
                 <div>
                     <p class="nav-name-1">Dinas Sosial PPPA</p>
                     <p class="nav-name-2">Kabupaten Cilacap</p>
@@ -367,32 +465,108 @@
         </div>
     </header>
 
-    <!-- Stats Bar -->
+    <!-- Stats Bar (data asli) -->
     <div class="stats-bar">
         <div class="stats-inner">
             <div class="stat-item">
-                <p class="stat-num">248</p>
+                <p class="stat-num">{{ $totalUepAktif }}</p>
                 <p class="stat-lbl">UEP Aktif</p>
             </div>
             <div class="stat-divider"></div>
             <div class="stat-item">
-                <p class="stat-num">32</p>
+                <p class="stat-num">{{ $totalKecamatan }}</p>
                 <p class="stat-lbl">Kecamatan</p>
             </div>
             <div class="stat-divider"></div>
             <div class="stat-item">
-                <p class="stat-num">1.2K</p>
+                <p class="stat-num">{{ $totalPenerimaManfaat >= 1000 ? number_format($totalPenerimaManfaat / 1000, 1) . 'K' : $totalPenerimaManfaat }}</p>
                 <p class="stat-lbl">Penerima Manfaat</p>
             </div>
             <div class="stat-divider"></div>
             <div class="stat-item">
-                <p class="stat-num">96%</p>
+                <p class="stat-num">{{ $tingkatAktif }}%</p>
                 <p class="stat-lbl">Tingkat Aktif</p>
             </div>
         </div>
     </div>
 
-    <!-- Produk Section -->
+    <!-- Visi & Misi Section -->
+    <section class="section-wrap">
+        <div class="section-inner">
+            <div class="accent-bar-o"></div>
+            <span class="section-tag">Arah Kebijakan</span>
+            <h2 class="section-title">Visi &amp; Misi</h2>
+            <p class="section-sub">Landasan gerak SIDAYA dalam mendukung program pemberdayaan masyarakat Dinas Sosial PPPA Kabupaten Cilacap.</p>
+
+            <div class="vm-grid">
+                <div class="vm-visi-card">
+                    <span class="vm-visi-quote">&ldquo;</span>
+                    <span class="vm-visi-label">Visi</span>
+                    <p class="vm-visi-text">Menjadi platform digital yang inovatif dalam mengintegrasikan data pemberdayaan masyarakat guna menciptakan tata kelola bantuan yang tepat sasaran dan berkelanjutan.</p>
+                </div>
+
+                <div class="vm-misi-list">
+                    <div class="vm-misi-item">
+                        <div class="vm-misi-num">01</div>
+                        <div>
+                            <p class="vm-misi-title">Akurasi Data</p>
+                            <p class="vm-misi-desc">Membangun database terpadu untuk memetakan potensi penerima manfaat dan profil usaha secara presisi dan terorganisir.</p>
+                        </div>
+                    </div>
+                    <div class="vm-misi-item">
+                        <div class="vm-misi-num">02</div>
+                        <div>
+                            <p class="vm-misi-title">Efisiensi Manajemen</p>
+                            <p class="vm-misi-desc">Mengoptimalkan alur kerja pendataan UEP dan KUBE untuk mempermudah pemantauan serta koordinasi bagi pengelola program.</p>
+                        </div>
+                    </div>
+                    <div class="vm-misi-item">
+                        <div class="vm-misi-num">03</div>
+                        <div>
+                            <p class="vm-misi-title">Pemberdayaan Berkelanjutan</p>
+                            <p class="vm-misi-desc">Mendukung pengembangan kapasitas pelaku UMKM melalui sistem pendataan yang memfasilitasi pendampingan dan legalitas usaha.</p>
+                        </div>
+                    </div>
+                    <div class="vm-misi-item">
+                        <div class="vm-misi-num">04</div>
+                        <div>
+                            <p class="vm-misi-title">Integritas Sistem</p>
+                            <p class="vm-misi-desc">Mengedepankan kemudahan akses informasi bagi setiap pemangku kepentingan dalam mendukung penguatan ekonomi lokal.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sebaran Bantuan Section (grafik) -->
+    <section class="section-wrap section-alt">
+        <div class="section-inner">
+            <div class="accent-bar-g"></div>
+            <span class="section-tag section-tag-o">Transparansi</span>
+            <h2 class="section-title">Sebaran Bantuan</h2>
+            <p class="section-sub">Distribusi bantuan Penerima Manfaat, UEP, dan KUBE yang dikelola Dinas Sosial PPPA Kabupaten Cilacap.</p>
+
+            <div class="chart-card">
+                <div class="chart-head">
+                    <div class="chart-legend">
+                        <span class="chart-legend-item"><span class="chart-legend-swatch" style="background:#0E7C9E"></span> Penerima Manfaat</span>
+                        <span class="chart-legend-item"><span class="chart-legend-swatch" style="background:#2BC4D9"></span> UEP</span>
+                        <span class="chart-legend-item"><span class="chart-legend-swatch" style="background:#8FB8E8"></span> KUBE</span>
+                    </div>
+                    <div class="chart-total-badge">
+                        <span class="chart-total-num">{{ number_format($totalPM + $totalUEP + $totalKUBE) }}</span>
+                        <span class="chart-total-lbl">Total Terdata</span>
+                    </div>
+                </div>
+                <div class="chart-canvas-wrap">
+                    <canvas id="sebaranBantuanChart" height="260"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Produk Section (data asli) -->
     <section id="produk" class="section-wrap">
         <div class="section-inner">
             <div class="accent-bar-o"></div>
@@ -401,114 +575,32 @@
             <p class="section-sub">Temukan produk berkualitas dari pelaku usaha binaan Dinas Sosial PPPA.</p>
 
             <div class="produk-grid">
-                <!-- Card 1 -->
-                <div class="produk-card">
-                    <div class="card-img card-img-g">🌿</div>
-                    <div class="card-body">
-                        <div class="card-cat">Pangan Olahan</div>
-                        <h3 class="card-title">Keripik Tempe Aneka Rasa</h3>
-                        <p class="card-desc">Produk unggulan hasil binaan UEP dari Kecamatan Adipala dengan varian rasa pilihan.</p>
-                        <div class="card-foot">
-                            <span class="card-loc">📍 Adipala</span>
-                            <div class="card-arrow">→</div>
+                @forelse($produkUnggulan as $index => $produk)
+                    @php
+                        $pemilikNama = $produk->uep->nama_usaha ?? ($produk->kube->nama_kelompok_kube ?? null);
+                        $lokasi = $produk->uep->kecamatan_usaha ?? ($produk->kube->kecamatan_kube ?? null);
+                        $imgClass = $cardImgClasses[$index % count($cardImgClasses)];
+                    @endphp
+                    <a href="{{ route('login') }}" class="produk-card">
+                        <div class="card-img {{ $imgClass }}"
+                             @if($produk->foto_produk) style="background-image:url('{{ asset('storage/' . $produk->foto_produk) }}'); font-size:0;" @endif>
+                            @if(!$produk->foto_produk) 🛍️ @endif
                         </div>
-                    </div>
-                </div>
-                <!-- Card 2 -->
-                <div class="produk-card">
-                    <div class="card-img card-img-o">🎋</div>
-                    <div class="card-body">
-                        <div class="card-cat">Kerajinan Tangan</div>
-                        <h3 class="card-title">Anyaman Bambu Kreatif</h3>
-                        <p class="card-desc">Kerajinan tangan unik berkualitas ekspor dari pengrajin binaan Kecamatan Majenang.</p>
-                        <div class="card-foot">
-                            <span class="card-loc">📍 Majenang</span>
-                            <div class="card-arrow">→</div>
+                        <div class="card-body">
+                            <div class="card-cat">{{ $produk->kategori }}</div>
+                            <h3 class="card-title">{{ $produk->nama_produk }}</h3>
+                            <p class="card-desc">{{ $produk->deskripsi_produk ?? ('Produk unggulan binaan ' . ($pemilikNama ?? 'UMKM Cilacap') . '.') }}</p>
+                            <div class="card-foot">
+                                <span class="card-loc">📍 {{ $lokasi ?? 'Cilacap' }}</span>
+                                <div class="card-arrow">→</div>
+                            </div>
                         </div>
+                    </a>
+                @empty
+                    <div class="produk-empty">
+                        Belum ada produk unggulan yang ditampilkan saat ini.
                     </div>
-                </div>
-                <!-- Card 3 -->
-                <div class="produk-card">
-                    <div class="card-img card-img-b">🌶️</div>
-                    <div class="card-body">
-                        <div class="card-cat">Bumbu & Rempah</div>
-                        <h3 class="card-title">Sambal Terasi Instan</h3>
-                        <p class="card-desc">Sambal khas Cilacap cita rasa tradisional asli, higienis dan tahan lama.</p>
-                        <div class="card-foot">
-                            <span class="card-loc">📍 Cilacap Kota</span>
-                            <div class="card-arrow">→</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Laporan Section -->
-    <section class="section-wrap section-alt">
-        <div class="section-inner">
-            <div class="accent-bar-g"></div>
-            <span class="section-tag section-tag-o">Transparansi</span>
-            <h2 class="section-title">Laporan Kegiatan Terbaru</h2>
-            <p class="section-sub">Rekam jejak monitoring dan evaluasi program pemberdayaan ekonomi.</p>
-
-            <div class="laporan-grid">
-                <!-- Laporan 1 -->
-                <div class="laporan-card">
-                    <div class="lap-date">
-                        <span class="lap-day">12</span>
-                        <span class="lap-mon">Jun</span>
-                    </div>
-                    <div>
-                        <h4 class="lap-title">Monitoring UEP di Cilacap Tengah</h4>
-                        <p class="lap-desc">Evaluasi perkembangan usaha rintisan binaan bulan Juni di wilayah Cilacap Tengah.</p>
-                        <span class="lap-tag tag-g">
-                            <span class="tag-dot" style="background:#0B2A4A"></span> Monitoring
-                        </span>
-                    </div>
-                </div>
-                <!-- Laporan 2 -->
-                <div class="laporan-card">
-                    <div class="lap-date">
-                        <span class="lap-day">05</span>
-                        <span class="lap-mon">Jun</span>
-                    </div>
-                    <div>
-                        <h4 class="lap-title">Pelatihan Digital Marketing</h4>
-                        <p class="lap-desc">Workshop peningkatan kapasitas UMKM di Kecamatan Kesugihan, 40 peserta.</p>
-                        <span class="lap-tag tag-o">
-                            <span class="tag-dot" style="background:#0E7C9E"></span> Pelatihan
-                        </span>
-                    </div>
-                </div>
-                <!-- Laporan 3 -->
-                <div class="laporan-card">
-                    <div class="lap-date">
-                        <span class="lap-day">28</span>
-                        <span class="lap-mon">Mei</span>
-                    </div>
-                    <div>
-                        <h4 class="lap-title">Distribusi Bantuan Modal UEP</h4>
-                        <p class="lap-desc">Penyaluran bantuan modal usaha kepada 24 penerima manfaat di Jeruklegi.</p>
-                        <span class="lap-tag tag-b">
-                            <span class="tag-dot" style="background:#2060C8"></span> Distribusi
-                        </span>
-                    </div>
-                </div>
-                <!-- Laporan 4 -->
-                <div class="laporan-card">
-                    <div class="lap-date">
-                        <span class="lap-day">20</span>
-                        <span class="lap-mon">Mei</span>
-                    </div>
-                    <div>
-                        <h4 class="lap-title">Evaluasi Triwulan II Program UEP</h4>
-                        <p class="lap-desc">Rapat evaluasi capaian kinerja triwulan II bersama seluruh pendamping lapangan.</p>
-                        <span class="lap-tag tag-p">
-                            <span class="tag-dot" style="background:#6A30C8"></span> Evaluasi
-                        </span>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
     </section>
@@ -527,6 +619,96 @@
             </div> --}}
         </div>
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sebaranCanvas = document.getElementById('sebaranBantuanChart');
+            if (sebaranCanvas) {
+                const ctx = sebaranCanvas.getContext('2d');
+
+                const gPM = ctx.createLinearGradient(0, 0, 400, 0);
+                gPM.addColorStop(0, '#0B5A75');
+                gPM.addColorStop(1, '#0E7C9E');
+
+                const gUEP = ctx.createLinearGradient(0, 0, 400, 0);
+                gUEP.addColorStop(0, '#0E7C9E');
+                gUEP.addColorStop(1, '#2BC4D9');
+
+                const gKUBE = ctx.createLinearGradient(0, 0, 400, 0);
+                gKUBE.addColorStop(0, '#5FA8E0');
+                gKUBE.addColorStop(1, '#8FB8E8');
+
+                // Plugin: nilai di ujung batang
+                const valueLabelPlugin = {
+                    id: 'valueLabelPlugin',
+                    afterDatasetsDraw(chart) {
+                        const { ctx, data } = chart;
+                        const meta = chart.getDatasetMeta(0);
+                        ctx.save();
+                        ctx.font = '700 12px "Plus Jakarta Sans", sans-serif';
+                        ctx.fillStyle = '#0A1F38';
+                        ctx.textBaseline = 'middle';
+                        meta.data.forEach((bar, i) => {
+                            const val = data.datasets[0].data[i];
+                            ctx.textAlign = 'left';
+                            ctx.fillText(val.toLocaleString('id-ID'), bar.x + 10, bar.y);
+                        });
+                        ctx.restore();
+                    }
+                };
+
+                new Chart(sebaranCanvas, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Penerima Manfaat', 'UEP', 'KUBE'],
+                        datasets: [{
+                            label: 'Jumlah',
+                            data: [{{ $totalPM }}, {{ $totalUEP }}, {{ $totalKUBE }}],
+                            backgroundColor: [gPM, gUEP, gKUBE],
+                            borderRadius: 10,
+                            borderSkipped: false,
+                            barThickness: 28,
+                            categoryPercentage: 0.6,
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        layout: { padding: { right: 46 } },
+                        animation: { duration: 900, easing: 'easeOutQuart' },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#0A1F38',
+                                titleFont: { family: "'Plus Jakarta Sans', sans-serif", weight: '700', size: 12 },
+                                bodyFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12 },
+                                padding: 10,
+                                cornerRadius: 8,
+                                displayColors: false,
+                                callbacks: {
+                                    label: (item) => ' ' + item.parsed.x.toLocaleString('id-ID') + ' data'
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                grid: { color: 'rgba(148,163,184,0.14)', drawBorder: false, borderDash: [4, 4] },
+                                ticks: { color: '#8FA8B8', font: { size: 11 } }
+                            },
+                            y: {
+                                grid: { display: false, drawBorder: false },
+                                ticks: { color: '#3E5A6C', font: { size: 12.5, weight: '600' } }
+                            }
+                        }
+                    },
+                    plugins: [valueLabelPlugin]
+                });
+            }
+        });
+    </script>
 
 </body>
 </html>

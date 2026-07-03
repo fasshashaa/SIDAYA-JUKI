@@ -164,7 +164,7 @@
                         @if(($data['totalUsahaPending'] ?? 0) > 0)
                             dan <span class="font-bold text-amber-400">{{ $data['totalUsahaPending'] }}</span> masih menunggu verifikasi
                         @endif
-                        .
+                        
                     </p>
                 </div>
             </div>
