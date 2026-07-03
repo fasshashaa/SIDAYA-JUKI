@@ -250,13 +250,13 @@
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between mb-7">
+                {{-- <div class="flex items-center justify-between mb-7">
                     <label class="flex items-center gap-2 cursor-pointer select-none">
                         <input type="checkbox" class="check-custom">
                         <span class="text-[12.5px] text-white/45">Ingat saya</span>
                     </label>
                     <a href="#" class="text-[12.5px] text-[#5FD9E8]/70 hover:text-[#5FD9E8] transition-colors">Lupa password?</a>
-                </div>
+                </div> --}}
 
                 <button type="submit" class="btn-submit w-full font-bold py-3.5 rounded-xl text-[14.5px] flex items-center justify-center gap-2">
                     Masuk Sekarang
