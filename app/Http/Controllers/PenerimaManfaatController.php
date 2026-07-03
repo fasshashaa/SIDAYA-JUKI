@@ -19,43 +19,83 @@ class PenerimaManfaatController extends Controller
     $penerima = \App\Models\PenerimaManfaat::findOrFail($id);
     return view('penerima-manfaat.show', compact('penerima'));
 }
-    public function index()
-    {
-        // Ubah nama variabel agar konsisten dengan View index.blade.php
-        $penerimaManfaat = DB::table('penerima_manfaats')->paginate(10);
-    return view('penerima-manfaat.index', compact('penerimaManfaat'));
+    public function index(Request $request)
+{
+    $search = trim($request->input('search', ''));
+    $status = $request->input('status', '');
+
+    $query = DB::table('penerima_manfaats');
+
+    if ($search !== '') {
+        $query->where(function ($q) use ($search) {
+            $q->where('nama_lengkap', 'like', "%{$search}%")
+              ->orWhere('nik', 'like', "%{$search}%");
+        });
     }
 
-    public function create()
-    {
-        return view('penerima-manfaat.create');
+    if ($status !== '' && $status !== 'semua') {
+        $query->where('status_verifikasi', $status);
     }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nik' => 'required|numeric|digits:16|unique:penerima_manfaats,nik',
-            'no_kk' => 'required|numeric|digits:16',
-            'nama_lengkap' => 'required|string|max:255',
-            'nama_ibu_kandung' => 'required|string|max:255',
-            'no_wa' => 'nullable|string', // Ubah ke string agar bisa menyimpan format 08...
-            'kecamatan' => 'required|string',
-            'desa' => 'required|string',
-            'alamat_detail' => 'required|string',
-            'status_verifikasi' => 'required|in:pending,disetujui,ditolak',
-        ]);
-        $validated['user_id'] = auth()->id();
-        $validated['created_at'] = now();
-        $validated['updated_at'] = now();
+    $penerimaManfaat = $query->orderByDesc('id')->paginate(10)->withQueryString();
 
-        DB::table('penerima_manfaats')->insert($validated);
-Activity::create([
-        'user_id'     => auth()->id(),
-        'causer_name' => auth()->user()->name,
-        'description' => 'Menambahkan data Penerima Manfaat baru: ' . $request->nama_lengkap,
+    // Statistik total dihitung dari SELURUH data (tidak ikut kefilter pencarian)
+    $statusCounts = [
+        'pending'   => DB::table('penerima_manfaats')->where('status_verifikasi', 'pending')->count(),
+        'disetujui' => DB::table('penerima_manfaats')->where('status_verifikasi', 'disetujui')->count(),
+        'ditolak'   => DB::table('penerima_manfaats')->where('status_verifikasi', 'ditolak')->count(),
+    ];
+    $totalOrang = DB::table('penerima_manfaats')->count();
+
+    // Kalau request datang dari fetch/AJAX, kirim balik tabelnya saja
+    if ($request->ajax()) {
+        return view('penerima-manfaat.partials.table', compact('penerimaManfaat'))->render();
+    }
+
+    return view('penerima-manfaat.index', compact('penerimaManfaat', 'statusCounts', 'totalOrang'));
+}
+public function create()
+{
+    // Ambil semua user yang memiliki role 'pengguna'
+    // Kita gunakan 'get()' agar datanya terkirim ke view sebagai array/koleksi
+$users = \App\Models\User::where('role', 'user')
+            ->whereDoesntHave('penerimaManfaat') // Pastikan user belum punya PM
+            ->get();
+
+    // Kirim variabel $users ke dalam view
+    return view('penerima-manfaat.create', compact('users'));
+}
+
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'user_id' => 'required|exists:users,id', // ID dari dropdown yang dipilih Admin
+        'nik' => 'required|numeric|digits:16|unique:penerima_manfaats,nik',
+        'no_kk' => 'required|numeric|digits:16',
+        'nama_lengkap' => 'required|string|max:255',
+        'nama_ibu_kandung' => 'required|string|max:255',
+        'no_wa' => 'nullable|string',
+        'kecamatan' => 'required|string',
+        'desa' => 'required|string',
+        'alamat_detail' => 'required|string',
+        'status_verifikasi' => 'required|in:pending,disetujui,ditolak',
     ]);
-        return redirect()->route('penerima-manfaat.index')->with('success', 'Data berhasil ditambahkan!');
-    }
+
+    // HAPUS BARIS INI: $validated['user_id'] = auth()->id(); 
+    // Biarkan $validated['user_id'] tetap menggunakan nilai dari request (dropdown)
+
+    // Simpan data
+    \App\Models\PenerimaManfaat::create($validated);
+
+    // Tambahkan aktivitas
+    Activity::create([
+        'user_id'     => auth()->id(), // Siapa yang melakukan input? (Admin)
+        'causer_name' => auth()->user()->name,
+        'description' => 'Menambahkan data Penerima Manfaat: ' . $request->nama_lengkap,
+    ]);
+
+    return redirect()->route('penerima-manfaat.index')->with('success', 'Data berhasil ditambahkan!');
+}
 
     public function edit($id)
     {

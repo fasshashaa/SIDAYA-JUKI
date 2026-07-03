@@ -28,4 +28,10 @@ class ProdukUmkm extends Model
 public function kube() {
     return $this->belongsTo(Kube::class);
 }
+// BENAR (mengembalikan 1 model)
+public function penerimaManfaat()
+{
+    return $this->belongsTo(PenerimaManfaat::class);
+}
+
 }

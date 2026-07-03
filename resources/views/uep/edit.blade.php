@@ -12,22 +12,23 @@
     </div>
 
         <form action="{{ route('uep.update', $uep->id) }}" method="POST" class="bg-white p-6 rounded-lg shadow-md"
-              x-data="{
-                selectedPm: {
-                    nama_lengkap: '{{ $uep->nama_lengkap }}',
-                    nama_ibu_kandung: '{{ $uep->nama_ibu_kandung }}',
-                    nik: '{{ $uep->nik }}',
-                    no_kk: '{{ $uep->no_kk }}',
-                    no_wa: '{{ $uep->no_wa }}'
-                },
-                pmList: {{ $penerimaManfaats->toJson() }},
-                updateFields(id) {
-                    let data = this.pmList.find(pm => pm.id == id);
-                    if(data) {
-                        this.selectedPm = data;
-                    }
-                }
-              }">
+             x-data="{
+    selectedPm: {
+        nama_lengkap: '{{ $uep->nama_lengkap }}',
+        nama_ibu_kandung: '{{ $uep->nama_ibu_kandung }}',
+        nik: '{{ $uep->nik }}',
+        no_kk: '{{ $uep->no_kk }}',
+        no_wa: '{{ $uep->no_wa }}'
+    },
+    pmList: {{ $penerimaManfaats->toJson() }},
+    statusVerifikasi: '{{ old('status_verifikasi', $uep->status_verifikasi) }}',
+    updateFields(id) {
+        let data = this.pmList.find(pm => pm.id == id);
+        if(data) {
+            this.selectedPm = data;
+        }
+    }
+}">
             @csrf
             @method('PUT')
 
@@ -149,15 +150,27 @@
                 <textarea name="alamat_lengkap" rows="3" required class="w-full mt-1 p-3 border rounded-xl bg-gray-50">{{ old('alamat_lengkap', $uep->alamat_lengkap) }}</textarea>
             </div>
 
-            <div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 mt-6">
-                <label class="block text-sm font-bold text-blue-900 mb-2">Status Verifikasi *</label>
-                <select name="status_verifikasi" class="w-full rounded-xl border-blue-200 bg-white text-sm p-3 focus:border-blue-500 focus:ring-blue-500">
-                    <option value="pending" {{ old('status_verifikasi', $uep->status_verifikasi) == 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="disetujui" {{ old('status_verifikasi', $uep->status_verifikasi) == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
-                    <option value="ditolak" {{ old('status_verifikasi', $uep->status_verifikasi) == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-                </select>
-                <p class="text-xs text-blue-600 mt-2">Pastikan data sudah diperiksa sebelum mengubah status menjadi Disetujui/Ditolak.</p>
-            </div>
+            
+{{-- Ganti <select name="status_verifikasi"> yang sudah ada dengan versi ini (tambahkan x-model) --}}
+<div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 mt-6">
+    <label class="block text-sm font-bold text-blue-900 mb-2">Status Verifikasi *</label>
+    <select name="status_verifikasi" x-model="statusVerifikasi" class="w-full rounded-xl border-blue-200 bg-white text-sm p-3 focus:border-blue-500 focus:ring-blue-500">
+        <option value="pending" {{ old('status_verifikasi', $uep->status_verifikasi) == 'pending' ? 'selected' : '' }}>Pending</option>
+        <option value="disetujui" {{ old('status_verifikasi', $uep->status_verifikasi) == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
+        <option value="ditolak" {{ old('status_verifikasi', $uep->status_verifikasi) == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+    </select>
+    <p class="text-xs text-blue-600 mt-2">Pastikan data sudah diperiksa sebelum mengubah status menjadi Disetujui/Ditolak.</p>
+ 
+    {{-- Muncul otomatis hanya saat status = ditolak --}}
+    <div x-show="statusVerifikasi === 'ditolak'" x-cloak x-transition class="mt-4">
+        <label class="block text-sm font-bold text-rose-700 mb-2">Alasan Penolakan *</label>
+        <textarea name="catatan_penolakan" rows="3"
+                  x-bind:required="statusVerifikasi === 'ditolak'"
+                  class="w-full rounded-xl border-rose-200 bg-white text-sm p-3 focus:border-rose-500 focus:ring-rose-500"
+                  placeholder="Jelaskan alasan penolakan agar pemohon bisa memperbaiki data (contoh: NIK tidak sesuai KTP, foto usaha tidak jelas, dsb.)">{{ old('catatan_penolakan', $uep->catatan_penolakan) }}</textarea>
+        @error('catatan_penolakan') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
+    </div>
+</div>
 
             <div class="bg-orange-50/50 p-6 rounded-2xl border border-orange-100 mt-6">
                 <label class="block text-sm font-bold text-orange-900 mb-2">Status Usaha *</label>

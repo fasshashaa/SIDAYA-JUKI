@@ -10,6 +10,7 @@ class Uep extends Model
     protected $table = 'ueps';
 
   protected $fillable = [
+    'user_id',
         'penerima_manfaat_id',
         'nama_lengkap',
         'status_verifikasi',
@@ -26,6 +27,7 @@ class Uep extends Model
         'tahun_realisasi',
         'sumber_anggaran',
         'status_usaha',
+         'catatan_penolakan',
     ];
 
 // public function penerimaManfaat()
@@ -36,4 +38,7 @@ public function penerimaManfaat()
 {
     return $this->belongsTo(\App\Models\PenerimaManfaat::class, 'penerima_manfaat_id');
 }
+public function user() { return $this->belongsTo(User::class); }
+public function produk() { return $this->hasMany(ProdukUmkm::class); }
+// public function penerimaManfaat() { return $this->hasMany(PenerimaManfaat::class); }
 }

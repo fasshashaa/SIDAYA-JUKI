@@ -114,7 +114,8 @@ Route::middleware(['auth', 'EnsureIsSuperAdmin'])->prefix('superadmin')->name('s
     Route::put('/users/{id}/role', [UserController::class, 'updateRole'])->name('superadmin.users.updateRole');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('superadmin.users.destroy');
 });
- 
+Route::get('/uep/status/saya', [UepController::class, 'myStatus'])->name('uep.status');
+Route::get('/kube/status/saya', [KubeController::class, 'myStatus'])->name('kube.status');
   // routes/web.php
 Route::get('/verifikasi', [App\Http\Controllers\DashboardController::class, 'verifikasi'])->name('verifikasi.index');
     // Laporan Kegiatan

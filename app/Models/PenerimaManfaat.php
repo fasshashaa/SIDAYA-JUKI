@@ -10,6 +10,7 @@ class PenerimaManfaat extends Model
    protected $table = 'penerima_manfaats';
 
   protected $fillable = [
+    'user_id',
         'nik', 
         'nama_lengkap', 
         'nama_ibu_kandung', 
@@ -31,4 +32,11 @@ class PenerimaManfaat extends Model
     {
         return $this->hasMany(Kube::class, 'ketua_penerima_manfaat_id');
     }
+  // Di dalam app/Models/Uep.php
+
+public function penerimaManfaat()
+{
+    // Pastikan ini belongsTo agar mengembalikan objek tunggal
+    return $this->belongsTo(\App\Models\PenerimaManfaat::class, 'penerima_manfaat_id');
+}
 }

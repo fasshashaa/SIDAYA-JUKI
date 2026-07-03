@@ -32,6 +32,7 @@ public function show($id)
     public function update(Request $request, $id)
 {
     $validated = $request->validate([
+         'catatan_penolakan'  => 'nullable|string|required_if:status_verifikasi,ditolak',
       'penerima_manfaat_id' => 'nullable|integer',
             'nama_usaha' => 'required|string|max:255',
             'nik' => 'required|numeric|digits:16',
@@ -44,8 +45,8 @@ public function show($id)
             'alamat_lengkap' => 'required|string',
             'kategori_produk' => 'required|string',
             'status_perkembangan' => 'required|in:rintisan,berkembang,mandiri',
-            'tahun_realisasi' => 'required|digits:4',
-            'sumber_anggaran' => 'required|string',
+            'tahun_realisasi' => 'nullable|digits:4',
+            'sumber_anggaran' => 'nullable|string',
             'status_verifikasi'    => 'required|in:pending,disetujui,ditolak',
     ]);
 
@@ -66,16 +67,14 @@ public function show($id)
      * Menampilkan Halaman Daftar UEP
      * URL: /uep (Route: uep.index)
      */
-    public function index()
-    {
-        $ueps = Uep::with('penerimaManfaat')->get();
-        // Mengambil data dari tabel ueps (bisa diganti relasi model nanti jika sudah siap)
-        $ueps = DB::table('ueps')->orderBy('created_at', 'desc')->get();
-        $ueps = \App\Models\Uep::latest()->get();
+   public function index()
+{
+    // Hanya gunakan satu query yang lengkap
+    // with('penerimaManfaat') wajib ada agar relasinya terbawa
+    $ueps = Uep::with('penerimaManfaat')->latest()->get();
 
-        // Mengarahkan ke file resources/views/uep/index.blade.php
-        return view('uep.index', compact('ueps'));
-    }
+    return view('uep.index', compact('ueps'));
+}
 
     /**
      * Menampilkan Form Tambah Data UEP
@@ -83,9 +82,13 @@ public function show($id)
      */
 public function create()
 {
-    // Mengambil semua data PM
+    // Ambil data penerima manfaat untuk dropdown (untuk Super Admin)
     $penerimaManfaats = \App\Models\PenerimaManfaat::all();
-    return view('uep.create', compact('penerimaManfaats'));
+    
+    // Ambil data profil user yang sedang login (untuk role User)
+    $myProfile = \App\Models\PenerimaManfaat::where('user_id', auth()->id())->first();
+    
+    return view('uep.create', compact('penerimaManfaats', 'myProfile'));
 }
 
     /**
@@ -108,8 +111,8 @@ public function create()
         'kategori_produk'      => 'required|string',
         'status_usaha'         => 'required|string',
         'status_perkembangan'  => 'required|string',
-        'tahun_realisasi'      => 'required|integer',
-        'sumber_anggaran'      => 'required|string',
+        'tahun_realisasi'      => 'nullable|integer',
+        'sumber_anggaran'      => 'nullable|string',
     ]);
 
     // 2. Tambahkan user_id secara manual
@@ -125,9 +128,12 @@ public function create()
         'causer_name' => auth()->user()->name,
         'description' => 'Menambahkan data UEP baru: ' . $validated['nama_usaha'],
     ]);
+    if (auth()->user()->role === 'user') {
+    return redirect()->route('uep.status')
+        ->with('success', 'Pengajuan UEP berhasil dikirim! Mohon tunggu proses verifikasi dari admin.');
+}
 
-    // 5. Redirect
-    return redirect()->route('uep.index')->with('success', 'Data UEP Berhasil Disimpan!');
+return redirect()->route('uep.index')->with('success', 'Data UEP Berhasil Disimpan!');
 }
 
     public function getDesa($kecamatan)
@@ -177,4 +183,11 @@ public function import(Request $request)
         return back()->with('error', 'Gagal impor: ' . $e->getMessage());
     }
 }
+public function myStatus()
+{
+    $ueps = Uep::where('user_id', auth()->id())->latest()->get();
+ 
+    return view('uep.status', compact('ueps'));
+}
+ 
 }

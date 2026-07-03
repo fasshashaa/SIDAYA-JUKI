@@ -31,15 +31,23 @@ class KubeController extends Controller
     return view('kube.index', compact('kubes'));
 }
 
-   public function create()
+public function create()
 {
-    // Mengambil PM yang belum masuk kelompok mana pun (kube_id is null)
-    $pms = \App\Models\PenerimaManfaat::whereNull('kube_id')->get();
-    return view('kube.create', compact('pms'));
+    if (in_array(auth()->user()->role, ['admin', 'super_admin'])) {
+        // Admin/Super Admin: bebas pilih ketua dari PM yang belum punya kelompok
+        $pms = \App\Models\PenerimaManfaat::whereNull('kube_id')->get();
+        $myProfile = null;
+    } else {
+        // User biasa: otomatis jadi ketua dari profil PM miliknya sendiri
+        $pms = collect(); // tidak dipakai untuk role user, tapi tetap dikirim agar view tidak error
+        $myProfile = \App\Models\PenerimaManfaat::where('user_id', auth()->id())->first();
+    }
+ 
+    return view('kube.create', compact('pms', 'myProfile'));
 }
+
 public function store(Request $request)
 {
-    // 1. Validasi semua data yang masuk dari form
     $validated = $request->validate([
         'nama_kelompok_kube'        => 'required|string|max:255',
         'ketua_penerima_manfaat_id' => 'required|integer',
@@ -48,39 +56,50 @@ public function store(Request $request)
         'jenis_usaha_kube'          => 'required|string',
         'no_telp_kube'              => 'nullable|string',
         'alamat_lengkap_kube'       => 'required|string',
-        'tahun_realisasi'           => 'required|integer',
-        'sumber_anggaran'           => 'required|string',
+        'tahun_realisasi'           => 'nullable|integer',
+        'sumber_anggaran'           => 'nullable|string',
         'status_verifikasi'         => 'required|string',
         'jumlah_anggota'            => 'required|integer',
+        
     ]);
-
+ 
     try {
-        // 2. Tambahkan user_id ke array yang sudah divalidasi
         $validated['user_id'] = auth()->id();
-
-        // 3. Simpan KUBE (Hanya sekali!)
+ 
         $kube = \App\Models\Kube::create($validated);
-
-        // 4. Update anggota (Update relasi jika ada anggota yang dipilih)
+ 
         if ($request->has('anggota_ids')) {
             \App\Models\PenerimaManfaat::whereIn('id', $request->anggota_ids)
                 ->update(['kube_id' => $kube->id]);
         }
-
-        // 5. Catat Log Aktivitas
+ 
+        // Kalau yang jadi ketua adalah user sendiri (role user), tandai juga PM tsb masuk ke kelompok ini
+        if (auth()->user()->role === 'user') {
+            \App\Models\PenerimaManfaat::where('id', $validated['ketua_penerima_manfaat_id'])
+                ->update(['kube_id' => $kube->id]);
+        }
+ 
         \App\Models\Activity::create([
             'user_id'     => auth()->id(),
             'causer_name' => auth()->user()->name,
             'description' => 'Menambahkan data KUBE baru: ' . $validated['nama_kelompok_kube'],
         ]);
-
+ 
+        // Redirect sesuai role:
+        // Admin & Super Admin -> daftar kelolaan KUBE
+        // User biasa -> halaman status pengajuan pribadi
+        if (auth()->user()->role === 'user') {
+            return redirect()->route('kube.status')
+                ->with('success', 'Pengajuan KUBE berhasil dikirim! Mohon tunggu proses verifikasi dari admin.');
+        }
+ 
         return redirect()->route('kube.index')->with('success', 'Kelompok KUBE berhasil didaftarkan!');
-
+ 
     } catch (\Exception $e) {
-        // Jika ada error database, tampilkan pesannya
         return back()->withErrors(['error' => 'Gagal menyimpan: ' . $e->getMessage()])->withInput();
     }
 }
+
 public function destroy($id)
 {
     $kube = Kube::findOrFail($id);
@@ -114,10 +133,11 @@ public function edit($id)
         'jenis_usaha_kube'      => 'required|string',
         'no_telp_kube'          => 'required|string|max:20',
         'alamat_lengkap_kube'   => 'required|string',
-        'tahun_realisasi'       => 'required|digits:4',
-        'sumber_anggaran'       => 'required|string',
+        'tahun_realisasi'       => 'nullable|digits:4',
+        'sumber_anggaran'       => 'nullable|string',
         'status_verifikasi'     => 'required|in:pending,disetujui,ditolak',
         'jumlah_anggota'        => 'required|numeric',
+         'catatan_penolakan'  => 'nullable|string|required_if:status_verifikasi,ditolak',
     ]);
 
     $kube = Kube::findOrFail($id);
@@ -208,5 +228,15 @@ public function import(Request $request)
     Excel::import(new KubeImport, $request->file('file'));
     return back()->with('success', 'Data KUBE berhasil diimpor!');
 }
+public function myStatus()
+{
+    $kubes = \App\Models\Kube::with('ketua')
+        ->where('user_id', auth()->id())
+        ->latest()
+        ->get();
+ 
+    return view('kube.status', compact('kubes'));
+}
+ 
 }
 

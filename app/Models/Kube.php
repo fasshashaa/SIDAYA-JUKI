@@ -11,6 +11,8 @@ class Kube extends Model
 
 // app/Models/Kube.php
 protected $fillable = [
+    'user_id',
+    'catatan_penolakan',
     'ketua_penerima_manfaat_id',
     'nama_kelompok_kube',
     'jenis_usaha_kube',
@@ -50,4 +52,5 @@ public function anggota() {
         // Pastikan nama modelnya benar (misal: App\Models\PenerimaManfaat)
         return $this->belongsTo(PenerimaManfaat::class, 'ketua_penerima_manfaat_id');
     }
+    
 }

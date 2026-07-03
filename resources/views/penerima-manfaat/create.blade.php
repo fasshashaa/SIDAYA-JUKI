@@ -54,6 +54,16 @@
 
             {{-- ================= SECTION: DATA PRIBADI ================= --}}
             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+                <label for="user_id">Pilih Akun Pengguna (Masyarakat):</label>
+<select name="user_id" class="form-control" required>
+    <option value="">-- Pilih User --</option>
+    @foreach($users as $user)
+        {{-- Hanya tampilkan user yang rolenya 'pengguna' --}}
+        @if($user->role === 'user')
+            <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
+        @endif
+    @endforeach
+</select>
                 <div class="flex items-center gap-3 mb-6">
                     <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>

@@ -3,11 +3,17 @@
 
  <div class="mb-8">
         <br>
+           @if(in_array(auth()->user()->role, ['admin', 'super_admin']))
         <a href="{{ route('kube.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 mb-3 w-fit">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             Kembali ke Daftar
         </a>
-        {{-- <p class="text-xs font-semibold text-blue-500 uppercase tracking-widest mb-1">Data Master</p> --}}
+        @else
+         <a href="{{ route('kube.status') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 mb-3 w-fit">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali ke Daftar
+        </a>
+        @endif
         <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Tambah Data Kelompok Usaha Bersama</h1>
         <p class="text-sm text-gray-500 mt-1">Tambah Data Kelompok Usaha Bersama Kabupaten Cilacap.</p>
     </div>
@@ -53,9 +59,6 @@
         }
     }">
 
-    {{-- ============ HEADER ============ --}}
-   
-
     <form action="{{ route('kube.store') }}" method="POST" class="space-y-6">
         @csrf
 
@@ -67,22 +70,47 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
+                <div class="md:col-span-2">
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Kelompok KUBE *</label>
                     <input type="text"  placeholder="Masukkan Nama Kelompok Usaha Bersama" name="nama_kelompok_kube" value="{{ old('nama_kelompok_kube') }}" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" required>
                     @error('nama_kelompok_kube') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Pilih Ketua KUBE *</label>
-                    <select name="ketua_penerima_manfaat_id" @change="updateKetua($event.target.value)" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" required>
-                        <option value="">-- Pilih Ketua --</option>
-                        @foreach($pms as $pm)
-                            <option value="{{ $pm->id }}">{{ $pm->nama_lengkap }}</option>
-                        @endforeach
-                    </select>
-                    @error('ketua_penerima_manfaat_id') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
-                </div>
+                @if(in_array(auth()->user()->role, ['admin', 'super_admin']))
+                    {{-- ===== ADMIN / SUPER ADMIN: pilih ketua dari dropdown PM yang belum berkelompok ===== --}}
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Pilih Ketua KUBE *</label>
+                        <select name="ketua_penerima_manfaat_id" @change="updateKetua($event.target.value)" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" required>
+                            <option value="">-- Pilih Ketua --</option>
+                            @foreach($pms as $pm)
+                                <option value="{{ $pm->id }}">{{ $pm->nama_lengkap }}</option>
+                            @endforeach
+                        </select>
+                        @error('ketua_penerima_manfaat_id') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+                @else
+                    {{-- ===== USER: otomatis jadi ketua dari profil PM miliknya sendiri ===== --}}
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Ketua Kelompok (Anda)</label>
+                        <input type="text" value="{{ $myProfile->nama_lengkap ?? 'Data profil tidak ditemukan' }}" readonly
+                               class="w-full rounded-xl border-slate-200 bg-slate-100/80 text-sm p-3 text-slate-500 cursor-not-allowed">
+
+                        @if(!$myProfile)
+                            <div class="mt-3 flex items-start gap-3 p-4 rounded-xl border border-amber-200 bg-amber-50">
+                                <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+                                <p class="text-sm text-amber-700">Data profil Penerima Manfaat kamu belum ditemukan. Hubungi admin sebelum mengajukan KUBE.</p>
+                            </div>
+                        @elseif($myProfile->kube_id)
+                            <div class="mt-3 flex items-start gap-3 p-4 rounded-xl border border-amber-200 bg-amber-50">
+                                <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+                                <p class="text-sm text-amber-700">Kamu sudah tergabung dalam kelompok KUBE lain. Tidak bisa mengajukan kelompok baru.</p>
+                            </div>
+                        @endif
+
+                        {{-- Dikirim langsung dari server, bukan dari input yang bisa diedit user di browser --}}
+                        <input type="hidden" name="ketua_penerima_manfaat_id" value="{{ $myProfile->id ?? '' }}">
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -185,6 +213,7 @@
                     <input type="number" name="jumlah_anggota" value="{{ old('jumlah_anggota') }}" min="1" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" required placeholder="Masukkan jumlah anggota">
                     @error('jumlah_anggota') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
+                 @if(in_array(auth()->user()->role, ['admin', 'super_admin']))
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Tahun Realisasi *</label>
                     <input type="number" name="tahun_realisasi" value="{{ old('tahun_realisasi', date('Y')) }}" class="w-full rounded-xl border-slate-200 bg-slate-50/60 text-sm p-3 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 transition-all" required>
@@ -197,7 +226,7 @@
                         <option value="Mandiri" {{ old('sumber_anggaran') == 'Mandiri' ? 'selected' : '' }}>Mandiri</option>
                     </select>
                 </div>
-
+@endif
                 <input type="hidden" name="status_verifikasi" value="pending">
             </div>
         </div>
@@ -209,12 +238,15 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                         Simpan Baru
                     </button>
+                       @if(in_array(auth()->user()->role, ['admin', 'super_admin']))
                     <a href="{{ route('kube.index') }}" class="bg-white hover:bg-gray-50 text-gray-500 font-semibold px-6 py-3 rounded-xl text-sm border border-gray-200 transition-all">
                         Batal
                     </a>
-                    {{-- <span class="ml-auto text-xs text-gray-400 hidden sm:flex items-center gap-1.5">
-                        <span class="text-rose-500">*</span> wajib diisi
-                    </span> --}}
+                    @else 
+                      <a href="{{ route('kube.status') }}" class="bg-white hover:bg-gray-50 text-gray-500 font-semibold px-6 py-3 rounded-xl text-sm border border-gray-200 transition-all">
+                        Batal
+                    </a>
+                    @endif
                 </div>
             </div>
     </form>

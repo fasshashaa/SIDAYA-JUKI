@@ -48,7 +48,6 @@
             --teal-400:#2FB4D6;
             --cyan-300:#5FD9E8;
 
-            /* ===== Tema terang (default) ===== */
             --page-bg-solid:#F4F7FA;
             --page-glow-1: rgba(14,124,158,0.07);
             --page-glow-2: rgba(95,217,232,0.05);
@@ -64,7 +63,6 @@
             --ring-bg: #F4F7FA;
         }
         html.dark {
-            /* ===== Tema gelap — diturunkan dari palet navy yang sama dengan sidebar ===== */
             --page-bg-solid:#081326;
             --page-glow-1: rgba(95,217,232,0.06);
             --page-glow-2: rgba(14,124,158,0.14);
@@ -86,7 +84,6 @@
             transition: background-color .35s ease, color .35s ease, border-color .35s ease, box-shadow .35s ease;
         }
 
-        /* ===== Sidebar shell ===== */
         .sidebar-navy {
             background:
                 radial-gradient(120% 60% at 10% -10%, rgba(95,217,232,0.14), transparent 55%),
@@ -106,7 +103,6 @@
         }
         .sidebar-navy > * { position: relative; z-index: 1; }
 
-        /* ===== Nav items ===== */
         .nav-item {
             position: relative; color: rgba(255,255,255,0.55);
             transition: background .2s ease, color .2s ease, transform .15s ease;
@@ -125,6 +121,8 @@
             background: linear-gradient(180deg, var(--cyan-300), var(--teal-600));
             box-shadow: 0 0 12px rgba(95,217,232,0.7);
         }
+        .nav-item.disabled { opacity: .4; cursor: not-allowed; }
+        .nav-item.disabled:hover { background: transparent; color: rgba(255,255,255,0.55); transform: none; }
         .nav-icon-wrap {
             width: 30px; height: 30px; border-radius: 9px;
             display: flex; align-items: center; justify-content: center;
@@ -141,7 +139,6 @@
 
         .sidebar-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent); }
 
-        /* ===== Group / accordion headers ===== */
         .group-header {
             color: rgba(255,255,255,0.38);
             transition: color .2s ease, background .2s ease;
@@ -156,7 +153,6 @@
         .group-panel.is-open { grid-template-rows: 1fr; }
         .group-panel > div { overflow: hidden; }
 
-        /* ===== Layout shift ===== */
         .main-content { transition: margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1), left .35s cubic-bezier(0.4, 0, 0.2, 1); }
         .main-bg {
             background:
@@ -165,7 +161,6 @@
                 var(--page-bg-solid);
         }
 
-        /* ===== Header chrome ===== */
         .app-header {
             background: var(--header-bg);
             border-bottom: 1px solid var(--divider);
@@ -187,7 +182,6 @@
         html.dark .dropdown-panel { box-shadow: 0 20px 45px -12px rgba(0,0,0,0.55); }
         [x-cloak] { display: none !important; }
 
-        /* ===== Sidebar collapse toggle (canggih) ===== */
         .sidebar-toggle {
             width: 30px; height: 30px; border-radius: 999px;
             background: linear-gradient(160deg, var(--surface), var(--surface-alt));
@@ -203,7 +197,6 @@
         .sidebar-toggle:active { transform: scale(0.92); }
         .sidebar-toggle svg { transition: transform .35s cubic-bezier(0.4,0,0.2,1); }
 
-        /* ===== Saklar mode gelap/terang ===== */
         .theme-toggle {
             position: relative; width: 52px; height: 28px; border-radius: 999px;
             background: linear-gradient(160deg, #EEF3F7, #E3E9EF);
@@ -227,14 +220,6 @@
         }
         .theme-toggle-thumb svg { width: 12px; height: 12px; }
 
-        /* =========================================================
-           OTOMATIS MENGGELAPKAN KONTEN @yield('content')
-           Meng-override class Tailwind netral (putih/abu-abu) yang umum
-           dipakai di halaman-halaman lain (card, tabel, form, dsb.)
-           supaya ikut tema gelap tanpa perlu diedit satu per satu.
-           Warna aksen/status (biru, hijau, merah, kuning) sengaja
-           tidak disentuh karena biasanya masih kontras di background gelap.
-        ========================================================= */
         html.dark main { color: var(--text-body); }
 
         html.dark main .bg-white,
@@ -294,14 +279,12 @@
         html.dark main .shadow-lg,
         html.dark main .shadow-xl { box-shadow: 0 10px 30px -12px rgba(0,0,0,0.55) !important; }
 
-        /* ===== Scrollbar ===== */
         .sidebar-scroll { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
         .sidebar-scroll::-webkit-scrollbar { width: 5px; }
         .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
         .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
         .sidebar-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.28); }
 
-        /* ===== Tooltip for collapsed rail ===== */
         .rail-tooltip {
             position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%) translateX(-4px);
             background: var(--navy-950); color: #fff; font-size: 12px; font-weight: 600;
@@ -313,7 +296,6 @@
         }
         .rail-item:hover .rail-tooltip { opacity: 1; transform: translateY(-50%) translateX(0); }
 
-        /* ===== Badge pill ===== */
         .badge-live {
             display:inline-flex; align-items:center; gap:5px;
             font-size: 10px; font-weight: 700; letter-spacing:.04em;
@@ -330,11 +312,9 @@
     <header class="main-content app-header border-b border-slate-100/80 fixed top-0 right-0 h-16 z-20 flex items-center justify-between px-6"
              :class="sidebarOpen ? 'left-64' : 'left-[78px]'">
         <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 dark:text-slate-500">
-            {{-- <span class="hidden md:inline">{{ now()->translatedFormat('l, d F Y') }}</span> --}}
         </div>
 
         <div class="flex items-center gap-3">
-            <!-- Saklar mode gelap / terang -->
             <button type="button"
                     @click="$store.theme.toggle()"
                     class="theme-toggle"
@@ -401,7 +381,6 @@
         <!-- Sidebar -->
         <aside :class="sidebarOpen ? 'w-64' : 'w-[78px]'" class="sidebar-navy fixed top-0 bottom-0 left-0 z-30 shadow-xl flex flex-col">
 
-            <!-- Tombol toggle buka/tutup -->
             <button @click="sidebarOpen = !sidebarOpen" class="sidebar-toggle absolute top-7 -right-3.5 z-30">
                 <svg class="w-3.5 h-3.5" :class="!sidebarOpen && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="15 18 9 12 15 6"/>
@@ -423,14 +402,71 @@
                     <template x-if="!sidebarOpen"><span class="rail-tooltip">Dashboard</span></template>
                 </a>
 
+                {{-- ========== GRUP: MANAJEMEN DATA (admin & super_admin) ========== --}}
                 @if(in_array(Auth::user()->role, ['admin', 'super_admin']))
+                <div class="pt-3">
+                    <div x-data="{ open: true }" class="rounded-xl" :class="!sidebarOpen && 'flex flex-col items-center'">
+
+                        <button x-show="sidebarOpen" x-cloak @click="open = !open"
+                                class="group-header w-full flex items-center justify-between px-4 py-2 mb-1 rounded-lg">
+                            <span class="text-[10px] font-bold uppercase tracking-wider">Manajemen Data</span>
+                            <svg class="group-chevron w-3 h-3" :class="open && 'rotate-90'" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                        <div x-show="!sidebarOpen" x-cloak class="sidebar-divider w-8 mx-auto my-2"></div>
+
+                        <div class="group-panel w-full" :class="(open || !sidebarOpen) && 'is-open'">
+                            <div class="space-y-1.5">
+
+                                <a href="{{ route('penerima-manfaat.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('penerima-manfaat.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
+                                    <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span>
+                                    <span x-show="sidebarOpen" x-cloak>Penerima Manfaat</span>
+                                    <template x-if="!sidebarOpen"><span class="rail-tooltip">Penerima Manfaat</span></template>
+                                </a>
+
+                                <a href="{{ route('uep.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('uep.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
+                                    <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></span>
+                                    <span x-show="sidebarOpen" x-cloak>Kelolaan UEP</span>
+                                    <template x-if="!sidebarOpen"><span class="rail-tooltip">Kelolaan UEP</span></template>
+                                </a>
+
+                                <a href="{{ route('kube.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('kube.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
+                                    <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/></svg></span>
+                                    <span x-show="sidebarOpen" x-cloak>Kelompok KUBE</span>
+                                    <template x-if="!sidebarOpen"><span class="rail-tooltip">Kelompok KUBE</span></template>
+                                </a>
+
+                                <a href="{{ route('produk.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('produk.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
+                                    <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span>
+                                    <span x-show="sidebarOpen" x-cloak>Produk UMKM</span>
+                                    <template x-if="!sidebarOpen"><span class="rail-tooltip">Produk UMKM</span></template>
+                                </a>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+                {{-- ========== GRUP: BISNIS SAYA (khusus role user) ========== --}}
+                @if(Auth::user()->role === 'user')
+                    @php
+                        // Status disetujui dicek dari kedua jenis usaha (UEP maupun KUBE) yang dimiliki user ini.
+                        // Sesuaikan nama model (Uep/Kube) jika namespace/case model kamu berbeda.
+                        $isApprovedUep = \App\Models\Uep::where('user_id', auth()->id())
+                                            ->where('status_verifikasi', 'disetujui')
+                                            ->exists();
+                        $isApprovedKube = \App\Models\Kube::where('user_id', auth()->id())
+                                            ->where('status_verifikasi', 'disetujui')
+                                            ->exists();
+                        $isApproved = $isApprovedUep || $isApprovedKube;
+                    @endphp
+
                     <div class="pt-3">
                         <div x-data="{ open: true }" class="rounded-xl" :class="!sidebarOpen && 'flex flex-col items-center'">
 
-                            <!-- Group header (accordion) -->
                             <button x-show="sidebarOpen" x-cloak @click="open = !open"
                                     class="group-header w-full flex items-center justify-between px-4 py-2 mb-1 rounded-lg">
-                                <span class="text-[10px] font-bold uppercase tracking-wider">Manajemen Data</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider">Manejemen Bisnis</span>
                                 <svg class="group-chevron w-3 h-3" :class="open && 'rotate-90'" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
                             </button>
                             <div x-show="!sidebarOpen" x-cloak class="sidebar-divider w-8 mx-auto my-2"></div>
@@ -438,29 +474,31 @@
                             <div class="group-panel w-full" :class="(open || !sidebarOpen) && 'is-open'">
                                 <div class="space-y-1.5">
 
-                                    <a href="{{ route('penerima-manfaat.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('penerima-manfaat.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
-                                        <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span>
-                                        <span x-show="sidebarOpen" x-cloak>Penerima Manfaat</span>
-                                        <template x-if="!sidebarOpen"><span class="rail-tooltip">Penerima Manfaat</span></template>
-                                    </a>
-
-                                    <a href="{{ route('uep.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('uep.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
+                                    <a href="{{ route('uep.status') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('uep.create') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
                                         <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></span>
-                                        <span x-show="sidebarOpen" x-cloak>Kelolaan UEP</span>
-                                        <template x-if="!sidebarOpen"><span class="rail-tooltip">Kelolaan UEP</span></template>
+                                        <span x-show="sidebarOpen" x-cloak>Ajukan UEP</span>
+                                        <template x-if="!sidebarOpen"><span class="rail-tooltip">Ajukan UEP</span></template>
                                     </a>
 
-                                    <a href="{{ route('kube.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('kube.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
+                                    <a href="{{ route('kube.status') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('kube.create') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
                                         <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/></svg></span>
-                                        <span x-show="sidebarOpen" x-cloak>Kelompok KUBE</span>
-                                        <template x-if="!sidebarOpen"><span class="rail-tooltip">Kelompok KUBE</span></template>
+                                        <span x-show="sidebarOpen" x-cloak>Ajukan KUBE</span>
+                                        <template x-if="!sidebarOpen"><span class="rail-tooltip">Ajukan KUBE</span></template>
                                     </a>
 
-                                    <a href="{{ route('produk.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('produk.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
-                                        <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span>
-                                        <span x-show="sidebarOpen" x-cloak>Produk UMKM</span>
-                                        <template x-if="!sidebarOpen"><span class="rail-tooltip">Produk UMKM</span></template>
-                                    </a>
+                                    @if($isApproved)
+                                        <a href="{{ route('produk.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('produk.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
+                                            <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span>
+                                            <span x-show="sidebarOpen" x-cloak>Produk Saya</span>
+                                            <template x-if="!sidebarOpen"><span class="rail-tooltip">Produk Saya</span></template>
+                                        </a>
+                                    @else
+                                        <span title="Tunggu verifikasi admin" class="rail-item nav-item disabled flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold" :class="!sidebarOpen && 'justify-center px-0'">
+                                            <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
+                                            <span x-show="sidebarOpen" x-cloak>Produk Saya (Terkunci)</span>
+                                            <template x-if="!sidebarOpen"><span class="rail-tooltip">Produk Saya (Terkunci)</span></template>
+                                        </span>
+                                    @endif
 
                                 </div>
                             </div>
@@ -468,10 +506,7 @@
                     </div>
                 @endif
 
-                @if(Auth::user()->role === 'user')
-                    <div x-show="sidebarOpen" x-cloak class="mt-4 mb-2 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Bisnis Saya</div>
-                @endif
-
+                {{-- ========== GRUP: SISTEM (khusus super_admin) ========== --}}
                 @if(Auth::user()->role === 'super_admin')
                     <div class="pt-3">
                         <div x-data="{ open: true }" class="rounded-xl" :class="!sidebarOpen && 'flex flex-col items-center'">
@@ -489,38 +524,20 @@
                                         <span x-show="sidebarOpen" x-cloak>User Management</span>
                                         <template x-if="!sidebarOpen"><span class="rail-tooltip">User Management</span></template>
                                     </a>
+
+                                    <a href="{{ route('settings.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('settings.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
+                                        <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
+                                        <span x-show="sidebarOpen" x-cloak>Pengaturan Sistem</span>
+                                        <template x-if="!sidebarOpen"><span class="rail-tooltip">Pengaturan Sistem</span></template>
+                                    </a>
                                 </div>
                             </div>
-                             @if(auth()->user()->role === 'super_admin')
-                            <div class="group-panel w-full" :class="(open || !sidebarOpen) && 'is-open'">
-                                <div class="space-y-1.5">
-                                  <a href="{{ route('settings.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('settings.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
-                                    <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
-                                    <span x-show="sidebarOpen" x-cloak>Pengaturan Sistem</span>
-                                    <template x-if="!sidebarOpen"><span class="rail-tooltip">Pengaturan Sistem</span></template>
-                                </a>
-                                </div>
-                            </div>
-                             @endif
                         </div>
                     </div>
                 @endif
-     {{-- @if(auth()->user()->role === 'super_admin')
-                <div class="sidebar-divider my-4"></div>
 
-                <a href="{{ route('settings.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('settings.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
-                    <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
-                    <span x-show="sidebarOpen" x-cloak>Pengaturan Sistem</span>
-                    <template x-if="!sidebarOpen"><span class="rail-tooltip">Pengaturan Sistem</span></template>
-                </a>
             </nav>
- @endif --}}
-            <!-- Mini brand footer in sidebar -->
-            {{-- <div x-show="sidebarOpen" x-cloak class="px-4 pb-5 pt-2 flex-shrink-0">
-                <div class="rounded-xl bg-white/5 border border-white/10 p-3.5 backdrop-blur-sm">
-                    <p class="text-[10.5px] text-white/40 leading-relaxed">Dinas Sosial PPPA<br>Kabupaten Cilacap</p>
-                </div>
-            </div> --}}
+
         </aside>
 
         <!-- Main content: margin menyesuaikan status sidebar -->
@@ -530,7 +547,9 @@
             @yield('content')
 
         </main>
-    </div> <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @include('components.alert')
 </body>
 </html>

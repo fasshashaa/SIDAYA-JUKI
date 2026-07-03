@@ -14,10 +14,11 @@
 
 
 
-        <form action="{{ route('kube.update', $kube->id) }}" method="POST" class="bg-white p-6 rounded-lg shadow-md">
-            @csrf
-            @method('PUT')
-
+       <form action="{{ route('kube.update', $kube->id) }}" method="POST"
+      class="bg-white p-6 rounded-lg shadow-md"
+      x-data="{ statusVerifikasi: '{{ old('status_verifikasi', $kube->status_verifikasi) }}' }">
+    @csrf
+    @method('PUT')        
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700">Nama Kelompok KUBE</label>
@@ -85,8 +86,12 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700">Sumber Anggaran</label>
-                    <input type="text" name="sumber_anggaran" value="{{ old('sumber_anggaran', $kube->sumber_anggaran) }}" class="w-full mt-1 p-3 border rounded-xl bg-gray-50" required>
+                    <label class="block text-sm font-semibold text-gray-700">Sumber Anggaran *</label>
+                    <select name="sumber_anggaran" required class="w-full mt-1 p-3 border rounded-xl bg-gray-50">
+                        @foreach(['APBN', 'APBD', 'CSR', 'Lainnya'] as $sumber)
+                            <option value="{{ $sumber }}" {{ old('sumber_anggaran', $kube->sumber_anggaran) == $sumber ? 'selected' : '' }}>{{ $sumber }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
 
@@ -100,14 +105,24 @@
                 <label class="block text-sm font-semibold text-gray-700">Alamat Lengkap</label>
                 <textarea name="alamat_lengkap_kube" class="w-full mt-1 p-3 border rounded-xl bg-gray-50" rows="3" required>{{ old('alamat_lengkap_kube', $kube->alamat_lengkap_kube) }}</textarea>
             </div>
-            <div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 mt-6">
+           <div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 mt-6">
     <label class="block text-sm font-bold text-blue-900 mb-2">Status Verifikasi *</label>
-    <select name="status_verifikasi" class="w-full rounded-xl border-blue-200 bg-white text-sm p-3 focus:border-blue-500 focus:ring-blue-500">
+    <select name="status_verifikasi" x-model="statusVerifikasi" class="w-full rounded-xl border-blue-200 bg-white text-sm p-3 focus:border-blue-500 focus:ring-blue-500">
         <option value="pending" {{ old('status_verifikasi', $kube->status_verifikasi) == 'pending' ? 'selected' : '' }}>Pending</option>
         <option value="disetujui" {{ old('status_verifikasi', $kube->status_verifikasi) == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
         <option value="ditolak" {{ old('status_verifikasi', $kube->status_verifikasi) == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
     </select>
     <p class="text-xs text-blue-600 mt-2">Pastikan data sudah diperiksa sebelum mengubah status menjadi Disetujui/Ditolak.</p>
+ 
+    {{-- Muncul otomatis hanya saat status = ditolak --}}
+    <div x-show="statusVerifikasi === 'ditolak'" x-cloak x-transition class="mt-4">
+        <label class="block text-sm font-bold text-rose-700 mb-2">Alasan Penolakan *</label>
+        <textarea name="catatan_penolakan" rows="3"
+                  x-bind:required="statusVerifikasi === 'ditolak'"
+                  class="w-full rounded-xl border-rose-200 bg-white text-sm p-3 focus:border-rose-500 focus:ring-rose-500"
+                  placeholder="Jelaskan alasan penolakan agar pemohon bisa memperbaiki data">{{ old('catatan_penolakan', $kube->catatan_penolakan) }}</textarea>
+        @error('catatan_penolakan') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
+    </div>
 </div>
 
            <div class="sticky bottom-4 z-10">

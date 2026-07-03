@@ -36,4 +36,19 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+public function penerimaManfaat()
+    {
+        return $this->hasOne(PenerimaManfaat::class);
+    }
+    
+    // Pastikan juga relasi lain sudah ada
+    public function uep() 
+    { 
+        return $this->hasOne(Uep::class); 
+    }
+
+    public function kube() 
+    { 
+        return $this->hasOne(Kube::class); 
+    }
 }
