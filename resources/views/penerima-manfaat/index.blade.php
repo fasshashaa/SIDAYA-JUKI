@@ -48,65 +48,20 @@
             {{ session('success') }}
         </div>
     @endif --}}
- {{-- ============ STAT SUMMARY STRIP ============ --}}
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-    
-    <div class="bg-white rounded-2xl border border-slate-100 p-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-        </div>
-        <div>
-            <p class="text-xs font-medium text-slate-400 uppercase tracking-wide">Total Orang</p>
-            <p class="text-xl font-bold text-slate-900">{{ $penerimaManfaat->count() }}</p>
-        </div>
-    </div>
-  @php
-        $statusCounts = [
-            'pending'   => $penerimaManfaat->where('status_verifikasi', 'pending')->count(),
-            'disetujui' => $penerimaManfaat->where('status_verifikasi', 'disetujui')->count(),
-            'ditolak'   => $penerimaManfaat->where('status_verifikasi', 'ditolak')->count(),
-        ];
-    @endphp
-     <div class="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+
+    {{-- ============ STAT SUMMARY STRIP ============ --}}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+
+        <div class="bg-white rounded-2xl border border-slate-100 p-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
             </div>
             <div>
-                <p class="text-xs font-medium text-slate-400 uppercase tracking-wide">Pending</p>
-                <p class="text-xl font-bold text-slate-900">{{ $statusCounts['pending'] }}</p>
+                <p class="text-xs font-medium text-slate-400 uppercase tracking-wide">Total Orang</p>
+                <p class="text-xl font-bold text-slate-900">{{ $totalOrang }}</p>
             </div>
         </div>
 
-    <div class="bg-white rounded-2xl border border-slate-100 p-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        </div>
-        <div>
-            <p class="text-xs font-medium text-slate-400 uppercase tracking-wide">Disetujui</p>
-            <p class="text-xl font-bold text-slate-900">{{ $statusCounts['disetujui'] }}</p>
-        </div>
-    </div>
-
-    <div class="bg-white rounded-2xl border border-slate-100 p-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </div>
-        <div>
-            <p class="text-xs font-medium text-slate-400 uppercase tracking-wide">Ditolak</p>
-            <p class="text-xl font-bold text-slate-900">{{ $statusCounts['ditolak'] }}</p>
-        </div>
-    </div>
-
-</div>
-    {{-- ================= QUICK STATS ROW =================
-    @php
-        $statusCounts = [
-            'pending'   => $penerimaManfaat->where('status_verifikasi', 'pending')->count(),
-            'disetujui' => $penerimaManfaat->where('status_verifikasi', 'disetujui')->count(),
-            'ditolak'   => $penerimaManfaat->where('status_verifikasi', 'ditolak')->count(),
-        ];
-    @endphp
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div class="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4">
             <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
@@ -116,7 +71,8 @@
                 <p class="text-xl font-bold text-slate-900">{{ $statusCounts['pending'] }}</p>
             </div>
         </div>
-        <div class="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4">
+
+        <div class="bg-white rounded-2xl border border-slate-100 p-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
@@ -125,7 +81,8 @@
                 <p class="text-xl font-bold text-slate-900">{{ $statusCounts['disetujui'] }}</p>
             </div>
         </div>
-        <div class="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4">
+
+        <div class="bg-white rounded-2xl border border-slate-100 p-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </div>
@@ -134,23 +91,31 @@
                 <p class="text-xl font-bold text-slate-900">{{ $statusCounts['ditolak'] }}</p>
             </div>
         </div>
-    </div> --}}
+
+    </div>
 
     {{-- ================= TABLE CARD ================= --}}
-    <div class="bg-white rounded-3xl shadow-sm shadow-slate-200/50 border border-slate-100 overflow-hidden">
+    <div class="bg-white rounded-3xl shadow-sm shadow-slate-200/50 border border-slate-100 overflow-hidden"
+         x-data="pmSearch()" x-init="load()">
 
         {{-- Toolbar --}}
         <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div class="relative w-full sm:max-w-xs">
                 <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/></svg>
-                <input type="text" placeholder="Cari nama atau NIK..." class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-100 rounded-xl placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-300 transition-all">
+                <input type="text" x-model="search" @input.debounce.400ms="load(1)"
+                       placeholder="Cari nama atau NIK..."
+                       class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-100 rounded-xl placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-300 transition-all">
             </div>
             <div class="flex items-center gap-2 shrink-0">
-                <button type="button" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 px-3.5 py-2.5 rounded-xl transition-colors">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
-                    Filter
-                </button>
-                <span class="text-xs bg-indigo-50 text-indigo-600 font-semibold px-3 py-2.5 rounded-xl whitespace-nowrap">{{ $penerimaManfaat->total() }} orang</span>
+                <select x-model="status" @change="load(1)"
+                        class="text-xs font-semibold text-slate-500 bg-slate-50 hover:bg-slate-100 px-3.5 py-2.5 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-colors cursor-pointer">
+                    <option value="">Semua Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="disetujui">Disetujui</option>
+                    <option value="ditolak">Ditolak</option>
+                </select>
+                <span x-show="loading" x-cloak class="text-xs text-slate-400">Memuat...</span>
+                <span x-show="!loading" x-cloak class="text-xs bg-indigo-50 text-indigo-600 font-semibold px-3 py-2.5 rounded-xl whitespace-nowrap" x-text="total + ' orang'"></span>
             </div>
         </div>
 
@@ -166,93 +131,109 @@
                         <th class="p-4 font-semibold">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-50 text-slate-700">
-                    @forelse($penerimaManfaat as $item)
-                        <tr class="hover:bg-slate-50/70 transition-colors">
-                            <td class="p-4 pl-6">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs shrink-0">
-                                        {{ Str::of($item->nama_lengkap)->explode(' ')->map(fn($w) => Str::substr($w, 0, 1))->take(2)->implode('') }}
-                                    </div>
-                                    <span class="font-semibold text-slate-900">{{ $item->nama_lengkap }}</span>
-                                </div>
-                            </td>
-                            <td class="p-4 font-mono text-slate-500 text-xs">{{ Str::mask($item->nik, '•', 4, 8) }}</td>
-                            <td class="p-4">
-                                <div class="text-slate-800 text-xs font-medium">{{ $item->desa }}</div>
-                                <div class="text-slate-400 text-[11px] mt-0.5">Kec. {{ $item->kecamatan }}</div>
-                            </td>
-                            <td class="p-4">
-                                @if($item->no_wa)
-                                    <a href="https://wa.me/{{ str_starts_with($item->no_wa, '0') ? '62'.substr($item->no_wa, 1) : $item->no_wa }}" target="_blank" class="inline-flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 font-medium text-xs">
-                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.001 2.003c-5.523 0-9.999 4.476-9.999 9.999 0 1.762.464 3.484 1.346 5.001L2 22l5.109-1.334a9.958 9.958 0 004.892 1.246h.005c5.523 0 9.999-4.476 9.999-9.999 0-2.67-1.04-5.179-2.928-7.067A9.936 9.936 0 0012.001 2.003zm0 18.174h-.004a8.163 8.163 0 01-4.166-1.14l-.299-.177-3.03.792.809-2.954-.195-.303a8.156 8.156 0 01-1.256-4.396c0-4.516 3.674-8.19 8.19-8.19 2.187 0 4.243.852 5.79 2.401a8.13 8.13 0 012.399 5.792c-.001 4.516-3.675 8.19-8.191 8.19z"/></svg>
-                                        {{ $item->no_wa }}
-                                    </a>
-                                @else
-                                    <span class="text-slate-300">&mdash;</span>
-                                @endif
-                            </td>
-                            <td class="p-4">
-                                @php
-                                    $statusStyles = [
-                                        'pending'   => ['bg-amber-50 text-amber-600', 'bg-amber-500'],
-                                        'disetujui' => ['bg-emerald-50 text-emerald-600', 'bg-emerald-500'],
-                                        'ditolak'   => ['bg-rose-50 text-rose-600', 'bg-rose-500'],
-                                    ];
-                                    [$badgeClass, $dotClass] = $statusStyles[$item->status_verifikasi] ?? ['bg-slate-100 text-slate-600', 'bg-slate-400'];
-                                @endphp
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold {{ $badgeClass }}">
-                                    <span class="h-1.5 w-1.5 rounded-full {{ $dotClass }}"></span>
-                                    {{ ucfirst($item->status_verifikasi) }}
-                                </span>
-                            </td>
+                <tbody class="divide-y divide-slate-50 text-slate-700" x-ref="tbody">
+                    {{-- Baris tabel diisi otomatis oleh JavaScript (pmSearch) --}}
+                    <tr>
+                        <td colspan="6" class="p-14 text-center text-slate-400 text-sm">Memuat data...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-                            {{-- Aksi --}}
-                            <td class="p-4 relative">
-                                <div x-data="{ open: false, dropUp: false }"
-                                     x-on:click.away="open = false"
-                                     class="relative inline-block text-left">
+        {{-- Pagination sederhana (prev/next) --}}
+        <div class="p-4 border-t border-slate-100 bg-slate-50/40 flex items-center justify-between" x-show="lastPage > 1" x-cloak>
+            <button type="button" @click="load(currentPage - 1)" :disabled="currentPage <= 1"
+                    class="text-xs font-semibold px-3 py-2 rounded-lg bg-white border border-slate-200 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors">
+                &larr; Sebelumnya
+            </button>
+            <span class="text-xs text-slate-400">Halaman <span x-text="currentPage"></span> dari <span x-text="lastPage"></span></span>
+            <button type="button" @click="load(currentPage + 1)" :disabled="currentPage >= lastPage"
+                    class="text-xs font-semibold px-3 py-2 rounded-lg bg-white border border-slate-200 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors">
+                Berikutnya &rarr;
+            </button>
+        </div>
+    </div>
 
-                                    <button @click="open = !open; dropUp = (window.innerHeight - $el.getBoundingClientRect().top) < 200"
-                                            class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 13a1 1 0 100-2 1 1 0 000 2zM12 6a1 1 0 100-2 1 1 0 000 2zM12 20a1 1 0 100-2 1 1 0 000 2z"/></svg>
-                                    </button>
+    <script>
+    function pmSearch() {
+        return {
+            search: '{{ request('search') }}',
+            status: '{{ request('status') }}',
+            loading: false,
+            total: {{ $penerimaManfaat->total() }},
+            currentPage: 1,
+            lastPage: 1,
+            isSuperAdmin: @json(auth()->user()->role === 'super_admin'),
+            baseUrl: '{{ route('penerima-manfaat.index') }}',
+            csrfToken: '{{ csrf_token() }}',
 
-                                    <div x-show="open"
-                                         x-cloak
-                                         x-transition:enter="transition ease-out duration-150"
-                                         x-transition:enter-start="opacity-0 scale-95"
-                                         x-transition:enter-end="opacity-100 scale-100"
-                                         :class="dropUp ? 'bottom-full mb-2' : 'top-full mt-2'"
-                                         class="absolute right-0 z-[100] w-40 bg-white rounded-xl shadow-xl shadow-slate-900/10 border border-slate-100 py-1.5">
+            routeShow(id)    { return '{{ route('penerima-manfaat.show', ':id') }}'.replace(':id', id); },
+            routeEdit(id)    { return '{{ route('penerima-manfaat.edit', ':id') }}'.replace(':id', id); },
+            routeDestroy(id) { return '{{ route('penerima-manfaat.destroy', ':id') }}'.replace(':id', id); },
 
-                                        <a href="{{ route('penerima-manfaat.show', $item->id) }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                            Lihat
-                                        </a>
+            load(page = 1) {
+                this.loading = true;
+                const url = new URL(this.baseUrl);
+                if (this.search) url.searchParams.set('search', this.search); else url.searchParams.delete('search');
+                if (this.status) url.searchParams.set('status', this.status); else url.searchParams.delete('status');
+                url.searchParams.set('page', page);
 
-                                        <a href="{{ route('penerima-manfaat.edit', $item->id) }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-amber-600 hover:bg-amber-50">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                            Edit
-                                        </a>
-     @if(auth()->user()->role === 'super_admin')
-                                        <div class="my-1 border-t border-slate-50"></div>
+                fetch(url.toString(), {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(res => res.json())
+                    .then(json => {
+                        this.total = json.total;
+                        this.currentPage = json.current_page;
+                        this.lastPage = json.last_page;
+                        this.renderRows(json.data);
+                        window.history.replaceState({}, '', url.toString());
+                    })
+                    .catch(() => {
+                        this.$refs.tbody.innerHTML = `
+                            <tr><td colspan="6" class="p-14 text-center text-rose-400 text-sm">Gagal memuat data. Silakan coba lagi.</td></tr>`;
+                    })
+                    .finally(() => { this.loading = false; });
+            },
 
-                                       <form id="delete-form-{{ $item->id }}" action="{{ route('penerima-manfaat.destroy', $item->id) }}" method="POST">
-                                            @csrf 
-                                            @method('DELETE')
-                                            
-                                            <button type="button" onclick="confirmDelete({{ $item->id }})" class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                Hapus
-                                            </button>
-                                        </form>
-                                         @endif
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
+            maskNik(nik) {
+                nik = String(nik);
+                return nik.length >= 12 ? nik.slice(0, 4) + '••••' + nik.slice(8) : nik;
+            },
+            initials(nama) {
+                return nama.split(' ').filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+            },
+            waLink(no) {
+                if (!no) return null;
+                return no.startsWith('0') ? '62' + no.slice(1) : no;
+            },
+            statusLabel(s) {
+                return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+            },
+            statusBadge(s) {
+                const map = {
+                    pending:   ['bg-amber-50 text-amber-600', 'bg-amber-500'],
+                    disetujui: ['bg-emerald-50 text-emerald-600', 'bg-emerald-500'],
+                    ditolak:   ['bg-rose-50 text-rose-600', 'bg-rose-500'],
+                };
+                return map[s] || ['bg-slate-100 text-slate-600', 'bg-slate-400'];
+            },
+            escapeHtml(str) {
+                if (str === null || str === undefined) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            },
+
+            renderRows(items) {
+                if (!items.length) {
+                    this.$refs.tbody.innerHTML = `
                         <tr>
                             <td colspan="6" class="p-14 text-center">
                                 <div class="flex flex-col items-center justify-center gap-3">
@@ -260,56 +241,114 @@
                                         <svg class="w-7 h-7 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M23 21v-2a4 4 0 00-3-3.87"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 3.13a4 4 0 010 7.75"/></svg>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-semibold text-slate-600">Belum ada data penerima manfaat</p>
-                                        <p class="text-xs text-slate-400 mt-1">Tambahkan penerima baru untuk mulai mengelola data.</p>
+                                        <p class="text-sm font-semibold text-slate-600">Data tidak ditemukan</p>
+                                        <p class="text-xs text-slate-400 mt-1">Coba kata kunci atau filter lain.</p>
                                     </div>
-                                     @if(auth()->user()->role === 'super_admin')
-                                    <a href="{{ route('penerima-manfaat.create') }}" class="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                                        Tambah Penerima Manfaat
-                                    </a>
-                                     @endif
                                 </div>
                             </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                        </tr>`;
+                    return;
+                }
 
-        <div class="p-4 border-t border-slate-100 bg-slate-50/40">
-            {{ $penerimaManfaat->links() }}
-        </div>
-    </div>
-    <script>
-function confirmDelete(id) {
-    Swal.fire({
-        title: 'Hapus Data Penerima Manfaat ?',
-        text: "Data akan dihapus permanen.",
-        icon: 'warning',
-        width: '300px', // Sedikit lebih ramping
-        padding: '1.5rem', // Padding dikurangi agar tidak mepet
-        showCancelButton: true,
-        confirmButtonColor: '#e11d48',
-        cancelButtonColor: '#f1f5f9',
-        confirmButtonText: 'Hapus',
-        cancelButtonText: 'Batal',
-        reverseButtons: true,
-        customClass: {
-            popup: 'rounded-3xl shadow-xl border border-gray-100',
-            icon: 'mb-4', // Memberi jarak bawah pada ikon
-            title: 'text-lg font-bold text-gray-800', // Ukuran title disesuaikan
-            htmlContainer: 'text-xs text-gray-500 m-0', // Margin 0 agar tidak mepet
-            actions: 'mt-6 w-full', // Memastikan area tombol punya ruang
-            confirmButton: 'bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-5 py-2 text-xs font-semibold shadow-sm mx-1',
-            cancelButton: 'bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl px-5 py-2 text-xs font-semibold shadow-sm mx-1'
-        },
-        buttonsStyling: false
-    }).then((result) => {
-        if (result.isConfirmed) {
-            document.getElementById('delete-form-' + id).submit();
+                this.$refs.tbody.innerHTML = items.map(item => {
+                    const [badgeClass, dotClass] = this.statusBadge(item.status_verifikasi);
+                    const wa = this.waLink(item.no_wa);
+                    const namaEsc = this.escapeHtml(item.nama_lengkap);
+                    const desaEsc = this.escapeHtml(item.desa);
+                    const kecEsc = this.escapeHtml(item.kecamatan);
+
+                    const waHtml = wa
+                        ? `<a href="https://wa.me/${wa}" target="_blank" class="inline-flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 font-medium text-xs">
+                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.001 2.003c-5.523 0-9.999 4.476-9.999 9.999 0 1.762.464 3.484 1.346 5.001L2 22l5.109-1.334a9.958 9.958 0 004.892 1.246h.005c5.523 0 9.999-4.476 9.999-9.999 0-2.67-1.04-5.179-2.928-7.067A9.936 9.936 0 0012.001 2.003zm0 18.174h-.004a8.163 8.163 0 01-4.166-1.14l-.299-.177-3.03.792.809-2.954-.195-.303a8.156 8.156 0 01-1.256-4.396c0-4.516 3.674-8.19 8.19-8.19 2.187 0 4.243.852 5.79 2.401a8.13 8.13 0 012.399 5.792c-.001 4.516-3.675 8.19-8.191 8.19z"/></svg>
+                             ${this.escapeHtml(item.no_wa)}
+                           </a>`
+                        : `<span class="text-slate-300">&mdash;</span>`;
+
+                    const deleteHtml = this.isSuperAdmin ? `
+                        <div class="my-1 border-t border-slate-50"></div>
+                        <form id="delete-form-${item.id}" action="${this.routeDestroy(item.id)}" method="POST">
+                            <input type="hidden" name="_token" value="${this.csrfToken}">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="button" onclick="confirmDelete(${item.id})" class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                Hapus
+                            </button>
+                        </form>` : '';
+
+                    return `
+                    <tr class="hover:bg-slate-50/70 transition-colors">
+                        <td class="p-4 pl-6">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs shrink-0">${this.initials(item.nama_lengkap)}</div>
+                                <span class="font-semibold text-slate-900">${namaEsc}</span>
+                            </div>
+                        </td>
+                        <td class="p-4 font-mono text-slate-500 text-xs">${this.maskNik(item.nik)}</td>
+                        <td class="p-4">
+                            <div class="text-slate-800 text-xs font-medium">${desaEsc}</div>
+                            <div class="text-slate-400 text-[11px] mt-0.5">Kec. ${kecEsc}</div>
+                        </td>
+                        <td class="p-4">${waHtml}</td>
+                        <td class="p-4">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${badgeClass}">
+                                <span class="h-1.5 w-1.5 rounded-full ${dotClass}"></span>
+                                ${this.statusLabel(item.status_verifikasi)}
+                            </span>
+                        </td>
+                        <td class="p-4 relative">
+                            <div x-data="{ open: false, dropUp: false }" x-on:click.away="open = false" class="relative inline-block text-left">
+                                <button @click="open = !open; dropUp = (window.innerHeight - $el.getBoundingClientRect().top) < 200" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 13a1 1 0 100-2 1 1 0 000 2zM12 6a1 1 0 100-2 1 1 0 000 2zM12 20a1 1 0 100-2 1 1 0 000 2z"/></svg>
+                                </button>
+                                <div x-show="open" x-cloak x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" :class="dropUp ? 'bottom-full mb-2' : 'top-full mt-2'" class="absolute right-0 z-[100] w-40 bg-white rounded-xl shadow-xl shadow-slate-900/10 border border-slate-100 py-1.5">
+                                    <a href="${this.routeShow(item.id)}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                        Lihat
+                                    </a>
+                                    <a href="${this.routeEdit(item.id)}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-amber-600 hover:bg-amber-50">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                        Edit
+                                    </a>
+                                    ${deleteHtml}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>`;
+                }).join('');
+            }
         }
-    });
-}
-</script>
+    }
+    </script>
+
+    <script>
+    function confirmDelete(id) {
+        Swal.fire({
+            title: 'Hapus Data Penerima Manfaat ?',
+            text: "Data akan dihapus permanen.",
+            icon: 'warning',
+            width: '300px', // Sedikit lebih ramping
+            padding: '1.5rem', // Padding dikurangi agar tidak mepet
+            showCancelButton: true,
+            confirmButtonColor: '#e11d48',
+            cancelButtonColor: '#f1f5f9',
+            confirmButtonText: 'Hapus',
+            cancelButtonText: 'Batal',
+            reverseButtons: true,
+            customClass: {
+                popup: 'rounded-3xl shadow-xl border border-gray-100',
+                icon: 'mb-4', // Memberi jarak bawah pada ikon
+                title: 'text-lg font-bold text-gray-800', // Ukuran title disesuaikan
+                htmlContainer: 'text-xs text-gray-500 m-0', // Margin 0 agar tidak mepet
+                actions: 'mt-6 w-full', // Memastikan area tombol punya ruang
+                confirmButton: 'bg-rose-600 hover:bg-rose-700 text-white rounded-xl px-5 py-2 text-xs font-semibold shadow-sm mx-1',
+                cancelButton: 'bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl px-5 py-2 text-xs font-semibold shadow-sm mx-1'
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + id).submit();
+            }
+        });
+    }
+    </script>
 @endsection

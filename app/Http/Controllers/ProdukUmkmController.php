@@ -11,19 +11,85 @@ class ProdukUmkmController extends Controller
     /**
      * Menampilkan daftar Usaha Ekonomi Produktif (UEP).
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = (in_array(auth()->user()->role, ['super_admin', 'admin']))
-            ? \App\Models\ProdukUmkm::all()
-            : \App\Models\ProdukUmkm::whereHas('uep', function ($q) {
-                    $q->where('user_id', auth()->id());
-                })
-                ->orWhereHas('kube', function ($q) {
-                    $q->where('user_id', auth()->id());
-                })
-                ->get();
+        $search = trim($request->input('search', ''));
+        $status = $request->input('status', '');
+        $page   = (int) $request->input('page', 1);
 
-        return view('produk.index', compact('data'));
+        // Query dasar: admin/super_admin lihat semua, user biasa hanya lihat produk
+        // dari UEP/KUBE miliknya sendiri.
+        $baseQuery = function () {
+            $q = \App\Models\ProdukUmkm::query();
+
+            if (!in_array(auth()->user()->role, ['super_admin', 'admin'])) {
+                $q->where(function ($qq) {
+                    $qq->whereHas('uep', function ($q2) {
+                            $q2->where('user_id', auth()->id());
+                        })
+                        ->orWhereHas('kube', function ($q2) {
+                            $q2->where('user_id', auth()->id());
+                        });
+                });
+            }
+
+            return $q;
+        };
+
+        $query = $baseQuery()->with(['uep', 'kube']);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_produk', 'like', "%{$search}%")
+                  ->orWhere('kategori', 'like', "%{$search}%");
+            });
+        }
+
+        if ($status !== '' && $status !== 'semua') {
+            $query->where('status_publikasi', $status);
+        }
+
+        $produk = $query->orderByDesc('id')
+            ->paginate(12, ['*'], 'page', $page)
+            ->withQueryString();
+
+        // Statistik selalu dihitung dari SELURUH data yang boleh dilihat user ini
+        // (tidak ikut kefilter pencarian, tapi tetap ikut scoping role)
+        $allData        = $baseQuery()->get();
+        $totalProduk    = $allData->count();
+        $totalTampil    = $allData->where('status_publikasi', 'Ditampilkan')->count();
+        $totalDraft     = $allData->where('status_publikasi', 'Draft')->count();
+        $totalStokHabis = $allData->where('stok', 0)->count();
+
+        // Kalau dipanggil via fetch/AJAX (dari fitur auto search), balas JSON saja
+        if ($request->ajax() || $request->wantsJson()) {
+            $items = collect($produk->items())->map(function ($item) {
+                return [
+                    'id'               => $item->id,
+                    'nama_produk'      => $item->nama_produk,
+                    'kategori'         => $item->kategori,
+                    'harga_jual'       => $item->harga_jual,
+                    'stok'             => $item->stok,
+                    'status_publikasi' => $item->status_publikasi,
+                    'foto_url'         => $item->foto_produk ? asset('storage/' . $item->foto_produk) : null,
+                    'uep_id'           => $item->uep_id,
+                    'kube_id'          => $item->kube_id,
+                    'uep_nama'         => $item->uep->nama_usaha ?? null,
+                    'kube_nama'        => $item->kube->nama_kelompok_kube ?? null,
+                ];
+            });
+
+            return response()->json([
+                'data'         => $items,
+                'current_page' => $produk->currentPage(),
+                'last_page'    => $produk->lastPage(),
+                'total'        => $produk->total(),
+                'from'         => $produk->firstItem(),
+                'to'           => $produk->lastItem(),
+            ]);
+        }
+
+        return view('produk.index', compact('produk', 'totalProduk', 'totalTampil', 'totalDraft', 'totalStokHabis'));
     }
 
     public function store(Request $request)
