@@ -71,6 +71,11 @@ Route::middleware(['auth', 'verified.otp', 'check.status'])->group(function () {
     Route::post('penerima-manfaat/import', [PenerimaManfaatController::class, 'import'])->name('penerima-manfaat.import');
     Route::get('penerima-manfaat/export/pdf', [PenerimaManfaatController::class, 'exportPdf'])->name('penerima-manfaat.export.pdf');
     Route::get('penerima-manfaat/export/excel', [PenerimaManfaatController::class, 'exportExcel'])->name('penerima-manfaat.export.excel');
+    
+    // 🟢 EVIDENCE LOG AUDIT - PENERIMA MANFAAT
+    Route::get('/penerima-manfaat/audit-log/export', [PenerimaManfaatController::class, 'exportAuditLogPdf'])
+        ->name('penerima-manfaat.audit-log.export');
+        
     Route::resource('penerima-manfaat', PenerimaManfaatController::class);
     
     // 4. Modul UEP (Usaha Ekonomi Produktif)
@@ -79,6 +84,10 @@ Route::middleware(['auth', 'verified.otp', 'check.status'])->group(function () {
         Route::get('/export/pdf', [UepController::class, 'exportPdf'])->name('uep.export.pdf');
         Route::post('/import', [UepController::class, 'import'])->name('uep.import');
         Route::get('/status/saya', [UepController::class, 'myStatus'])->name('uep.status');
+        
+        // 🟢 EVIDENCE LOG AUDIT - UEP
+        Route::get('/audit-log/export', [UepController::class, 'exportAuditLogPdf'])
+            ->name('uep.audit-log.export');
     });
     Route::resource('uep', UepController::class);
 
@@ -88,6 +97,10 @@ Route::middleware(['auth', 'verified.otp', 'check.status'])->group(function () {
         Route::get('/export/pdf', [KubeController::class, 'exportPdf'])->name('kube.export.pdf');
         Route::post('/import', [KubeController::class, 'import'])->name('kube.import');
         Route::get('/status/saya', [KubeController::class, 'myStatus'])->name('kube.status');
+        
+        // 🟢 EVIDENCE LOG AUDIT - KUBE
+        Route::get('/audit-log/export', [KubeController::class, 'exportAuditLogPdf'])
+            ->name('kube.audit-log.export');
     });
     Route::resource('kube', KubeController::class);
 
@@ -95,24 +108,17 @@ Route::middleware(['auth', 'verified.otp', 'check.status'])->group(function () {
     Route::resource('produk', ProdukUmkmController::class);
     Route::resource('laporan-kegiatan', LaporanKegiatanController::class);
 
-    // 7. Pengaturan Sistem
+    // 7. Pengaturan Sistem & Manajemen Konfigurasi Log Utama
     Route::get('/settings', function () {
-    // Ambil data audit log terbaru, urutkan dari yang paling baru, batasi 50 data untuk performa
-    $auditLogs = \App\Models\AuditLog::with('user')
-                    ->latest()
-                    ->take(50)
-                    ->get();
+        $auditLogs = \App\Models\AuditLog::with('user')
+                        ->latest()
+                        ->take(50)
+                        ->get();
 
-    return view('settings.index', compact('auditLogs'));
+        return view('settings.index', compact('auditLogs'));
     })->name('settings.index');
 
-    // 8. Khusus Fitur Super Admin (Prefix & Middleware Kelompok)
-    Route::middleware(['EnsureIsSuperAdmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
-        Route::resource('users', UserController::class);
-        Route::put('users/{id}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
-    });
     Route::post('/settings/toggle-otp', function (\Illuminate\Http\Request $request) {
-        // Validasi input sakelar
         $request->validate(['otp_status' => 'required|in:on,off']);
 
         \Illuminate\Support\Facades\DB::table('settings')
@@ -124,5 +130,14 @@ Route::middleware(['auth', 'verified.otp', 'check.status'])->group(function () {
 
         return back()->with('success', 'Status OTP Gateway berhasil diperbarui!');
     })->name('settings.toggle-otp');
-    Route::get('/settings/audit-logs/export-pdf', [App\Http\Controllers\PenerimaManfaatController::class, 'exportAuditLogPdf'])->name('audit-logs.export-pdf');
+
+    // 📄 LOG UTAMA SISTEM (ALL EVENTS) - Dihubungkan ke ActivityController agar global
+    Route::get('/settings/audit-logs/export-pdf', [ActivityController::class, 'exportAllAuditLogsPdf'])
+        ->name('audit-logs.export-pdf');
+
+    // 8. Khusus Fitur Super Admin (Prefix & Middleware Kelompok)
+    Route::middleware(['EnsureIsSuperAdmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
+        Route::resource('users', UserController::class);
+        Route::put('users/{id}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
+    });
 });

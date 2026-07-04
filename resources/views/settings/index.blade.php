@@ -55,13 +55,42 @@
         </div>
     </div>
 
-    <!-- TRIGGER AKSI: Berubah dari <a> ke <button> interaktif untuk memanggil fungsi modal -->
-    <div class="flex space-x-2 mb-4">
-        <button type="button" 
-                onclick="openSecurePdf('{{ route('audit-logs.export-pdf') }}')" 
-                class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
-            🖨️ Cetak Laporan ISO 27001
-        </button>
+    <div class="flex items-center space-x-2 mb-4 relative inline-block text-left">
+        <div class="relative inline-block text-left" id="dropdownContainer">
+            <button type="button" 
+                    onclick="toggleDropdown()"
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer gap-2 transition-all">
+                🖨️ Cetak Dokumen Bukti Log ISO 27001 <i class="fas fa-chevron-down text-xs text-gray-400 ml-1"></i>
+            </button>
+            
+            <div id="auditDropdown" class="hidden origin-top-left absolute left-0 mt-2 w-72 rounded-2xl shadow-xl bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 z-50 animate-in fade-in slide-in-from-top-2 duration-100">
+                <div class="py-1">
+                    <button type="button" 
+                            onclick="openSecurePdf('{{ route('audit-logs.export-pdf') }}')" 
+                            class="w-full text-left block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer">
+                        📄 Log Utama Sistem (All Events)
+                    </button>
+                </div>
+                <div class="py-1">
+                    <button type="button" 
+                            onclick="openSecurePdf('{{ route('penerima-manfaat.audit-log.export') }}')" 
+                            class="w-full text-left block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer">
+                        👥 Evidence Log: Penerima Manfaat
+                    </button>
+                    <button type="button" 
+                            onclick="openSecurePdf('{{ route('uep.audit-log.export') }}')" 
+                            class="w-full text-left block px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50/50 hover:text-indigo-700 flex items-center gap-2 cursor-pointer font-medium">
+                        💼 Evidence Log: Kelolaan UEP
+                    </button>
+                    <button type="button" 
+                            onclick="openSecurePdf('{{ route('kube.audit-log.export') }}')" 
+                            class="w-full text-left block px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50/50 hover:text-emerald-700 flex items-center gap-2 cursor-pointer font-medium">
+                        🏢 Evidence Log: Kelompok KUBE
+                    </button>
+                </div>
+            </div>
+        </div>
+        
         <span class="inline-flex items-center px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
             50 Aktivitas Terakhir
         </span>
@@ -118,7 +147,7 @@
                                         {{ $log->after_changes ? json_encode($log->after_changes) : 'null' }}
                                     )"
                                     class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                Inspeksi Data
+                                 Inspeksi Data
                             </button>
                             </td>
                         </tr>
@@ -133,7 +162,6 @@
     </div>
 </div>
 
-<!-- MODAL 1: Detail Perubahan Manifest Data (Inspeksi Data) -->
 <div id="logModal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-xs hidden z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
@@ -153,7 +181,6 @@
     </div>
 </div>
 
-<!-- MODAL 2: Secure PDF Preview Enclave (Mencegah Kebocoran History & Tab Napping) -->
 <div id="pdfModal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-xs hidden z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-5xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
@@ -169,7 +196,6 @@
             <button onclick="closePdfModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold p-2 cursor-pointer">&times;</button>
         </div>
         
-        <!-- Sandboxed Frame Area -->
         <div class="bg-gray-800 p-2 flex-1">
             <iframe id="pdfFrame" src="" class="w-full h-[70vh] rounded-2xl border-none shadow-inner"></iframe>
         </div>
@@ -184,6 +210,21 @@
 </div>
 
 <script>
+    // --- JAVASCRIPT: DROPDOWN MANAGER ---
+    function toggleDropdown() {
+        const dropdown = document.getElementById('auditDropdown');
+        dropdown.classList.toggle('hidden');
+    }
+
+    // Menutup dropdown otomatis jika pengguna mengklik area luar menu
+    window.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('auditDropdown');
+        const container = document.getElementById('dropdownContainer');
+        if (container && !container.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+
     // --- JAVASCRIPT: LOG DETAIL INSPEKSI ---
     function showLogDetail(id, before, after) {
         const sensitiveFields = ['password', 'remember_token', 'token', 'secret', 'password_hash'];
@@ -251,6 +292,9 @@
 
     // --- JAVASCRIPT: POPUP SECURE PDF PREVIEW ---
     function openSecurePdf(url) {
+        // Otomatis sembunyikan dropdown saat dokumen dibuka
+        document.getElementById('auditDropdown').classList.add('hidden');
+
         const frame = document.getElementById('pdfFrame');
         frame.src = url; // Inject route PDF secara dinamis
         

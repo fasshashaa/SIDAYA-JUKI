@@ -43,7 +43,7 @@ class PenerimaManfaatController extends Controller
             ->paginate(10, ['*'], 'page', $page)
             ->withQueryString();
 
-        // Statistik total selalu dihitung dari SELURUH data
+        // Statistik total selalu dihitung dari SELURUH data (tidak ikut kefilter pencarian)
         $statusCounts = [
             'pending'   => DB::table('penerima_manfaats')->where('status_verifikasi', 'pending')->count(),
             'disetujui' => DB::table('penerima_manfaats')->where('status_verifikasi', 'disetujui')->count(),
@@ -68,18 +68,20 @@ class PenerimaManfaatController extends Controller
 
     public function create()
     {
-        // Ambil semua user yang memiliki role 'user' yang belum punya Penerima Manfaat
+        // Ambil semua user yang memiliki role 'pengguna'
+        // Kita gunakan 'get()' agar datanya terkirim ke view sebagai array/koleksi
         $users = \App\Models\User::where('role', 'user')
-            ->whereDoesntHave('penerimaManfaat')
+            ->whereDoesntHave('penerimaManfaat') // Pastikan user belum punya PM
             ->get();
 
+        // Kirim variabel $users ke dalam view
         return view('penerima-manfaat.create', compact('users'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id', 
+            'user_id' => 'required|exists:users,id', // ID dari dropdown yang dipilih Admin
             'nik' => 'required|numeric|digits:16|unique:penerima_manfaats,nik',
             'no_kk' => 'required|numeric|digits:16',
             'nama_lengkap' => 'required|string|max:255',
@@ -91,12 +93,15 @@ class PenerimaManfaatController extends Controller
             'status_verifikasi' => 'required|in:pending,disetujui,ditolak',
         ]);
 
-        // Simpan data menggunakan Eloquent (memicu event static::created di Trait Loggable)
+        // HAPUS BARIS INI: $validated['user_id'] = auth()->id();
+        // Biarkan $validated['user_id'] tetap menggunakan nilai dari request (dropdown)
+
+        // Simpan data
         \App\Models\PenerimaManfaat::create($validated);
 
-        // Menambahkan aktivitas log manual lama
+        // Tambahkan aktivitas
         Activity::create([
-            'user_id'     => auth()->id(), 
+            'user_id'     => auth()->id(), // Siapa yang melakukan input? (Admin)
             'causer_name' => auth()->user()->name,
             'description' => 'Menambahkan data Penerima Manfaat: ' . $request->nama_lengkap,
         ]);
@@ -106,8 +111,8 @@ class PenerimaManfaatController extends Controller
 
     public function edit($id)
     {
-        // Ambil data menggunakan Eloquent Model agar sistem internal/Trait terjaga
-        $penerima = \App\Models\PenerimaManfaat::findOrFail($id);
+        $penerima = DB::table('penerima_manfaats')->where('id', $id)->first();
+        if (!$penerima) abort(404);
 
         return view('penerima-manfaat.edit', compact('penerima'));
     }
@@ -126,40 +131,20 @@ class PenerimaManfaatController extends Controller
             'status_verifikasi' => 'required|in:pending,disetujui,ditolak',
         ]);
 
-        // Cari datanya dengan Eloquent Model
-        $penerima = \App\Models\PenerimaManfaat::findOrFail($id);
-        
-        // Eksekusi update via Model agar memicu Event static::updating di Trait Loggable
-        $penerima->update($validated);
+        $validated['updated_at'] = now();
 
-        // Menambahkan aktivitas log manual lama
-        Activity::create([
-            'user_id'     => auth()->id(),
-            'causer_name' => auth()->user()->name,
-            'description' => 'Memperbarui data Penerima Manfaat: ' . $penerima->nama_lengkap,
-        ]);
+        DB::table('penerima_manfaats')->where('id', $id)->update($validated);
 
         return redirect()->route('penerima-manfaat.index')->with('success', 'Data berhasil diperbarui!');
     }
 
     public function destroy($id)
     {
-        // Cari datanya dengan Eloquent Model
-        $penerima = \App\Models\PenerimaManfaat::findOrFail($id);
-        
-        // Eksekusi delete via Model agar memicu Event static::deleted di Trait Loggable
-        $penerima->delete();
-
-        // Menambahkan aktivitas log manual lama
-        Activity::create([
-            'user_id'     => auth()->id(),
-            'causer_name' => auth()->user()->name,
-            'description' => 'Menghapus data Penerima Manfaat ID: #' . $id,
-        ]);
-
+        DB::table('penerima_manfaats')->where('id', $id)->delete();
         return redirect()->route('penerima-manfaat.index')->with('success', 'Data berhasil dihapus!');
     }
 
+    // Pastikan route di api.php mengarah ke sini
     public function getDesaByKecamatan($kecamatanNama)
     {
         $desas = DB::table('wilayah_desas')
@@ -172,9 +157,10 @@ class PenerimaManfaatController extends Controller
 
     public function exportPdf()
     {
+        // Ambil SEMUA data
         $data = \App\Models\PenerimaManfaat::all();
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('penerima-manfaat.pdf', compact('data'))
-            ->setPaper('a4', 'landscape');
+        ->setPaper('a4', 'landscape');
         return $pdf->stream('laporan-seluruh-penerima.pdf');
     }
 
@@ -183,7 +169,8 @@ class PenerimaManfaatController extends Controller
         return Excel::download(new PenerimaManfaatExport, 'Data_Penerima_Manfaat_' . date('Y-m-d') . '.xlsx');
     }
 
-    public function import(Request $request) 
+    // Di PenerimaManfaatController.php
+    public function import(Request $request) // Diubah dari 'import' ke 'importExcel'
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv'
@@ -196,21 +183,4 @@ class PenerimaManfaatController extends Controller
             return back()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
-    public function exportAuditLogPdf()
-{
-    // Ambil log audit trail terbaru
-    $logs = \App\Models\AuditLog::with('user')->orderByDesc('id')->take(100)->get();
-    
-    // Render view PDF dengan kertas landscape A4
-    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('penerima-manfaat.audit_pdf', compact('logs'))
-        ->setPaper('a4', 'landscape'); 
-
-    // Kembalikan langsung menggunakan method stream bawaan DomPDF
-    // Lalu rantaikan header keamanan SAMEORIGIN langsung di belakangnya
-    return $pdf->stream('LAPORAN_AUDIT_TRAIL_ISO27001_' . date('Y-m-d_H-i-s') . '.pdf')
-               ->withHeaders([
-                   'X-Frame-Options' => 'SAMEORIGIN',
-                   'Content-Security-Policy' => "frame-ancestors 'self'"
-               ]);
-}
 }

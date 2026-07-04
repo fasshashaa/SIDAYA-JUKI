@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kube; // Pastikan Anda sudah memiliki Model Kube
-use App\Models\PenerimaManfaat; // Pastikan Anda sudah memiliki Model Kube
+use App\Models\Kube; 
+use App\Models\PenerimaManfaat; 
+use App\Models\AuditLog; // Ditambahkan untuk pelaporan evidence ISO 27001
+use App\Models\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +17,7 @@ use App\Imports\KubeImport;
 class KubeController extends Controller
 {
     /**
-     * Menampilkan daftar Kelompok KUBE Binaan Dinsos Cilacap.
+     * Menampilkan daftar Kelompok KUBE Binaan Dinsos Cilacap dengan Proteksi Data Masking.
      */
     public function index(Request $request)
     {
@@ -23,6 +25,7 @@ class KubeController extends Controller
         $status = $request->input('status', '');
         $page   = (int) $request->input('page', 1);
 
+        // 🟢 GANTI: Pastikan menggunakan Eloquent query builder utuh agar fungsi perlindungan aktif
         $query = \App\Models\Kube::with(['ketua', 'anggota']);
 
         if ($search !== '') {
@@ -42,23 +45,31 @@ class KubeController extends Controller
             ->paginate(10, ['*'], 'page', $page)
             ->withQueryString();
 
-        // Statistik selalu dihitung dari SELURUH data (tidak ikut kefilter pencarian)
+        // 🔒 PENGAMANAN DATA FINANSIAL/SENSITIF ON-THE-FLY UNTUK NON-SUPERADMIN
+        if (auth()->check() && auth()->user()->role !== 'super_admin') {
+            $kubes->getCollection()->transform(function ($item) {
+                // Contoh Penyamaran Nomor Telepon Kelompok KUBE jika bersifat rahasia
+                if (!empty($item->no_telp_kube)) {
+                    $item->no_telp_kube = substr($item->no_telp_kube, 0, 4) . '****' . substr($item->no_telp_kube, -4);
+                }
+                // Jika di tabel Kube terdapat fields seperti nomor rekening bank kelompok:
+                if (!empty($item->no_rekening_kube)) {
+                    $item->no_rekening_kube = substr($item->no_rekening_kube, 0, 3) . '******' . substr($item->no_rekening_kube, -3);
+                }
+                return $item;
+            });
+        }
+
+        // Statistik dihitung menggunakan struktur model Eloquent
         $kubeStats = [
             'total_anggota' => (int) \App\Models\Kube::sum('jumlah_anggota'),
             'disetujui'     => \App\Models\Kube::where('status_verifikasi', 'disetujui')->count(),
             'pending'       => \App\Models\Kube::where('status_verifikasi', 'pending')->count(),
         ];
 
-        // Kalau dipanggil via fetch/AJAX (dari fitur auto search), balas JSON saja
+        // Balasan JSON untuk komponen auto-search AJAX dengan payload ter-masking
         if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'data'         => $kubes->items(),
-                'current_page' => $kubes->currentPage(),
-                'last_page'    => $kubes->lastPage(),
-                'total'        => $kubes->total(),
-                'from'         => $kubes->firstItem(),
-                'to'           => $kubes->lastItem(),
-            ]);
+            return response()->json($kubes);
         }
 
         return view('kube.index', compact('kubes', 'kubeStats'));
@@ -67,12 +78,10 @@ class KubeController extends Controller
     public function create()
     {
         if (in_array(auth()->user()->role, ['admin', 'super_admin'])) {
-            // Admin/Super Admin: bebas pilih ketua dari PM yang belum punya kelompok
             $pms = \App\Models\PenerimaManfaat::whereNull('kube_id')->get();
             $myProfile = null;
         } else {
-            // User biasa: otomatis jadi ketua dari profil PM miliknya sendiri
-            $pms = collect(); // tidak dipakai untuk role user, tapi tetap dikirim agar view tidak error
+            $pms = collect(); 
             $myProfile = \App\Models\PenerimaManfaat::where('user_id', auth()->id())->first();
         }
 
@@ -93,7 +102,6 @@ class KubeController extends Controller
             'sumber_anggaran'           => 'nullable|string',
             'status_verifikasi'         => 'required|string',
             'jumlah_anggota'            => 'required|integer',
-
         ]);
 
         try {
@@ -106,7 +114,6 @@ class KubeController extends Controller
                     ->update(['kube_id' => $kube->id]);
             }
 
-            // Kalau yang jadi ketua adalah user sendiri (role user), tandai juga PM tsb masuk ke kelompok ini
             if (auth()->user()->role === 'user') {
                 \App\Models\PenerimaManfaat::where('id', $validated['ketua_penerima_manfaat_id'])
                     ->update(['kube_id' => $kube->id]);
@@ -118,9 +125,6 @@ class KubeController extends Controller
                 'description' => 'Menambahkan data KUBE baru: ' . $validated['nama_kelompok_kube'],
             ]);
 
-            // Redirect sesuai role:
-            // Admin & Super Admin -> daftar kelolaan KUBE
-            // User biasa -> halaman status pengajuan pribadi
             if (auth()->user()->role === 'user') {
                 return redirect()->route('kube.status')
                     ->with('success', 'Pengajuan KUBE berhasil dikirim! Mohon tunggu proses verifikasi dari admin.');
@@ -133,11 +137,39 @@ class KubeController extends Controller
         }
     }
 
+    public function edit($id)
+    {
+        $kube = \App\Models\Kube::findOrFail($id);
+        $pms = \App\Models\PenerimaManfaat::all();
+        return view('kube.edit', compact('kube', 'pms'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'nama_kelompok_kube'    => 'required|string|max:255',
+            'kecamatan_kube'        => 'required|string', 
+            'desa_kube'             => 'required|string', 
+            'jenis_usaha_kube'      => 'required|string',
+            'no_telp_kube'          => 'required|string|max:20',
+            'alamat_lengkap_kube'   => 'required|string',
+            'tahun_realisasi'       => 'nullable|digits:4',
+            'sumber_anggaran'       => 'nullable|string',
+            'status_verifikasi'     => 'required|in:pending,disetujui,ditolak',
+            'jumlah_anggota'        => 'required|numeric',
+            'catatan_penolakan'     => 'nullable|string|required_if:status_verifikasi,ditolak',
+        ]);
+
+        $kube = Kube::findOrFail($id);
+        $kube->update($validated);
+
+        return redirect()->route('kube.index')->with('success', 'Data berhasil diperbarui!');
+    }
+
     public function destroy($id)
     {
         $kube = Kube::findOrFail($id);
 
-        // Opsional: Reset kube_id di tabel penerima_manfaat agar tidak null/error
         \App\Models\PenerimaManfaat::where('kube_id', $kube->id)
             ->update(['kube_id' => null]);
 
@@ -146,45 +178,8 @@ class KubeController extends Controller
         return redirect()->route('kube.index')->with('success', 'Kelompok KUBE berhasil dihapus!');
     }
 
-    // Menampilkan form edit
-    public function edit($id)
-    {
-        $kube = Kube::findOrFail($id);
-
-        $kube = \App\Models\Kube::findOrFail($id);
-        // Mengambil PM yang belum punya KUBE ATAU PM yang sudah menjadi anggota KUBE ini
-        $pms = \App\Models\PenerimaManfaat::all();
-        return view('kube.edit', compact('kube', 'pms'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        // 1. Validasi harus sesuai dengan 'name' di HTML form kamu
-        $validated = $request->validate([
-            'nama_kelompok_kube'    => 'required|string|max:255',
-            'kecamatan_kube'        => 'required|string', // Pastikan di HTML namanya 'kecamatan_kube'
-            'desa_kube'             => 'required|string', // Pastikan di HTML namanya 'desa_kube'
-            'jenis_usaha_kube'      => 'required|string',
-            'no_telp_kube'          => 'required|string|max:20',
-            'alamat_lengkap_kube'   => 'required|string',
-            'tahun_realisasi'       => 'nullable|digits:4',
-            'sumber_anggaran'       => 'nullable|string',
-            'status_verifikasi'     => 'required|in:pending,disetujui,ditolak',
-            'jumlah_anggota'        => 'required|numeric',
-             'catatan_penolakan'  => 'nullable|string|required_if:status_verifikasi,ditolak',
-        ]);
-
-        $kube = Kube::findOrFail($id);
-
-        // 2. Update data
-        $kube->update($validated);
-
-        return redirect()->route('kube.index')->with('success', 'Data berhasil diperbarui!');
-    }
-
     public function getDesa($kecamatan)
     {
-        // Sesuaikan data ini dengan daftar desa di kecamatan Anda
         $data = [
             'Cilacap Tengah' => ['Sidanegara', 'Donan', 'Tambakreja', 'Lomanis'],
             'Cilacap Utara' => ['Kebonmanis', 'Gombolharjo', 'Karangtalun', 'Martasinga'],
@@ -208,7 +203,6 @@ class KubeController extends Controller
 
     public function show($id)
     {
-        // Memuat data kube beserta relasi ketuanya
         $kube = \App\Models\Kube::with('ketua')->findOrFail($id);
         return view('kube.show', compact('kube'));
     }
@@ -220,9 +214,7 @@ class KubeController extends Controller
 
     public function exportPdf()
     {
-        // Mengambil data dengan eager loading agar tidak terjadi N+1 query
         $data = Kube::with('ketuaPenerimaManfaat')->get();
-
         $pdf = \PDF::loadView('kube.pdf', compact('data'))
                    ->setPaper('a4', 'landscape');
 
@@ -246,4 +238,25 @@ class KubeController extends Controller
         return view('kube.status', compact('kubes'));
     }
 
+    /**
+     * 🟢 ISO 27001 - Kontrol A.8.15 Audit Logging 
+     * Ekspor Dokumen Evidence Log Khusus Perubahan Struktur Kelompok KUBE
+     */
+    public function exportAuditLogPdf()
+    {
+        $logs = \App\Models\AuditLog::with('user')
+            ->where('model_type', \App\Models\Kube::class)
+            ->orderByDesc('id')
+            ->take(100)
+            ->get();
+        
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('kube.audit_pdf', compact('logs'))
+            ->setPaper('a4', 'landscape'); 
+
+        return $pdf->stream('LAPORAN_EVIDENCE_LOG_KUBE_' . date('Y-m-d_H-i-s') . '.pdf')
+                   ->withHeaders([
+                       'X-Frame-Options' => 'SAMEORIGIN',
+                       'Content-Security-Policy' => "frame-ancestors 'self'"
+                   ]);
+    }
 }

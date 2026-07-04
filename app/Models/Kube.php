@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\Loggable;
 
 class Kube extends Model
 {
+    use Loggable;
     protected $table = 'kube';
 
 // app/Models/Kube.php

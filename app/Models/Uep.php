@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\Loggable;
 
 class Uep extends Model
 {
+    use Loggable;
     protected $table = 'ueps';
 
   protected $fillable = [
