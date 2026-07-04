@@ -94,6 +94,9 @@
         .input-field:focus { border-color: #0E7C9E; background: rgba(255,255,255,0.06); outline: none; box-shadow: 0 0 0 3px rgba(14,124,158,0.18); }
         .input-field-icon { padding-left: 42px; }
 
+        .field-error { font-size: 12px; color: #F87171; margin-top: 6px; }
+        .field-hint { font-size: 11.5px; color: rgba(255,255,255,0.35); margin-top: 6px; display: block; }
+
         .btn-submit {
             background: linear-gradient(135deg, #0E7C9E, #0B6580);
             color: #fff;
@@ -128,11 +131,6 @@
 
         <!-- ── PANEL KIRI: BRAND & VALUE PROPS ── -->
         <div class="hidden md:flex flex-col justify-center items-start">
-
-            {{-- <div class="badge-pill mb-7">
-                <span class="badge-dot"></span>
-                Platform Terintegrasi Pemerintah
-            </div> --}}
 
             <div class="logo-glow-wrap mb-7">
                 <div class="logo-glow-ring"></div>
@@ -169,24 +167,6 @@
             </div>
 
             <div class="w-full divider-line my-7"></div>
-
-            {{-- <!-- Mini stats -->
-            <div class="flex items-center gap-5">
-                <div class="stat-block">
-                    <p class="stat-num-mini">248</p>
-                    <p class="stat-lbl-mini">UEP Aktif</p>
-                </div>
-                <div class="stat-vline"></div>
-                <div class="stat-block">
-                    <p class="stat-num-mini">32</p>
-                    <p class="stat-lbl-mini">Kecamatan</p>
-                </div>
-                <div class="stat-vline"></div>
-                <div class="stat-block">
-                    <p class="stat-num-mini">1.2K</p>
-                    <p class="stat-lbl-mini">Penerima Manfaat</p>
-                </div>
-            </div> --}}
         </div>
 
         <!-- ── PANEL KANAN: FORM CARD ── -->
@@ -202,22 +182,22 @@
                     <h2 class="text-[22px] font-extrabold text-white tracking-tight">Buat Akun Baru</h2>
                     <p class="text-[12.5px] text-white/40 mt-1">Daftar untuk mulai mengelola UEP Anda</p>
                 </div>
-                {{-- <span class="card-header-tag hidden sm:inline-flex">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                    Aman
-                </span> --}}
             </div>
 
-            <form action="#" method="POST">
+            <form action="{{ route('register') }}" method="POST">
                 @csrf
+
                 <div class="mb-5">
                     <label class="field-label">Nama Lengkap</label>
                     <div class="input-wrap">
                         <span class="input-icon">
                             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                         </span>
-                        <input type="text" name="name" class="input-field input-field-icon w-full pr-4 py-3.5 rounded-xl text-[14px]" placeholder="Masukkan nama Anda" required>
+                        <input type="text" name="name" value="{{ old('name') }}" class="input-field input-field-icon w-full pr-4 py-3.5 rounded-xl text-[14px]" placeholder="Masukkan nama Anda" required autofocus>
                     </div>
+                    @error('name')
+                        <p class="field-error">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="mb-5">
@@ -226,15 +206,25 @@
                         <span class="input-icon">
                             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 6l-10 7L2 6"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>
                         </span>
-                        <input type="email" name="email" class="input-field input-field-icon w-full pr-4 py-3.5 rounded-xl text-[14px]" placeholder="nama@email.com" required>
+                        <input type="email" name="email" value="{{ old('email') }}" class="input-field input-field-icon w-full pr-4 py-3.5 rounded-xl text-[14px]" placeholder="nama@email.com" required>
                     </div>
+                    @error('email')
+                        <p class="field-error">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <div class="mt-4">
-                    <x-input-label for="nomor_wa" :value="__('Nomor WhatsApp')" />
-                    <x-text-input id="nomor_wa" class="block mt-1 w-full" type="text" name="nomor_wa" :value="old('nomor_wa')" required autofocus placeholder="Contoh: 628123456xxx" />
-                    <x-input-error :messages="$errors->get('nomor_wa')" class="mt-2" />
-                    <small class="text-gray-500 text-xs mt-1 block">Gunakan kode negara (62) di depan, tanpa tanda + atau angka 0.</small>
+                <div class="mb-5">
+                    <label class="field-label">Nomor WhatsApp</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                        </span>
+                        <input type="text" name="nomor_wa" id="nomor_wa" value="{{ old('nomor_wa') }}" class="input-field input-field-icon w-full pr-4 py-3.5 rounded-xl text-[14px]" placeholder="Contoh: 628123456xxx" required>
+                    </div>
+                    @error('nomor_wa')
+                        <p class="field-error">{{ $message }}</p>
+                    @enderror
+                    <small class="field-hint">Gunakan kode negara (62) di depan, tanpa tanda + atau angka 0.</small>
                 </div>
 
                 <div class="mb-2">
@@ -248,6 +238,9 @@
                             <svg id="icon1" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </div>
+                    @error('password')
+                        <p class="field-error">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div class="flex items-center gap-2 mb-6 mt-2.5">
                     <div class="strength-bar"><div id="strengthFill" class="strength-fill"></div></div>

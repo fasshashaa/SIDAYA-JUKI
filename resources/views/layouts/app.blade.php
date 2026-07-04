@@ -322,12 +322,19 @@
             background: linear-gradient(135deg, #F59E0B, #DC2626);
             box-shadow: 0 0 0 2px var(--navy-900);
         }
+
+        /* ── FIX FOUC: kunci ukuran logo di kedua state supaya tidak ada jeda "tanpa ukuran"
+             sebelum Alpine selesai hydrate. Base = state sidebarOpen (default true). ── */
+        .sidebar-logo {
+            width: 5rem;  /* setara w-20 */
+            height: 5rem; /* setara h-20 */
+        }
     </style>
 </head>
 <body class="font-sans antialiased text-slate-800 dark:text-slate-200" x-data="{ sidebarOpen: true }">
 
     <!-- Header -->
-    <header class="main-content app-header border-b border-slate-100/80 fixed top-0 right-0 h-16 z-20 flex items-center justify-between px-6"
+    <header class="main-content app-header border-b border-slate-100/80 fixed top-0 right-0 h-16 z-20 flex items-center justify-between px-6 left-64"
              :class="sidebarOpen ? 'left-64' : 'left-[78px]'">
         <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 dark:text-slate-500">
         </div>
@@ -397,7 +404,7 @@
     <div class="flex min-h-screen">
 
         <!-- Sidebar -->
-        <aside :class="sidebarOpen ? 'w-64' : 'w-[78px]'" class="sidebar-navy fixed top-0 bottom-0 left-0 z-30 shadow-xl flex flex-col">
+        <aside :class="sidebarOpen ? 'w-64' : 'w-[78px]'" class="sidebar-navy fixed top-0 bottom-0 left-0 z-30 shadow-xl flex flex-col w-64">
 
             <button @click="sidebarOpen = !sidebarOpen" class="sidebar-toggle absolute top-7 -right-3.5 z-30">
                 <svg class="w-3.5 h-3.5" :class="!sidebarOpen && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -406,7 +413,9 @@
             </button>
 
             <div class="p-6 flex flex-col items-center border-b border-white/5 flex-shrink-0">
-                <img src="{{ asset('img/Logo_sdy.png') }}" class="object-contain mb-3 transition-all duration-300" :class="sidebarOpen ? 'w-20 h-20' : 'w-10 h-10'">
+                <img src="{{ asset('img/Logo_sdy.png') }}"
+                     class="sidebar-logo object-contain mb-3 transition-all duration-300"
+                     :class="!sidebarOpen && 'w-10 h-10'">
                 <h2 x-show="sidebarOpen" x-cloak class="text-white font-display font-extrabold text-lg tracking-tight whitespace-nowrap">SIDAYA</h2>
                 <p x-show="sidebarOpen" x-cloak class="text-white/40 text-xs font-medium uppercase tracking-widest whitespace-nowrap mb-2"></p>
                 <span x-show="sidebarOpen" x-cloak class="badge-live"><span class="dot"></span>SISTEM AKTIF</span>
@@ -471,7 +480,7 @@
                                     <template x-if="!sidebarOpen"><span class="rail-tooltip">Produk UMKM</span></template>
                                 </a>
 
-                                <a href="{{ route('pesanan.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('pesanan.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
+                                {{-- <a href="{{ route('pesanan.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('pesanan.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
                                     <span class="nav-icon-wrap">
                                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>
                                         @if($pesananMenungguCount > 0 && !sidebarOpen)
@@ -483,7 +492,7 @@
                                         <span x-show="sidebarOpen" x-cloak class="nav-badge">{{ $pesananMenungguCount > 99 ? '99+' : $pesananMenungguCount }}</span>
                                     @endif
                                     <template x-if="!sidebarOpen"><span class="rail-tooltip">Konfirmasi Pesanan @if($pesananMenungguCount > 0)({{ $pesananMenungguCount }})@endif</span></template>
-                                </a>
+                                </a> --}}
 
                             </div>
                         </div>
@@ -536,7 +545,7 @@
                                             <span x-show="sidebarOpen" x-cloak>Produk Saya</span>
                                             <template x-if="!sidebarOpen"><span class="rail-tooltip">Produk Saya</span></template>
                                         </a>
-
+                                        
                                         <a href="{{ route('pesanan.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('pesanan.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
                                             <span class="nav-icon-wrap">
                                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>
@@ -605,7 +614,7 @@
         </aside>
 
         <!-- Main content: margin menyesuaikan status sidebar -->
-        <main class="main-content flex-1 pt-16 p-10 main-bg min-h-screen overflow-y-auto"
+        <main class="main-content flex-1 pt-16 p-10 main-bg min-h-screen overflow-y-auto ml-64"
               :class="sidebarOpen ? 'ml-64' : 'ml-[78px]'">
         {{-- Konten hanya yield satu kali di sini --}}
             @yield('content')
