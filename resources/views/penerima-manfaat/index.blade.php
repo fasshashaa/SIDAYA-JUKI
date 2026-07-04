@@ -201,7 +201,7 @@
 
             maskNik(nik) {
                 nik = String(nik);
-                return nik.length >= 12 ? nik.slice(0, 4) + '••••' + nik.slice(8) : nik;
+                return nik.length >= 12 ? nik.slice(0, 4) + '••••' + nik.slice(16) : nik;
             },
             initials(nama) {
                 return nama.split(' ').filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase();
@@ -256,6 +256,7 @@
                     const namaEsc = this.escapeHtml(item.nama_lengkap);
                     const desaEsc = this.escapeHtml(item.desa);
                     const kecEsc = this.escapeHtml(item.kecamatan);
+                    const nikEsc = this.escapeHtml(item.nik);
 
                     const waHtml = wa
                         ? `<a href="https://wa.me/${wa}" target="_blank" class="inline-flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 font-medium text-xs">
@@ -283,7 +284,28 @@
                                 <span class="font-semibold text-slate-900">${namaEsc}</span>
                             </div>
                         </td>
-                        <td class="p-4 font-mono text-slate-500 text-xs">${this.maskNik(item.nik)}</td>
+                        <td class="p-4 font-mono text-slate-500 text-xs">
+                            <div class="relative inline-block" x-data="{ show: false, copied: false }" @mouseenter="show = true" @mouseleave="show = false; copied = false">
+                                <span class="cursor-pointer select-none">${this.maskNik(item.nik)}</span>
+                                <!-- pb-2 (bukan mb-2) supaya celah antara teks & tooltip tetap "milik" elemen ini,
+                                     jadi kursor bisa turun ke tooltip tanpa memutus hover -->
+                                <div x-show="show" x-cloak
+                                     x-transition:enter="transition ease-out duration-150"
+                                     x-transition:enter-start="opacity-0 translate-y-1"
+                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                     class="absolute bottom-full left-0 pb-2 z-30">
+                                    <div @click="navigator.clipboard.writeText('${nikEsc}'); copied = true; setTimeout(() => { copied = false; show = false }, 900)"
+                                         class="relative whitespace-nowrap bg-slate-900 text-white text-xs font-mono font-semibold px-3 py-1.5 rounded-lg shadow-lg cursor-pointer hover:bg-slate-800 transition-colors flex items-center gap-2"
+                                         title="Klik untuk menyalin">
+                                        <span x-show="!copied">${nikEsc}</span>
+                                        <span x-show="copied" x-cloak class="text-emerald-400 font-semibold">Tersalin!</span>
+                                        <svg x-show="!copied" class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                        <svg x-show="copied" x-cloak class="w-3 h-3 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                        <span class="absolute top-full left-4 -mt-1 w-2 h-2 bg-slate-900 rotate-45"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
                         <td class="p-4">
                             <div class="text-slate-800 text-xs font-medium">${desaEsc}</div>
                             <div class="text-slate-400 text-[11px] mt-0.5">Kec. ${kecEsc}</div>

@@ -272,6 +272,7 @@
                     const kategoriEsc = this.escapeHtml(item.kategori_produk);
                     const desaEsc = this.escapeHtml(item.desa_kelurahan_usaha);
                     const kecEsc = this.escapeHtml(item.kecamatan_usaha);
+                    const nikEsc = this.escapeHtml(item.nik || '');
 
                     const deleteHtml = this.isSuperAdmin ? `
                         <form id="delete-form-${item.id}" action="${this.routeDestroy(item.id)}" method="POST">
@@ -283,6 +284,28 @@
                             </button>
                         </form>` : '';
 
+                    // NIK dengan hover-copy: pb-2 (bukan mb-2) supaya celah antara teks & tooltip
+                    // tetap "milik" elemen ini, sehingga kursor bisa turun ke tooltip tanpa memutus hover.
+                    const nikHtml = item.nik ? `
+                        <span class="relative inline-flex" x-data="{ show: false, copied: false }" @mouseenter="show = true" @mouseleave="show = false; copied = false">
+                            <span class="cursor-pointer select-none">NIK ${this.maskNik(item.nik)}</span>
+                            <span x-show="show" x-cloak
+                                  x-transition:enter="transition ease-out duration-150"
+                                  x-transition:enter-start="opacity-0 translate-y-1"
+                                  x-transition:enter-end="opacity-100 translate-y-0"
+                                  class="absolute bottom-full left-0 pb-2 z-30">
+                                <span @click="navigator.clipboard.writeText('${nikEsc}'); copied = true; setTimeout(() => { copied = false; show = false }, 900)"
+                                      class="relative whitespace-nowrap bg-slate-900 text-white text-xs font-mono font-semibold px-3 py-1.5 rounded-lg shadow-lg cursor-pointer hover:bg-slate-800 transition-colors inline-flex items-center gap-2"
+                                      title="Klik untuk menyalin">
+                                    <span x-show="!copied">${nikEsc}</span>
+                                    <span x-show="copied" x-cloak class="text-emerald-400 font-semibold">Tersalin!</span>
+                                    <svg x-show="!copied" class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                    <svg x-show="copied" x-cloak class="w-3 h-3 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    <span class="absolute top-full left-4 -mt-1 w-2 h-2 bg-slate-900 rotate-45"></span>
+                                </span>
+                            </span>
+                        </span>` : `<span>NIK -</span>`;
+
                     return `
                     <tr class="hover:bg-slate-50/70 transition-colors group">
                         <td class="p-4 pl-6">
@@ -290,7 +313,11 @@
                                 <div class="w-9 h-9 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-bold shrink-0">${this.initials(item.nama_usaha)}</div>
                                 <div class="min-w-0">
                                     <div class="font-semibold text-slate-900 truncate">${namaUsahaEsc}</div>
-                                    <div class="text-xs text-slate-400 mt-0.5 truncate">${namaLengkapEsc} &middot; NIK ${this.maskNik(item.nik)}</div>
+                                    <div class="text-xs text-slate-400 mt-0.5 flex items-center gap-1">
+                                        <span class="truncate">${namaLengkapEsc}</span>
+                                        <span class="shrink-0">&middot;</span>
+                                        ${nikHtml}
+                                    </div>
                                 </div>
                             </div>
                         </td>
