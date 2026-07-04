@@ -28,7 +28,7 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(Request $request): RedirectResponse
+   public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -40,12 +40,16 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            // Jika role di database default-nya bukan 'pelanggan', tambahkan di sini:
+            // 'role' => 'pelanggan', 
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // HAPUS ATAU KOMENTARI BARIS DI BAWAH INI:
+        // Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Arahkan ke halaman login dengan pesan sukses
+        return redirect()->route('login')->with('status', 'Registrasi berhasil! Silakan login dengan akun Anda.');
     }
 }

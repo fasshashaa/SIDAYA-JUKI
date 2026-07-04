@@ -149,30 +149,30 @@
                                 required 
                                 class="w-full rounded-xl border-gray-200 bg-gray-50/50 text-sm p-3 focus:bg-white focus:border-blue-500 focus:ring-blue-500 transition-all">
                             <option value="">-- Pilih Kecamatan --</option>
-                            <option value="KEDUNGREJA">Kedungreja</option>
-                            <option value="KESUGIHAN">Kesugihan</option>
-                            <option value="ADIPALA">Adipala</option>
-                            <option value="BINANGUN">Binangun</option>
-                            <option value="NUSAWUNGU">Nusawungu</option>
-                            <option value="KROYA">Kroya</option>
-                            <option value="MAOS">Maos</option>
-                            <option value="JERUKLEGI">Jeruklegi</option>
-                            <option value="KAWUNGANTEN">Kawunganten</option>
-                            <option value="GANDRUNGMANGU">Gandrungmangu</option>
-                            <option value="SIDAREJA">Sidareja</option>
-                            <option value="KARANGPUCUNG">Karangpucung</option>
-                            <option value="CIMANGGU">Cimanggu</option>
-                            <option value="MAJENANG">Majenang</option>
-                            <option value="WANAREJA">Wanareja</option>
-                            <option value="DAYEUHLUHUR">Dayeuhluhur</option>
-                            <option value="SAMPANG">Sampang</option>
-                            <option value="CIPARI">Cipari</option>
-                            <option value="PATIMUAN">Patimuan</option>
-                            <option value="BANTARSARI">Bantarsari</option>
-                            <option value="CILACAP SELATAN">Cilacap Selatan</option>
-                            <option value="CILACAP TENGAH">Cilacap Tengah</option>
-                            <option value="CILACAP UTARA">Cilacap Utara</option>
-                            <option value="KAMPUNG LAUT">Kampung Laut</option>
+                            <option value="Kedungreja">Kedungreja</option>
+                            <option value="Kesugihan">Kesugihan</option>
+                            <option value="Adipala">Adipala</option>
+                            <option value="Binangun">Binangun</option>
+                            <option value="Nusawungu">Nusawungu</option>
+                            <option value="Kroya">Kroya</option>
+                            <option value="Maos">Maos</option>
+                            <option value="Jeruklegi">Jeruklegi</option>
+                            <option value="Kawunganten">Kawunganten</option>
+                            <option value="Gandrungmangu">Gandrungmangu</option>
+                            <option value="Sidareja">Sidareja</option>
+                            <option value="Karangpucung">Karangpucung</option>
+                            <option value="Cimanggu">Cimanggu</option>
+                            <option value="Majenang">Majenang</option>
+                            <option value="Wanareja">Wanareja</option>
+                            <option value="Dayeuhluhur">Dayeuhluhur</option>
+                            <option value="Sampang">Sampang</option>
+                            <option value="Cipari">Cipari</option>
+                            <option value="Patimuan">Patimuan</option>
+                            <option value="Bantarsari">Bantarsari</option>
+                            <option value="Cilacap Selatan">Cilacap Selatan</option>
+                            <option value="Cilacap Tengah">Cilacap Tengah</option>
+                            <option value="Cilacap Utara">Cilacap Utara</option>
+                            <option value="Kampung Laut">Kampung Laut</option>
                         </select>
                         @error('kecamatan') <span class="text-xs text-rose-500 mt-1.5 flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>{{ $message }}</span> @enderror
                     </div>

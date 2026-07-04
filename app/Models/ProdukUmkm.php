@@ -33,5 +33,10 @@ public function penerimaManfaat()
 {
     return $this->belongsTo(PenerimaManfaat::class);
 }
+public function user()
+    {
+        // Asumsi: Produk dimiliki oleh User (Pedagang)
+        return $this->belongsTo(User::class, 'user_id'); 
+    }
 
 }

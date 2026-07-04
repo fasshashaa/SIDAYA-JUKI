@@ -9,12 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
- public function up()
-{
-    Schema::table('produk_umkms', function (Blueprint $table) {
-        $table->unsignedBigInteger('user_id')->after('id')->nullable();
-    });
-}
+
     /**
      * Reverse the migrations.
      */

@@ -388,14 +388,16 @@
                     <span class="text-sm font-medium" style="color: var(--text-body)">Tambah Produk</span>
                 </a>
 
-                @if(auth()->user()->role !== 'user')
-                <a href="{{ route($data['targetRoute'], ['status_verifikasi' => 'pending']) }}" class="flex items-center gap-3 p-3 rounded-xl border transition hover:-translate-y-0.5 hover:shadow-sm" style="border-color: var(--surface-border)">
-                    <div class="w-9 h-9 rounded-lg bg-cyan-50 flex items-center justify-center">
-                        <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    </div>
-                    <span class="text-sm font-medium" style="color: var(--text-body)">Verifikasi Data Pending</span>
-                </a>
-                @endif
+             {{-- Hanya muncul jika role-nya admin atau super_admin --}}
+@if(in_array(auth()->user()->role, ['admin', 'super_admin']))
+    <a href="{{ route($data['targetRoute'], ['status_verifikasi' => 'pending']) }}" class="flex items-center ...">
+        <div class="w-9 h-9 rounded-lg bg-cyan-50 flex items-center justify-center">
+            <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                </svg>
+        </div>
+        <span class="text-sm font-medium" style="color: var(--text-body)">Verifikasi Data Pending</span>
+    </a>
+@endif
             </div>
         </div>
     </div>
