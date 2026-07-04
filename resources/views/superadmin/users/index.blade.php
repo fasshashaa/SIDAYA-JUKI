@@ -120,8 +120,12 @@
         @case('admin')
             <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-bold text-[10px]">Admin</span>
             @break
-        @default
+        @case('user')
             <span class="px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-bold text-[10px]">Pengguna</span>
+            @break
+            @default 
+             <span class="px-2 py-1 bg-cyan-100 text-cyan-700 rounded-full font-bold text-[10px]">Pelanggan</span>
+
     @endswitch
 </td>
 

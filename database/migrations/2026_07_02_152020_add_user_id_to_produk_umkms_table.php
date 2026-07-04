@@ -11,12 +11,7 @@ return new class extends Migration
      */
 public function up(): void
 {
-    // Cek dulu apakah kolom user_id belum ada di tabel produk_umkms
-    if (!Schema::hasColumn('produk_umkms', 'user_id')) {
-        Schema::table('produk_umkms', function (Blueprint $table) {
-            $table->bigInteger('user_id')->unsigned()->nullable()->after('id');
-        });
-    }
+ 
 }
     /**
      * Reverse the migrations.

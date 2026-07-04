@@ -129,6 +129,7 @@
             background: rgba(255,255,255,0.05); flex-shrink: 0;
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
             transition: background .2s ease, box-shadow .2s ease;
+            position: relative;
         }
         .nav-item:hover .nav-icon-wrap { background: rgba(255,255,255,0.08); }
         .nav-item.active .nav-icon-wrap {
@@ -304,6 +305,23 @@
             box-shadow: inset 0 0 0 1px rgba(95,217,232,0.25);
         }
         .badge-live .dot { width:5px; height:5px; border-radius:999px; background: var(--cyan-300); box-shadow: 0 0 6px var(--cyan-300); }
+
+        .nav-badge {
+            margin-left: auto;
+            min-width: 19px; height: 19px; padding: 0 5px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #F59E0B, #DC2626);
+            color: #fff; font-size: 10px; font-weight: 800;
+            display:flex; align-items:center; justify-content:center;
+            box-shadow: 0 4px 10px -2px rgba(220,38,38,0.55);
+            flex-shrink: 0;
+        }
+        .nav-badge-dot {
+            position: absolute; top: -2px; right: -2px;
+            width: 9px; height: 9px; border-radius: 999px;
+            background: linear-gradient(135deg, #F59E0B, #DC2626);
+            box-shadow: 0 0 0 2px var(--navy-900);
+        }
     </style>
 </head>
 <body class="font-sans antialiased text-slate-800 dark:text-slate-200" x-data="{ sidebarOpen: true }">
@@ -394,6 +412,18 @@
                 <span x-show="sidebarOpen" x-cloak class="badge-live"><span class="dot"></span>SISTEM AKTIF</span>
             </div>
 
+            @php
+                // Jumlah pesanan menunggu konfirmasi, discope sesuai role (sama seperti scoping produk)
+                $pesananMenungguCount = \App\Models\Pesanan::where('status', 'menunggu_konfirmasi')
+                    ->when(!in_array(Auth::user()->role, ['super_admin', 'admin']), function ($q) {
+                        $q->whereHas('produk', function ($qq) {
+                            $qq->whereHas('uep', fn ($q2) => $q2->where('user_id', Auth::id()))
+                               ->orWhereHas('kube', fn ($q2) => $q2->where('user_id', Auth::id()));
+                        });
+                    })
+                    ->count();
+            @endphp
+
             <nav class="sidebar-scroll p-4 space-y-1.5 flex-1 overflow-y-auto overflow-x-hidden">
 
                 <a href="{{ route('dashboard') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('dashboard') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
@@ -439,6 +469,20 @@
                                     <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span>
                                     <span x-show="sidebarOpen" x-cloak>Produk UMKM</span>
                                     <template x-if="!sidebarOpen"><span class="rail-tooltip">Produk UMKM</span></template>
+                                </a>
+
+                                <a href="{{ route('pesanan.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('pesanan.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
+                                    <span class="nav-icon-wrap">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>
+                                        @if($pesananMenungguCount > 0 && !sidebarOpen)
+                                            <span class="nav-badge-dot"></span>
+                                        @endif
+                                    </span>
+                                    <span x-show="sidebarOpen" x-cloak>Konfirmasi Pesanan</span>
+                                    @if($pesananMenungguCount > 0)
+                                        <span x-show="sidebarOpen" x-cloak class="nav-badge">{{ $pesananMenungguCount > 99 ? '99+' : $pesananMenungguCount }}</span>
+                                    @endif
+                                    <template x-if="!sidebarOpen"><span class="rail-tooltip">Konfirmasi Pesanan @if($pesananMenungguCount > 0)({{ $pesananMenungguCount }})@endif</span></template>
                                 </a>
 
                             </div>
@@ -492,11 +536,31 @@
                                             <span x-show="sidebarOpen" x-cloak>Produk Saya</span>
                                             <template x-if="!sidebarOpen"><span class="rail-tooltip">Produk Saya</span></template>
                                         </a>
+
+                                        <a href="{{ route('pesanan.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('pesanan.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
+                                            <span class="nav-icon-wrap">
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>
+                                                @if($pesananMenungguCount > 0)
+                                                    <span class="nav-badge-dot" x-show="!sidebarOpen" x-cloak></span>
+                                                @endif
+                                            </span>
+                                            <span x-show="sidebarOpen" x-cloak>Konfirmasi Pesanan</span>
+                                            @if($pesananMenungguCount > 0)
+                                                <span x-show="sidebarOpen" x-cloak class="nav-badge">{{ $pesananMenungguCount > 99 ? '99+' : $pesananMenungguCount }}</span>
+                                            @endif
+                                            <template x-if="!sidebarOpen"><span class="rail-tooltip">Konfirmasi Pesanan @if($pesananMenungguCount > 0)({{ $pesananMenungguCount }})@endif</span></template>
+                                        </a>
                                     @else
                                         <span title="Tunggu verifikasi admin" class="rail-item nav-item disabled flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold" :class="!sidebarOpen && 'justify-center px-0'">
                                             <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
                                             <span x-show="sidebarOpen" x-cloak>Produk Saya (Terkunci)</span>
                                             <template x-if="!sidebarOpen"><span class="rail-tooltip">Produk Saya (Terkunci)</span></template>
+                                        </span>
+
+                                        <span title="Tunggu verifikasi admin" class="rail-item nav-item disabled flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold" :class="!sidebarOpen && 'justify-center px-0'">
+                                            <span class="nav-icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg></span>
+                                            <span x-show="sidebarOpen" x-cloak>Konfirmasi Pesanan (Terkunci)</span>
+                                            <template x-if="!sidebarOpen"><span class="rail-tooltip">Konfirmasi Pesanan (Terkunci)</span></template>
                                         </span>
                                     @endif
 

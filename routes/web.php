@@ -11,6 +11,9 @@ use App\Http\Controllers\ProdukUmkmController;
 use App\Http\Controllers\LaporanKegiatanController;
 use App\Http\Controllers\KubeController;
 use App\Http\Controllers\SuperAdmin\UserController;
+use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\RiwayatPesananController;
+use App\Http\Controllers\PesananController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\ActivityController;
@@ -22,6 +25,35 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::post('/pesanan', [PesananController::class, 'store'])->name('pesanan.store');
+
+ 
+    // Antrian konfirmasi untuk pemilik usaha (UEP/KUBE miliknya) & admin/super_admin (semua)
+    Route::get('/pesanan/konfirmasi', [PesananController::class, 'index'])->name('pesanan.index');
+    Route::post('/pesanan/{id}/konfirmasi', [PesananController::class, 'confirm'])->name('pesanan.confirm');
+    Route::post('/pesanan/{id}/tolak', [PesananController::class, 'reject'])->name('pesanan.reject');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/marketplace', [App\Http\Controllers\MarketplaceController::class, 'index'])
+         ->name('marketplace.index');
+         // Pastikan route ini ada di dalam file web.php
+Route::get('/checkout/{id}', [MarketplaceController::class, 'checkout'])->name('checkout');
+// Tambahkan baris ini:
+// Route untuk Keranjang harus memanggil KeranjangController, bukan MarketplaceController
+Route::get('/keranjang', [App\Http\Controllers\KeranjangController::class, 'index'])->name('keranjang');
+Route::post('/keranjang/tambah', [App\Http\Controllers\KeranjangController::class, 'store'])->name('keranjang.store');
+Route::get('/checkout-wa', [App\Http\Controllers\KeranjangController::class, 'checkoutWa'])->name('checkout.wa');
+Route::post('/keranjang/update/{id}', [App\Http\Controllers\KeranjangController::class, 'update'])->name('keranjang.update');
+Route::delete('/keranjang/hapus/{id}', [App\Http\Controllers\KeranjangController::class, 'destroy'])->name('keranjang.destroy');
+ Route::get('/riwayat-pesanan', [PesananController::class, 'riwayat'])->name('riwayat.index');
+// Route::get('/riwayat-pesanan', [App\Http\Controllers\RiwayatPesananController::class, 'index'])->name('riwayat.index')->middleware('auth');
+// Route untuk Checkout dan Marketplace
+Route::get('/marketplace', [App\Http\Controllers\MarketplaceController::class, 'index'])->name('marketplace.index');
+// Tambahkan ini di routes/web.php
+Route::post('/keranjang/checkout/{id}', [App\Http\Controllers\KeranjangController::class, 'checkout'])->name('keranjang.checkout');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
+Route::get('/uep/create', [UepController::class, 'create'])->name('uep.create');
 // Proses Login Tahap 1 (Dibatasi maksimal 5 kali percobaan per menit)
 Route::post('/login', [LoginController::class, 'loginTahapSatu'])
     ->middleware('throttle:login_tahap_satu')

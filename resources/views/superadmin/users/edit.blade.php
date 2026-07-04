@@ -55,6 +55,7 @@
                     ['value' => 'user', 'label' => 'Masyarakat', 'desc' => 'Akses terbatas ke usaha & produk milik sendiri.'],
                     ['value' => 'admin', 'label' => 'Admin', 'desc' => 'Kelola data & verifikasi, tanpa manajemen user.'],
                     ['value' => 'super_admin', 'label' => 'Super Admin', 'desc' => 'Akses penuh termasuk manajemen pengguna.'],
+                      ['value' => 'pelanggan', 'label' => 'Pelanggan', 'desc' => 'Akses marketplace pelanggan.'],
                 ];
             @endphp
 

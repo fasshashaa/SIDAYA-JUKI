@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Models\Keranjang; 
+use Illuminate\Support\Facades\View;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Http\Request;
@@ -22,6 +24,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+         View::composer('layouts.marketplace', function ($view) {
+        $cartCount = auth()->check()
+            ? Keranjang::where('user_id', auth()->id())->sum('jumlah')
+            : 0;
+
+        $view->with('cartCount', $cartCount);
+    });
         // Limiter untuk Form Login Pertama (Password)
         RateLimiter::for('login_tahap_satu', function (Request $request) {
             return Limit::perMinute(3)->by($request->ip())->response(function () use ($request) {
