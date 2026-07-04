@@ -11,10 +11,12 @@ use App\Http\Controllers\ProdukUmkmController;
 use App\Http\Controllers\LaporanKegiatanController;
 use App\Http\Controllers\KubeController;
 use App\Http\Controllers\SuperAdmin\UserController;
-use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\RiwayatPesananController;
 use App\Http\Controllers\PesananController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\OtpController;
+use App\Http\Controllers\ActivityController;
 
 // ==========================================
 // PUBLIC ROUTES & API WILAYAH (Bebas OTP & Auth)
@@ -52,6 +54,20 @@ Route::post('/keranjang/checkout/{id}', [App\Http\Controllers\KeranjangControlle
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 Route::get('/uep/create', [UepController::class, 'create'])->name('uep.create');
+// Proses Login Tahap 1 (Dibatasi maksimal 5 kali percobaan per menit)
+Route::post('/login', [LoginController::class, 'loginTahapSatu'])
+    ->middleware('throttle:login_tahap_satu')
+    ->name('login.submit');
+
+// Rute Alur Verifikasi OTP (Menggunakan OtpController)
+Route::get('login/verify-otp/{id}', [OtpController::class, 'showOtpForm'])->name('login.otp-verify');
+
+// Proses Validasi OTP (Dibatasi ketat maksimal 3 kali percobaan per menit)
+Route::post('login/verify-otp/{id}/submit', [OtpController::class, 'verifikasiOtp'])
+    ->middleware('throttle:otp_verify')
+    ->name('login.otp-verify.submit');
+
+// API Ambil Data Desa Berdasarkan Kecamatan
 Route::get('/get-desa/{kecamatan}', function ($kecamatan) {
     $namaKecamatan = trim(urldecode($kecamatan));
     $desa = DB::table('wilayah_desas')
@@ -61,97 +77,84 @@ Route::get('/get-desa/{kecamatan}', function ($kecamatan) {
         ->pluck('nama_desa')
         ->toArray();
 
-
     return response()->json($desa);
 })->name('get-desa');
 
-
-
-Route::get('/activities', [App\Http\Controllers\ActivityController::class, 'index'])
-    ->name('activities.index')
-    ->middleware('auth');
-Route::get('/get-desa/{kecamatan}', [App\Http\Controllers\UepController::class, 'getDesa']);
-Route::put('/uep/{id}', [UepController::class, 'update'])->name('uep.update');
-Route::get('/uep/{id}', [UepController::class, 'show'])->name('uep.show');
-
-// Memuat rute bawaan authentication (Login, Register, OTP form, dll)
+// Memuat rute bawaan authentication (Register, Logout, dll)
 require __DIR__.'/auth.php';
+
 
 // ==========================================
 // PROTECTED ROUTES (Wajib Login & Lolos OTP)
 // ==========================================
 Route::middleware(['auth', 'verified.otp', 'check.status'])->group(function () {
     
-    // 1. Dashboard Utama
-    Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->middleware(['auth', 'verified'])
-        ->name('dashboard');
+    // 1. Dashboard Utama & Verifikasi
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/verifikasi', [DashboardController::class, 'verifikasi'])->name('verifikasi.index');
 
-    // 2. Profil Pengguna
+    // 2. Aktivitas & Profil Pengguna
+    Route::get('/activities', [ActivityController::class, 'index'])->name('activities.index');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // 3. Modul Data Utama SIDAYA (Clean URL tanpa prefix)
-    
-    // Penerima Manfaat
-    // Route::get('penerima-manfaat/{id}/pdf', [PenerimaManfaatController::class, 'generatePdf'])->name('penerima-manfaat.pdf');
+    // 3. Modul Penerima Manfaat
     Route::post('penerima-manfaat/import', [PenerimaManfaatController::class, 'import'])->name('penerima-manfaat.import');
-Route::get('penerima-manfaat/export/pdf', [PenerimaManfaatController::class, 'exportPdf'])->name('penerima-manfaat.export.pdf');
-Route::get('penerima-manfaat/export/excel', [PenerimaManfaatController::class, 'exportExcel'])->name('penerima-manfaat.export.excel');
+    Route::get('penerima-manfaat/export/pdf', [PenerimaManfaatController::class, 'exportPdf'])->name('penerima-manfaat.export.pdf');
+    Route::get('penerima-manfaat/export/excel', [PenerimaManfaatController::class, 'exportExcel'])->name('penerima-manfaat.export.excel');
     Route::resource('penerima-manfaat', PenerimaManfaatController::class);
-    Route::get('/penerima-manfaat/{id}', [PenerimaManfaatController::class, 'show'])->name('penerima-manfaat.show');
-    Route::get('/penerima-manfaat', [PenerimaManfaatController::class, 'index'])->name('penerima-manfaat.index');
-    Route::get('/penerima-manfaat/{id}/edit', [PenerimaManfaatController::class, 'edit'])->name('penerima-manfaat.edit');
-    Route::delete('/penerima-manfaat/{id}', [PenerimaManfaatController::class, 'destroy'])->name('penerima-manfaat.destroy');
     
+    // 4. Modul UEP (Usaha Ekonomi Produktif)
     Route::prefix('uep')->group(function () {
-    Route::get('/export/excel', [UepController::class, 'exportExcel'])->name('uep.export.excel');
-    Route::get('/export/pdf', [UepController::class, 'exportPdf'])->name('uep.export.pdf');
-    Route::post('/import', [UepController::class, 'import'])->name('uep.import');
-});
-    // UEP (Usaha Ekonomi Produktif)
+        Route::get('/export/excel', [UepController::class, 'exportExcel'])->name('uep.export.excel');
+        Route::get('/export/pdf', [UepController::class, 'exportPdf'])->name('uep.export.pdf');
+        Route::post('/import', [UepController::class, 'import'])->name('uep.import');
+        Route::get('/status/saya', [UepController::class, 'myStatus'])->name('uep.status');
+    });
     Route::resource('uep', UepController::class);
 
+    // 5. Modul KUBE (Kelompok Usaha Bersama)
     Route::prefix('kube')->group(function () {
-    Route::get('/export/excel', [KubeController::class, 'exportExcel'])->name('kube.export.excel');
-    Route::get('/export/pdf', [KubeController::class, 'exportPdf'])->name('kube.export.pdf');
-    Route::post('/import', [KubeController::class, 'import'])->name('kube.import');
-});
-    // KUBE (Kelompok Usaha Bersama)
-// Hapus atau ganti resource menjadi deklarasi rute manual untuk KUBE
-Route::get('/kube', [KubeController::class, 'index'])->name('kube.index');
-Route::get('/kube/create', [KubeController::class, 'create'])->name('kube.create');
-Route::post('/kube', [KubeController::class, 'store'])->name('kube.store');
-Route::get('/kube/{kube}/edit', [KubeController::class, 'edit'])->name('kube.edit');
-Route::put('/kube/{kube}', [KubeController::class, 'update'])->name('kube.update');
-Route::get('/kube/{kube}', [KubeController::class, 'show'])->name('kube.show');
-// Tambahkan rute destroy secara manual di sini
-Route::delete('/kube/{kube}', [KubeController::class, 'destroy'])->name('kube.destroy');
+        Route::get('/export/excel', [KubeController::class, 'exportExcel'])->name('kube.export.excel');
+        Route::get('/export/pdf', [KubeController::class, 'exportPdf'])->name('kube.export.pdf');
+        Route::post('/import', [KubeController::class, 'import'])->name('kube.import');
+        Route::get('/status/saya', [KubeController::class, 'myStatus'])->name('kube.status');
+    });
+    Route::resource('kube', KubeController::class);
 
-
-Route::middleware(['auth', 'EnsureIsSuperAdmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
-    Route::resource('users', UserController::class)->except(['show', 'edit', 'update']);
-    Route::resource('users', UserController::class);
-    Route::put('users/{id}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
-});
-    // Produk UMKM
-  Route::resource('produk', ProdukUmkmController::class);
-
-  Route::middleware(['auth', 'EnsureIsSuperAdmin'])->prefix('superadmin')->group(function () {
-    Route::get('/users', [UserController::class, 'index'])->name('superadmin.users.index');
-    Route::put('/users/{id}/role', [UserController::class, 'updateRole'])->name('superadmin.users.updateRole');
-    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('superadmin.users.destroy');
-});
-Route::get('/uep/status/saya', [UepController::class, 'myStatus'])->name('uep.status');
-Route::get('/kube/status/saya', [KubeController::class, 'myStatus'])->name('kube.status');
-  // routes/web.php
-Route::get('/verifikasi', [App\Http\Controllers\DashboardController::class, 'verifikasi'])->name('verifikasi.index');
-    // Laporan Kegiatan
+    // 6. Produk UMKM & Laporan Kegiatan
+    Route::resource('produk', ProdukUmkmController::class);
     Route::resource('laporan-kegiatan', LaporanKegiatanController::class);
 
-    // Pengaturan Sistem
+    // 7. Pengaturan Sistem
     Route::get('/settings', function () {
-        return view('settings.index');
+    // Ambil data audit log terbaru, urutkan dari yang paling baru, batasi 50 data untuk performa
+    $auditLogs = \App\Models\AuditLog::with('user')
+                    ->latest()
+                    ->take(50)
+                    ->get();
+
+    return view('settings.index', compact('auditLogs'));
     })->name('settings.index');
+
+    // 8. Khusus Fitur Super Admin (Prefix & Middleware Kelompok)
+    Route::middleware(['EnsureIsSuperAdmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
+        Route::resource('users', UserController::class);
+        Route::put('users/{id}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
+    });
+    Route::post('/settings/toggle-otp', function (\Illuminate\Http\Request $request) {
+        // Validasi input sakelar
+        $request->validate(['otp_status' => 'required|in:on,off']);
+
+        \Illuminate\Support\Facades\DB::table('settings')
+            ->where('key', 'otp_gateway_status')
+            ->update([
+                'value' => $request->otp_status,
+                'updated_at' => now()
+            ]);
+
+        return back()->with('success', 'Status OTP Gateway berhasil diperbarui!');
+    })->name('settings.toggle-otp');
+    Route::get('/settings/audit-logs/export-pdf', [App\Http\Controllers\PenerimaManfaatController::class, 'exportAuditLogPdf'])->name('audit-logs.export-pdf');
 });

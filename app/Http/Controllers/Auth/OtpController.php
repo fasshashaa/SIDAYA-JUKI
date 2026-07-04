@@ -4,55 +4,60 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Services\FonnteService;
 
 class OtpController extends Controller
 {
-    public function index()
+    // 1. Menampilkan Halaman Input OTP
+    public function showOtpForm($id)
     {
-        // Tampilkan halaman form input OTP
-        $user = Auth::user();
-        if (!$user || $user->otp_code === null) {
-            return redirect()->route('dashboard');
-        }
+        $user = User::findOrFail($id);
 
         return view('auth.otp-verify', compact('user'));
     }
 
-    public function verify(Request $request)
+    // 2. Memproses Validasi Kode OTP yang diinput oleh user Admin/Super Admin
+    public function verifikasiOtp(Request $request, $id)
     {
         $request->validate([
-            'otp_code' => 'required|string|size:6',
+            'otp_input' => 'required|numeric',
         ]);
 
-        $user = Auth::user();
+        // Cari user berdasarkan ID dari URL route (Gunakan $id, bukan $request->user_id)
+        $user = User::findOrFail($id);
 
-        // Cek apakah OTP cocok dan belum kedaluwarsa
-        if ($user->otp_code === $request->otp_code && now()->lessThanOrEqualTo($user->otp_expires_at)) {
-            // Kosongkan OTP di DB menandakan akun sukses diverifikasi
-            $user->update([
-                'otp_code' => null,
-                'otp_expires_at' => null,
+        // ===================================================================
+        // DEBUG TRIGGER: Pindahkan DD ke sini agar langsung tereksekusi murni
+        // ===================================================================
+        if ($user->role === 'superadmin') {
+            dd([
+                'Role User' => $user->role,
+                'OTP di Database' => $user->otp_code,
+                'Tipe OTP DB' => gettype($user->otp_code),
+                'OTP yang Kamu Input' => $request->otp_input,
+                'Tipe OTP Input' => gettype($request->otp_input),
             ]);
-
-            return redirect()->route('dashboard')->with('status', 'Verifikasi OTP berhasil!');
         }
 
-        return back()->withErrors(['otp_code' => 'Kode OTP salah atau telah kedaluwarsa.']);
-    }
+        // Cek apakah kode OTP sudah kadaluwarsa
+        if (now()->gt($user->otp_expires_at)) {
+            return back()->withErrors(['otp_error' => 'Kode OTP telah kedaluwarsa. Silakan login kembali.']);
+        }
 
-    public function resend()
-    {
-        $user = Auth::user();
-        
-        // Generate ulang kode 6 digit baru dengan masa aktif 5 menit
-        $newOtp = rand(100000, 999999);
-        $user->update([
-            'otp_code' => $newOtp,
-            'otp_expires_at' => now()->addMinutes(5),
-        ]);
+        // Cek apakah kode OTP cocok (Menggunakan perbandingan standar)
+        if (trim($user->otp_code) != trim($request->otp_input)) {
+            return back()->withErrors(['otp_error' => 'Kode OTP salah, silakan periksa kembali WhatsApp Anda.']);
+        }
 
-        // Kirim OTP via WA/Email Logika taruh di sini (sementara di-log atau langsung muncul di view)
-        return back()->with('status', 'Kode OTP baru telah dikirim!');
+        // Jika lolos pengecekan, bersihkan field OTP di database demi keamanan
+        $user->otp_code = null;
+        $user->otp_expires_at = null;
+        $user->save();
+
+        // Login-kan user ke session Laravel secara resmi
+        auth()->login($user);
+
+        return redirect('/dashboard');
     }
 }

@@ -230,6 +230,13 @@
                     </div>
                 </div>
 
+                <div class="mt-4">
+                    <x-input-label for="nomor_wa" :value="__('Nomor WhatsApp')" />
+                    <x-text-input id="nomor_wa" class="block mt-1 w-full" type="text" name="nomor_wa" :value="old('nomor_wa')" required autofocus placeholder="Contoh: 628123456xxx" />
+                    <x-input-error :messages="$errors->get('nomor_wa')" class="mt-2" />
+                    <small class="text-gray-500 text-xs mt-1 block">Gunakan kode negara (62) di depan, tanpa tanda + atau angka 0.</small>
+                </div>
+
                 <div class="mb-2">
                     <label class="field-label">Password</label>
                     <div class="input-wrap">
