@@ -97,7 +97,13 @@ Route::middleware(['auth', 'verified.otp', 'check.status'])->group(function () {
 
     // 7. Pengaturan Sistem
     Route::get('/settings', function () {
-        return view('settings.index');
+    // Ambil data audit log terbaru, urutkan dari yang paling baru, batasi 50 data untuk performa
+    $auditLogs = \App\Models\AuditLog::with('user')
+                    ->latest()
+                    ->take(50)
+                    ->get();
+
+    return view('settings.index', compact('auditLogs'));
     })->name('settings.index');
 
     // 8. Khusus Fitur Super Admin (Prefix & Middleware Kelompok)
@@ -118,4 +124,5 @@ Route::middleware(['auth', 'verified.otp', 'check.status'])->group(function () {
 
         return back()->with('success', 'Status OTP Gateway berhasil diperbarui!');
     })->name('settings.toggle-otp');
+    Route::get('/settings/audit-logs/export-pdf', [App\Http\Controllers\PenerimaManfaatController::class, 'exportAuditLogPdf'])->name('audit-logs.export-pdf');
 });

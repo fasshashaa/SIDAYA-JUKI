@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\Loggable;
 
 class PenerimaManfaat extends Model
 {
-   protected $table = 'penerima_manfaats';
+    use Loggable;
+    protected $table = 'penerima_manfaats';
 
   protected $fillable = [
     'user_id',
