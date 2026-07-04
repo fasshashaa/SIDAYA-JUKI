@@ -34,6 +34,9 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+    
+    Route::get('login/verify-otp/{id}', [OtpController::class, 'showOtpForm'])->name('login.otp-verify');
+    Route::post('login/verify-otp', [OtpController::class, 'verifikasiOtp'])->name('login.otp-verify.submit');
 });
 
 Route::middleware('auth')->group(function () {
