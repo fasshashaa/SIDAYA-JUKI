@@ -10,6 +10,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Models\PenerimaManfaat;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Activity;
+use App\Exports\PenerimaManfaatTemplateExport;
 
 class PenerimaManfaatController extends Controller
 {
@@ -109,35 +110,46 @@ class PenerimaManfaatController extends Controller
         return redirect()->route('penerima-manfaat.index')->with('success', 'Data berhasil ditambahkan!');
     }
 
-    public function edit($id)
-    {
-        $penerima = DB::table('penerima_manfaats')->where('id', $id)->first();
-        if (!$penerima) abort(404);
+  public function edit($id)
+{
+    $penerima = DB::table('penerima_manfaats')->where('id', $id)->first();
+    if (!$penerima) abort(404);
 
-        return view('penerima-manfaat.edit', compact('penerima'));
-    }
+    // Ambil user dengan role 'user' yang belum punya Penerima Manfaat,
+    // ditambah user yang MEMANG sedang terpasang di data ini
+    // (biar tetap muncul di dropdown & otomatis ke-select)
+    $users = \App\Models\User::where('role', 'user')
+        ->where(function ($q) use ($penerima) {
+            $q->whereDoesntHave('penerimaManfaat')
+              ->orWhere('id', $penerima->user_id);
+        })
+        ->orderBy('name')
+        ->get();
 
-    public function update(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'nik' => 'required|numeric|digits:16|unique:penerima_manfaats,nik,' . $id,
-            'no_kk' => 'required|numeric|digits:16',
-            'nama_lengkap' => 'required|string|max:255',
-            'nama_ibu_kandung' => 'required|string|max:255',
-            'no_wa' => 'nullable|string',
-            'kecamatan' => 'required|string',
-            'desa' => 'required|string',
-            'alamat_detail' => 'required|string',
-            'status_verifikasi' => 'required|in:pending,disetujui,ditolak',
-        ]);
+    return view('penerima-manfaat.edit', compact('penerima', 'users'));
+}
 
-        $validated['updated_at'] = now();
+public function update(Request $request, $id)
+{
+    $validated = $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'nik' => 'required|numeric|digits:16|unique:penerima_manfaats,nik,' . $id,
+        'no_kk' => 'required|numeric|digits:16',
+        'nama_lengkap' => 'required|string|max:255',
+        'nama_ibu_kandung' => 'required|string|max:255',
+        'no_wa' => 'nullable|string',
+        'kecamatan' => 'required|string',
+        'desa' => 'required|string',
+        'alamat_detail' => 'required|string',
+        'status_verifikasi' => 'required|in:pending,disetujui,ditolak',
+    ]);
 
-        DB::table('penerima_manfaats')->where('id', $id)->update($validated);
+    $validated['updated_at'] = now();
 
-        return redirect()->route('penerima-manfaat.index')->with('success', 'Data berhasil diperbarui!');
-    }
+    DB::table('penerima_manfaats')->where('id', $id)->update($validated);
 
+    return redirect()->route('penerima-manfaat.index')->with('success', 'Data berhasil diperbarui!');
+}
     public function destroy($id)
     {
         DB::table('penerima_manfaats')->where('id', $id)->delete();
@@ -183,4 +195,8 @@ class PenerimaManfaatController extends Controller
             return back()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
+    public function downloadTemplate()
+{
+    return Excel::download(new PenerimaManfaatTemplateExport, 'Template_Import_Penerima_Manfaat.xlsx');
+}
 }

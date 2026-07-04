@@ -12,6 +12,9 @@ use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\UepExport;
 use App\Imports\UepImport;
+    use App\Exports\UepTemplateExport;
+
+
 
 class UepController extends Controller
 {
@@ -254,4 +257,9 @@ class UepController extends Controller
                        'Content-Security-Policy' => "frame-ancestors 'self'"
                    ]);
     }
+
+public function downloadTemplate()
+{
+    return Excel::download(new UepTemplateExport, 'Template_Import_UEP.xlsx');
+}
 }

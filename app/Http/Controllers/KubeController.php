@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\KubeExport;
 use App\Imports\KubeImport;
+ use App\Exports\KubeTemplateExport;
 
 class KubeController extends Controller
 {
@@ -74,6 +75,13 @@ class KubeController extends Controller
 
         return view('kube.index', compact('kubes', 'kubeStats'));
     }
+   
+
+
+public function downloadTemplate()
+{
+    return Excel::download(new KubeTemplateExport, 'Template_Import_KUBE.xlsx');
+}
 
     public function create()
     {

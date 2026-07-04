@@ -74,7 +74,7 @@
                 <div class="py-1">
                     <button type="button" 
                             onclick="openSecurePdf('{{ route('penerima-manfaat.audit-log.export') }}')" 
-                            class="w-full text-left block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer">
+                            class="w-full text-left block px-4 py-3 text-sm text-gray-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer">
                         👥 Evidence Log: Penerima Manfaat
                     </button>
                     <button type="button" 
@@ -117,7 +117,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-50 text-sm text-gray-600">
                     @forelse($auditLogs as $log)
-                        <tr class="hover:bg-gray-50/40 transition-colors">
+                        <tr class="hover:bg-slate-50 transition-colors">
                             <td class="p-4 pl-6">
                                 <div class="font-medium text-gray-900">{{ $log->created_at->format('d M Y H:i:s') }} WIB</div>
                                 <div class="text-xs text-gray-400 mt-0.5">{{ $log->ip_address }}</div>

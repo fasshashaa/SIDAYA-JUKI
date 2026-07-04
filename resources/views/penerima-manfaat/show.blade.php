@@ -19,7 +19,7 @@
     <div class="bg-white shadow-sm shadow-slate-200/50 border border-slate-100 rounded-3xl overflow-hidden">
 
         {{-- Profile header --}}
-        <div class="p-8 pb-6 border-b border-slate-100 bg-gradient-to-br from-slate-50/80 to-white flex items-center gap-5">
+        <div class="p-8 pb-6 border-b  border-slate-100 flex items-start gap-4">
             <div class="w-16 h-16 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-extrabold text-xl shrink-0 shadow-lg shadow-indigo-600/20">
                 {{ Str::of($penerima->nama_lengkap)->explode(' ')->map(fn($w) => Str::substr($w, 0, 1))->take(2)->implode('') }}
             </div>

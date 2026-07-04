@@ -229,6 +229,14 @@
         html.dark main .bg-slate-100,
         html.dark main .bg-gray-100 { background-color: var(--surface) !important; }
 
+        /* FIX: varian opacity kayak bg-white/90, bg-white/80 (dipakai di sticky action bar, dsb)
+           belum ke-tangkep rule .bg-white biasa di atas, jadi masih putih terang di dark mode */
+        html.dark main [class*="bg-white/"] {
+            background-color: var(--surface) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+
         html.dark main .text-slate-900,
         html.dark main .text-slate-800,
         html.dark main .text-gray-900,
@@ -252,6 +260,33 @@
         html.dark main .border-gray-200,
         html.dark main .border-gray-300 { border-color: var(--surface-border) !important; }
 
+        /* FIX: box notice/info yang pakai gradient (bg-gradient-to-br from-blue-50/70 to-indigo-50/40, dst)
+           masih pudar abu-abu di dark mode karena Tailwind gradient pakai CSS variable sendiri,
+           nggak ke-tangkep rule bg-color biasa. Diganti jadi warna solid surface-alt. */
+        html.dark main [class*="bg-gradient-to-"] {
+            background-image: none !important;
+            background-color: var(--surface-alt) !important;
+        }
+
+        /* FIX: border warna-warni (border-blue-100, border-emerald-100, dst) yang biasa nempel
+           di box notice/badge, disamakan ke border gelap standar */
+        html.dark main [class*="border-blue-"],
+        html.dark main [class*="border-indigo-"],
+        html.dark main [class*="border-emerald-"],
+        html.dark main [class*="border-green-"],
+        html.dark main [class*="border-amber-"],
+        html.dark main [class*="border-yellow-"],
+        html.dark main [class*="border-rose-"],
+        html.dark main [class*="border-red-"],
+        html.dark main [class*="border-teal-"],
+        html.dark main [class*="border-cyan-"],
+        html.dark main [class*="border-violet-"],
+        html.dark main [class*="border-purple-"],
+        html.dark main [class*="border-pink-"],
+        html.dark main [class*="border-orange-"] {
+            border-color: var(--surface-border) !important;
+        }
+
         html.dark main .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
         html.dark main .divide-slate-200 > :not([hidden]) ~ :not([hidden]),
         html.dark main .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
@@ -260,6 +295,21 @@
         html.dark main .hover\:bg-slate-50:hover,
         html.dark main .hover\:bg-gray-50:hover,
         html.dark main .hover\:bg-slate-100:hover { background-color: var(--surface-hover) !important; }
+
+        /* FIX: baris tabel row yang pakai hover:bg-slate-50/70 (opacity) dan pagination bg-slate-50/40
+           masih pakai warna terang bawaan Tailwind karena rule di atas cuma nangkep versi tanpa opacity */
+        html.dark main .hover\:bg-slate-50\/70:hover,
+        html.dark main .hover\:bg-slate-50\/50:hover,
+        html.dark main .hover\:bg-slate-50\/60:hover,
+        html.dark main .hover\:bg-slate-50\/80:hover,
+        html.dark main .hover\:bg-gray-50\/70:hover,
+        html.dark main .hover\:bg-gray-50\/50:hover { background-color: var(--surface-hover) !important; }
+
+        html.dark main .bg-slate-50\/40,
+        html.dark main .bg-slate-50\/50,
+        html.dark main .bg-slate-50\/70,
+        html.dark main .bg-gray-50\/40,
+        html.dark main .bg-gray-50\/50 { background-color: var(--surface-alt) !important; }
 
         html.dark main table thead,
         html.dark main thead tr { background-color: var(--surface-alt) !important; }
@@ -279,6 +329,210 @@
         html.dark main .shadow-md,
         html.dark main .shadow-lg,
         html.dark main .shadow-xl { box-shadow: 0 10px 30px -12px rgba(0,0,0,0.55) !important; }
+
+        /* FIX: teks warna gelap (indigo-900, blue-700, rose-800, dst) supaya tetap kebaca saat dark mode */
+        html.dark main .text-slate-700,
+        html.dark main .text-slate-800,
+        html.dark main .text-slate-900,
+        html.dark main .text-slate-950,
+        html.dark main .text-gray-700,
+        html.dark main .text-gray-800,
+        html.dark main .text-gray-900,
+        html.dark main .text-gray-950,
+        html.dark main .text-zinc-700,
+        html.dark main .text-zinc-800,
+        html.dark main .text-zinc-900,
+        html.dark main .text-zinc-950,
+        html.dark main .text-neutral-700,
+        html.dark main .text-neutral-800,
+        html.dark main .text-neutral-900,
+        html.dark main .text-neutral-950,
+        html.dark main .text-stone-700,
+        html.dark main .text-stone-800,
+        html.dark main .text-stone-900,
+        html.dark main .text-stone-950,
+        html.dark main .text-red-700,
+        html.dark main .text-red-800,
+        html.dark main .text-red-900,
+        html.dark main .text-red-950,
+        html.dark main .text-orange-700,
+        html.dark main .text-orange-800,
+        html.dark main .text-orange-900,
+        html.dark main .text-orange-950,
+        html.dark main .text-amber-700,
+        html.dark main .text-amber-800,
+        html.dark main .text-amber-900,
+        html.dark main .text-amber-950,
+        html.dark main .text-yellow-700,
+        html.dark main .text-yellow-800,
+        html.dark main .text-yellow-900,
+        html.dark main .text-yellow-950,
+        html.dark main .text-lime-700,
+        html.dark main .text-lime-800,
+        html.dark main .text-lime-900,
+        html.dark main .text-lime-950,
+        html.dark main .text-green-700,
+        html.dark main .text-green-800,
+        html.dark main .text-green-900,
+        html.dark main .text-green-950,
+        html.dark main .text-emerald-700,
+        html.dark main .text-emerald-800,
+        html.dark main .text-emerald-900,
+        html.dark main .text-emerald-950,
+        html.dark main .text-teal-700,
+        html.dark main .text-teal-800,
+        html.dark main .text-teal-900,
+        html.dark main .text-teal-950,
+        html.dark main .text-cyan-700,
+        html.dark main .text-cyan-800,
+        html.dark main .text-cyan-900,
+        html.dark main .text-cyan-950,
+        html.dark main .text-sky-700,
+        html.dark main .text-sky-800,
+        html.dark main .text-sky-900,
+        html.dark main .text-sky-950,
+        html.dark main .text-blue-700,
+        html.dark main .text-blue-800,
+        html.dark main .text-blue-900,
+        html.dark main .text-blue-950,
+        html.dark main .text-indigo-700,
+        html.dark main .text-indigo-800,
+        html.dark main .text-indigo-900,
+        html.dark main .text-indigo-950,
+        html.dark main .text-violet-700,
+        html.dark main .text-violet-800,
+        html.dark main .text-violet-900,
+        html.dark main .text-violet-950,
+        html.dark main .text-purple-700,
+        html.dark main .text-purple-800,
+        html.dark main .text-purple-900,
+        html.dark main .text-purple-950,
+        html.dark main .text-fuchsia-700,
+        html.dark main .text-fuchsia-800,
+        html.dark main .text-fuchsia-900,
+        html.dark main .text-fuchsia-950,
+        html.dark main .text-pink-700,
+        html.dark main .text-pink-800,
+        html.dark main .text-pink-900,
+        html.dark main .text-pink-950,
+        html.dark main .text-rose-700,
+        html.dark main .text-rose-800,
+        html.dark main .text-rose-900,
+        html.dark main .text-rose-950 {
+            color: var(--text-strong) !important;
+        }
+
+        html.dark main .text-slate-600,
+        html.dark main .text-gray-600,
+        html.dark main .text-zinc-600,
+        html.dark main .text-neutral-600,
+        html.dark main .text-stone-600,
+        html.dark main .text-red-600,
+        html.dark main .text-orange-600,
+        html.dark main .text-amber-600,
+        html.dark main .text-yellow-600,
+        html.dark main .text-lime-600,
+        html.dark main .text-green-600,
+        html.dark main .text-emerald-600,
+        html.dark main .text-teal-600,
+        html.dark main .text-cyan-600,
+        html.dark main .text-sky-600,
+        html.dark main .text-blue-600,
+        html.dark main .text-indigo-600,
+        html.dark main .text-violet-600,
+        html.dark main .text-purple-600,
+        html.dark main .text-fuchsia-600,
+        html.dark main .text-pink-600,
+        html.dark main .text-rose-600 {
+            color: var(--text-body) !important;
+        }
+
+        /* FIX: kotak ikon & badge status pakai bg-*-50/100 yang pucat di dark mode -> diganti tint kaca + teks terang.
+           Ini ditaruh SETELAH rule text-*-600 di atas supaya menang (warna aksen tetap kebaca, bukan jadi abu-abu polos) */
+        html.dark main .bg-red-50,
+        html.dark main .bg-red-100 { background-color: rgba(239,68,68,0.16) !important; }
+        html.dark main .text-red-600,
+        html.dark main .text-red-700 { color: #FCA5A5 !important; }
+
+        html.dark main .bg-orange-50,
+        html.dark main .bg-orange-100 { background-color: rgba(249,115,22,0.16) !important; }
+        html.dark main .text-orange-600,
+        html.dark main .text-orange-700 { color: #FDBA74 !important; }
+
+        html.dark main .bg-amber-50,
+        html.dark main .bg-amber-100 { background-color: rgba(245,158,11,0.16) !important; }
+        html.dark main .text-amber-600,
+        html.dark main .text-amber-700 { color: #FCD34D !important; }
+
+        html.dark main .bg-yellow-50,
+        html.dark main .bg-yellow-100 { background-color: rgba(234,179,8,0.16) !important; }
+        html.dark main .text-yellow-600,
+        html.dark main .text-yellow-700 { color: #FDE68A !important; }
+
+        html.dark main .bg-lime-50,
+        html.dark main .bg-lime-100 { background-color: rgba(132,204,22,0.16) !important; }
+        html.dark main .text-lime-600,
+        html.dark main .text-lime-700 { color: #BEF264 !important; }
+
+        html.dark main .bg-green-50,
+        html.dark main .bg-green-100 { background-color: rgba(34,197,94,0.16) !important; }
+        html.dark main .text-green-600,
+        html.dark main .text-green-700 { color: #86EFAC !important; }
+
+        html.dark main .bg-emerald-50,
+        html.dark main .bg-emerald-100 { background-color: rgba(16,185,129,0.16) !important; }
+        html.dark main .text-emerald-600,
+        html.dark main .text-emerald-700 { color: #6EE7B7 !important; }
+
+        html.dark main .bg-teal-50,
+        html.dark main .bg-teal-100 { background-color: rgba(20,184,166,0.16) !important; }
+        html.dark main .text-teal-600,
+        html.dark main .text-teal-700 { color: #5EEAD4 !important; }
+
+        html.dark main .bg-cyan-50,
+        html.dark main .bg-cyan-100 { background-color: rgba(6,182,212,0.16) !important; }
+        html.dark main .text-cyan-600,
+        html.dark main .text-cyan-700 { color: #67E8F9 !important; }
+
+        html.dark main .bg-sky-50,
+        html.dark main .bg-sky-100 { background-color: rgba(14,165,233,0.16) !important; }
+        html.dark main .text-sky-600,
+        html.dark main .text-sky-700 { color: #7DD3FC !important; }
+
+        html.dark main .bg-blue-50,
+        html.dark main .bg-blue-100 { background-color: rgba(59,130,246,0.16) !important; }
+        html.dark main .text-blue-600,
+        html.dark main .text-blue-700 { color: #93C5FD !important; }
+
+        html.dark main .bg-indigo-50,
+        html.dark main .bg-indigo-100 { background-color: rgba(99,102,241,0.16) !important; }
+        html.dark main .text-indigo-600,
+        html.dark main .text-indigo-700 { color: #A5B4FC !important; }
+
+        html.dark main .bg-violet-50,
+        html.dark main .bg-violet-100 { background-color: rgba(139,92,246,0.16) !important; }
+        html.dark main .text-violet-600,
+        html.dark main .text-violet-700 { color: #C4B5FD !important; }
+
+        html.dark main .bg-purple-50,
+        html.dark main .bg-purple-100 { background-color: rgba(168,85,247,0.16) !important; }
+        html.dark main .text-purple-600,
+        html.dark main .text-purple-700 { color: #D8B4FE !important; }
+
+        html.dark main .bg-fuchsia-50,
+        html.dark main .bg-fuchsia-100 { background-color: rgba(217,70,239,0.16) !important; }
+        html.dark main .text-fuchsia-600,
+        html.dark main .text-fuchsia-700 { color: #F0ABFC !important; }
+
+        html.dark main .bg-pink-50,
+        html.dark main .bg-pink-100 { background-color: rgba(236,72,153,0.16) !important; }
+        html.dark main .text-pink-600,
+        html.dark main .text-pink-700 { color: #F9A8D4 !important; }
+
+        html.dark main .bg-rose-50,
+        html.dark main .bg-rose-100 { background-color: rgba(244,63,94,0.16) !important; }
+        html.dark main .text-rose-600,
+        html.dark main .text-rose-700 { color: #FDA4AF !important; }
 
         .sidebar-scroll { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
         .sidebar-scroll::-webkit-scrollbar { width: 5px; }
@@ -545,7 +799,7 @@
                                             <span x-show="sidebarOpen" x-cloak>Produk Saya</span>
                                             <template x-if="!sidebarOpen"><span class="rail-tooltip">Produk Saya</span></template>
                                         </a>
-                                        
+
                                         <a href="{{ route('pesanan.index') }}" class="rail-item nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('pesanan.*') ? 'active' : '' }}" :class="!sidebarOpen && 'justify-center px-0'">
                                             <span class="nav-icon-wrap">
                                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>
