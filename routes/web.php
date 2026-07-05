@@ -17,6 +17,7 @@ use App\Http\Controllers\PesananController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\SuperAdmin\SystemMaintenanceController;
 
 // ==========================================
 // PUBLIC ROUTES & API WILAYAH (Bebas OTP & Auth)
@@ -173,8 +174,18 @@ Route::middleware(['auth', 'verified.otp', 'check.status'])->group(function () {
         ->name('audit-logs.export-pdf');
 
     // 8. Khusus Fitur Super Admin (Prefix & Middleware Kelompok)
-    Route::middleware(['EnsureIsSuperAdmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
-        Route::resource('users', UserController::class);
-        Route::put('users/{id}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
+Route::middleware(['EnsureIsSuperAdmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
+    Route::resource('users', UserController::class);
+    Route::put('users/{id}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
+
+    // 🔒 Backup Panel & Maintenance Mode (Kontrol A.5.9 & A.8.14)
+    Route::prefix('system')->name('system.')->group(function () {
+        Route::get('/', [SystemMaintenanceController::class, 'index'])->name('index');
+        Route::post('/backup', [SystemMaintenanceController::class, 'backupNow'])->name('backup.store');
+        Route::get('/backup/{filename}/download', [SystemMaintenanceController::class, 'download'])->name('backup.download');
+        Route::delete('/backup/{filename}', [SystemMaintenanceController::class, 'delete'])->name('backup.delete');
+        Route::post('/maintenance/on', [SystemMaintenanceController::class, 'maintenanceOn'])->name('maintenance.on');
+        Route::post('/maintenance/off', [SystemMaintenanceController::class, 'maintenanceOff'])->name('maintenance.off');
     });
+});
 });

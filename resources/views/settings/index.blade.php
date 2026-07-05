@@ -55,6 +55,32 @@
         </div>
     </div>
 
+    {{-- ================================================================ --}}
+    {{-- 🔒 BACKUP PANEL & MAINTENANCE MODE (ISO 27001 - A.5.9 & A.8.14)   --}}
+    {{-- Hanya tampil untuk role super_admin                              --}}
+    {{-- ================================================================ --}}
+    @if (auth()->user()->role === 'super_admin')
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+            <div class="p-6 border-b border-gray-50 bg-gray-50/50 flex items-center">
+                <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider flex items-center gap-2">
+                    🗄️ Backup Panel & Maintenance Mode (ISO 27001 - Kontrol A.5.9 & A.8.14)
+                </h3>
+            </div>
+            <div class="p-8">
+                <div class="max-w-2xl">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-1">Manajemen Backup & Ketersediaan Sistem</h3>
+                    <p class="text-sm text-gray-500 mb-6">
+                        Buat cadangan database & berkas unggahan secara manual, serta aktifkan mode pemeliharaan saat perlu melakukan perawatan sistem.
+                    </p>
+                    <a href="{{ route('superadmin.system.index') }}"
+                       class="inline-flex items-center gap-2 px-5 py-3 bg-gray-900 text-white text-sm font-semibold rounded-2xl hover:bg-gray-800 transition-all shadow-sm">
+                        🔧 Buka Panel Backup &amp; Maintenance
+                    </a>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="flex items-center space-x-2 mb-4 relative inline-block text-left">
         <div class="relative inline-block text-left" id="dropdownContainer">
             <button type="button" 

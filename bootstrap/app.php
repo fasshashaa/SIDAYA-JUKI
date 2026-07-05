@@ -21,7 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.status'       => \App\Http\Middleware\CheckUserStatus::class,
             
         ]);
-
+    
+        $middleware->web(append: [
+            \App\Http\Middleware\CheckForMaintenanceModeByRole::class,
+        ]);
         
     })
     
