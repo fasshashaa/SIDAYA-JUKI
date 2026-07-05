@@ -27,7 +27,12 @@ Route::get('/', function () {
 
 Route::post('/pesanan', [PesananController::class, 'store'])->name('pesanan.store');
 
- 
+Route::get('/uep/template', [UepController::class, 'downloadTemplate'])
+    ->name('uep.template');
+    Route::get('/kube/template', [KubeController::class, 'downloadTemplate'])
+    ->name('kube.template');
+ Route::get('/penerima-manfaat/template', [PenerimaManfaatController::class, 'downloadTemplate'])
+    ->name('penerima-manfaat.template');
     // Antrian konfirmasi untuk pemilik usaha (UEP/KUBE miliknya) & admin/super_admin (semua)
     Route::get('/pesanan/konfirmasi', [PesananController::class, 'index'])->name('pesanan.index');
     Route::post('/pesanan/{id}/konfirmasi', [PesananController::class, 'confirm'])->name('pesanan.confirm');
