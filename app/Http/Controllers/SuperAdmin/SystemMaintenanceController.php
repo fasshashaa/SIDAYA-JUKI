@@ -24,7 +24,10 @@ class SystemMaintenanceController extends Controller
                 return [
                     'name' => $file,
                     'size' => $this->formatBytes(filesize("{$folderPath}/{$file}")),
-                    'date' => Carbon::createFromTimestamp(filemtime("{$folderPath}/{$file}"))->format('d M Y H:i'),
+                    // TAMBAHKAN setTimezone(config('app.timezone')) DI SINI:
+                    'date' => Carbon::createFromTimestamp(filemtime("{$folderPath}/{$file}"))
+                                ->setTimezone(config('app.timezone'))
+                                ->format('d M Y H:i'),
                 ];
             })
             ->sortByDesc('date')
