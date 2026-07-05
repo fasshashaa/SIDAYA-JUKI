@@ -45,7 +45,7 @@
     'Gandrungmangu': ['Bulusari', 'Cinangsi', 'Cisumur', 'Gandrungmangu', 'Gandrungmanis', 'Gintungreja', 'Karanganyar', 'Karanggintung', 'Kertajaya', 'Layansari', 'Muktisari', 'Rungkang', 'Sidaurip', 'Wringinharjo'],
     'Sidareja': ['Gunungreja', 'Karanggedang', 'Kunci', 'Margasari', 'Penyarang', 'Sidamulya', 'Sidareja', 'Sudagaran', 'Tegalsari', 'Tinggarjaya'],
     'Karangpucung': ['Babakan', 'Bengbulang', 'Cidadap', 'Ciporos', 'Ciruyung', 'Gunungtelu', 'Karangpucung', 'Pamulihan', 'Pengawaren', 'Sidamulya', 'Sindangbarang', 'Surusunda', 'Tayem', 'Tayemtimur'],
-    'Wanareja': ['Adimulya', 'Bantar', 'Cigintung', 'Cilongkrang', 'Jambu', 'Limbangan', 'Madura', 'Madusari', 'Majingklak', 'Malabar', 'Palugon', 'Purwasari', 'Sidamulya', 'Tambaksari', 'Tarisi', 'Wanareja'],
+    'Wanareja': ['Adimulya', 'Bantar', 'Cigintung', 'Cilongkrang', 'Jambu', 'Limbangan', 'Madura', 'Madusari', 'Majingklak', 'Malabar', 'Palugon', 'Purwasari', 'Sidamulya', 'Tambaksari', 'Tarisi','Wanareja'],
     'Dayeuhluhur': ['Bingkeng', 'Bolang', 'Cijeruk', 'Cilumping', 'Ciwalen', 'Datar', 'Dayeuhluhur', 'Hanum', 'Kutaagung', 'Matenggeng', 'Panulisan', 'Panulisan Barat', 'Panulisan Timur', 'Sumpinghayu'],
     'Sampang': ['Brani', 'Karangasem', 'Karangjati', 'Karangtengah', 'Ketanggung', 'Nusajati', 'Paberasan', 'Paketingan', 'Sampang', 'Sidasari'],
     'Patimuan': ['Bulupayung', 'Cimrutu', 'Cinyawang', 'Patimuan', 'Purwodadi', 'Rawaapu', 'Sidamukti'],
