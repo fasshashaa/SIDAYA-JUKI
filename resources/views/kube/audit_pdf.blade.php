@@ -24,7 +24,7 @@
     <div class="header">
         <h2>SIDAYA CILACAP - AUDIT TRAIL REKOR</h2>
         <p>Dokumen Kepatuhan Keamanan Informasi (ISO 27001 - Kontrol A.8.15)</p>
-        <p>Modul: Penerima Manfaat</p>
+        <p>Modul: Kelompok KUBE</p>
     </div>
 
     <div class="meta-info">

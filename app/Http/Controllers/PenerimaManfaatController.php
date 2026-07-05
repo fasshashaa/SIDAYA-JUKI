@@ -16,7 +16,6 @@ class PenerimaManfaatController extends Controller
 {
     public function show($id)
     {
-        // Mengambil data penerima manfaat berdasarkan ID
         $penerima = \App\Models\PenerimaManfaat::findOrFail($id);
         return view('penerima-manfaat.show', compact('penerima'));
     }
@@ -44,7 +43,6 @@ class PenerimaManfaatController extends Controller
             ->paginate(10, ['*'], 'page', $page)
             ->withQueryString();
 
-        // Statistik total selalu dihitung dari SELURUH data (tidak ikut kefilter pencarian)
         $statusCounts = [
             'pending'   => DB::table('penerima_manfaats')->where('status_verifikasi', 'pending')->count(),
             'disetujui' => DB::table('penerima_manfaats')->where('status_verifikasi', 'disetujui')->count(),
@@ -52,7 +50,6 @@ class PenerimaManfaatController extends Controller
         ];
         $totalOrang = DB::table('penerima_manfaats')->count();
 
-        // Kalau dipanggil via fetch/AJAX (dari fitur auto search), balas JSON saja
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'data'         => $penerimaManfaat->items(),
@@ -69,20 +66,17 @@ class PenerimaManfaatController extends Controller
 
     public function create()
     {
-        // Ambil semua user yang memiliki role 'pengguna'
-        // Kita gunakan 'get()' agar datanya terkirim ke view sebagai array/koleksi
         $users = \App\Models\User::where('role', 'user')
-            ->whereDoesntHave('penerimaManfaat') // Pastikan user belum punya PM
+            ->whereDoesntHave('penerimaManfaat')
             ->get();
 
-        // Kirim variabel $users ke dalam view
         return view('penerima-manfaat.create', compact('users'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id', // ID dari dropdown yang dipilih Admin
+            'user_id' => 'required|exists:users,id',
             'nik' => 'required|numeric|digits:16|unique:penerima_manfaats,nik',
             'no_kk' => 'required|numeric|digits:16',
             'nama_lengkap' => 'required|string|max:255',
@@ -94,15 +88,10 @@ class PenerimaManfaatController extends Controller
             'status_verifikasi' => 'required|in:pending,disetujui,ditolak',
         ]);
 
-        // HAPUS BARIS INI: $validated['user_id'] = auth()->id();
-        // Biarkan $validated['user_id'] tetap menggunakan nilai dari request (dropdown)
-
-        // Simpan data
         \App\Models\PenerimaManfaat::create($validated);
 
-        // Tambahkan aktivitas
         Activity::create([
-            'user_id'     => auth()->id(), // Siapa yang melakukan input? (Admin)
+            'user_id'     => auth()->id(),
             'causer_name' => auth()->user()->name,
             'description' => 'Menambahkan data Penerima Manfaat: ' . $request->nama_lengkap,
         ]);
@@ -110,53 +99,50 @@ class PenerimaManfaatController extends Controller
         return redirect()->route('penerima-manfaat.index')->with('success', 'Data berhasil ditambahkan!');
     }
 
-  public function edit($id)
-{
-    $penerima = DB::table('penerima_manfaats')->where('id', $id)->first();
-    if (!$penerima) abort(404);
+    public function edit($id)
+    {
+        $penerima = DB::table('penerima_manfaats')->where('id', $id)->first();
+        if (!$penerima) abort(404);
 
-    // Ambil user dengan role 'user' yang belum punya Penerima Manfaat,
-    // ditambah user yang MEMANG sedang terpasang di data ini
-    // (biar tetap muncul di dropdown & otomatis ke-select)
-    $users = \App\Models\User::where('role', 'user')
-        ->where(function ($q) use ($penerima) {
-            $q->whereDoesntHave('penerimaManfaat')
-              ->orWhere('id', $penerima->user_id);
-        })
-        ->orderBy('name')
-        ->get();
+        $users = \App\Models\User::where('role', 'user')
+            ->where(function ($q) use ($penerima) {
+                $q->whereDoesntHave('penerimaManfaat')
+                  ->orWhere('id', $penerima->user_id);
+            })
+            ->orderBy('name')
+            ->get();
 
-    return view('penerima-manfaat.edit', compact('penerima', 'users'));
-}
+        return view('penerima-manfaat.edit', compact('penerima', 'users'));
+    }
 
-public function update(Request $request, $id)
-{
-    $validated = $request->validate([
-        'user_id' => 'required|exists:users,id',
-        'nik' => 'required|numeric|digits:16|unique:penerima_manfaats,nik,' . $id,
-        'no_kk' => 'required|numeric|digits:16',
-        'nama_lengkap' => 'required|string|max:255',
-        'nama_ibu_kandung' => 'required|string|max:255',
-        'no_wa' => 'nullable|string',
-        'kecamatan' => 'required|string',
-        'desa' => 'required|string',
-        'alamat_detail' => 'required|string',
-        'status_verifikasi' => 'required|in:pending,disetujui,ditolak',
-    ]);
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'nik' => 'required|numeric|digits:16|unique:penerima_manfaats,nik,' . $id,
+            'no_kk' => 'required|numeric|digits:16',
+            'nama_lengkap' => 'required|string|max:255',
+            'nama_ibu_kandung' => 'required|string|max:255',
+            'no_wa' => 'nullable|string',
+            'kecamatan' => 'required|string',
+            'desa' => 'required|string',
+            'alamat_detail' => 'required|string',
+            'status_verifikasi' => 'required|in:pending,disetujui,ditolak',
+        ]);
 
-    $validated['updated_at'] = now();
+        $validated['updated_at'] = now();
 
-    DB::table('penerima_manfaats')->where('id', $id)->update($validated);
+        DB::table('penerima_manfaats')->where('id', $id)->update($validated);
 
-    return redirect()->route('penerima-manfaat.index')->with('success', 'Data berhasil diperbarui!');
-}
+        return redirect()->route('penerima-manfaat.index')->with('success', 'Data berhasil diperbarui!');
+    }
+
     public function destroy($id)
     {
         DB::table('penerima_manfaats')->where('id', $id)->delete();
         return redirect()->route('penerima-manfaat.index')->with('success', 'Data berhasil dihapus!');
     }
 
-    // Pastikan route di api.php mengarah ke sini
     public function getDesaByKecamatan($kecamatanNama)
     {
         $desas = DB::table('wilayah_desas')
@@ -169,10 +155,9 @@ public function update(Request $request, $id)
 
     public function exportPdf()
     {
-        // Ambil SEMUA data
         $data = \App\Models\PenerimaManfaat::all();
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('penerima-manfaat.pdf', compact('data'))
-        ->setPaper('a4', 'landscape');
+            ->setPaper('a4', 'landscape');
         return $pdf->stream('laporan-seluruh-penerima.pdf');
     }
 
@@ -181,8 +166,7 @@ public function update(Request $request, $id)
         return Excel::download(new PenerimaManfaatExport, 'Data_Penerima_Manfaat_' . date('Y-m-d') . '.xlsx');
     }
 
-    // Di PenerimaManfaatController.php
-    public function import(Request $request) // Diubah dari 'import' ke 'importExcel'
+    public function import(Request $request)
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv'
@@ -195,8 +179,31 @@ public function update(Request $request, $id)
             return back()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
+
     public function downloadTemplate()
-{
-    return Excel::download(new PenerimaManfaatTemplateExport, 'Template_Import_Penerima_Manfaat.xlsx');
-}
+    {
+        return Excel::download(new PenerimaManfaatTemplateExport, 'Template_Import_Penerima_Manfaat.xlsx');
+    }
+
+    /**
+     * 🟢 ISO 27001 - Kontrol A.8.15 Audit Logging
+     * Ekspor Dokumen Evidence Log Khusus Perubahan Data Penerima Manfaat
+     */
+    public function exportAuditLogPdf()
+    {
+        $logs = \App\Models\AuditLog::with('user')
+            ->where('model_type', \App\Models\PenerimaManfaat::class)
+            ->orderByDesc('id')
+            ->take(100)
+            ->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('penerima-manfaat.audit_pdf', compact('logs'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->stream('LAPORAN_EVIDENCE_LOG_PENERIMA_MANFAAT_' . date('Y-m-d_H-i-s') . '.pdf')
+                   ->withHeaders([
+                       'X-Frame-Options' => 'SAMEORIGIN',
+                       'Content-Security-Policy' => "frame-ancestors 'self'"
+                   ]);
+    }
 }
