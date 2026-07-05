@@ -9,7 +9,7 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             Kembali ke Katalog
         </a>
-        {{-- <p class="text-xs font-semibold text-blue-500 uppercase tracking-widest mb-1">Data Master</p> --}}
+
         <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Tambah Produk Baru</h1>
         <p class="text-sm text-gray-500 mt-1">Isikan detail informasi produk UMKM dengan lengkap.</p>
     </div>
@@ -17,102 +17,98 @@
     <form action="{{ route('produk.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
 
-      {{-- ================= SECTION: MITRA UEP ================= --}}
-<div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-    <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
-        </div>
-        <div>
-            <h3 class="text-sm font-bold text-gray-900">Pemilik Produk</h3>
-            <p class="text-xs text-gray-400">
-                @if(in_array(auth()->user()->role, ['admin', 'super_admin']))
-                    Pilih mitra UEP atau kelompok KUBE
-                @else
-                    Pilih dari usaha yang telah Anda daftarkan
-                @endif
-            </p>
-        </div>
-    </div>
-
-    @if(in_array(auth()->user()->role, ['admin', 'super_admin']))
-        {{-- ===== ADMIN / SUPER ADMIN: pilih bebas dari semua UEP/KUBE ===== --}}
-        <div class="space-y-2">
-            <label class="text-xs font-bold text-gray-500 uppercase">Pilih Pemilik Produk <span class="text-rose-500">*</span></label>
-            <select name="pemilik_id" id="pemilik_select" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
-                <option value="" disabled selected>-- Pilih UEP atau KUBE --</option>
-                <optgroup label="Daftar UEP">
-                    @foreach($ueps as $uep)
-                        <option value="uep_{{ $uep->id }}"
-                                data-wa="{{ $uep->no_wa ?? '' }}"
-                                data-kategori="{{ $uep->kategori_produk ?? '' }}"
-                                data-status="disetujui">
-                            [UEP] {{ $uep->nama_usaha }} - {{ $uep->penerimaManfaat->nama_lengkap ?? 'Tanpa Pemilik' }}
-                        </option>
+        {{-- 🔒 TAMBAHAN: ringkasan semua pesan error validasi.
+             Sebelumnya form ini tidak menampilkan @error/errors sama sekali,
+             jadi kalau validasi gagal (mis. foto ditolak karena ukuran,
+             dimensi, tipe file) halaman cuma terlihat "reload diam-diam"
+             tanpa penjelasan ke pengguna. --}}
+        @if ($errors->any())
+            <div class="rounded-2xl border border-red-200 bg-red-50 p-4">
+                <p class="text-sm font-bold text-red-700 mb-2 flex items-center gap-1.5">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Terjadi kesalahan saat menyimpan:
+                </p>
+                <ul class="list-disc list-inside text-sm text-red-600 space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
                     @endforeach
-                </optgroup>
-                <optgroup label="Daftar KUBE">
-                    @foreach($kubes as $kube)
-                        <option value="kube_{{ $kube->id }}"
-                                data-wa="{{ $kube->no_telp_kube ?? '' }}"
-                                data-kategori="Kelompok Usaha"
-                                data-status="disetujui">
-                            [KUBE] {{ $kube->nama_kelompok_kube }} - Ketua: {{ $kube->ketua->nama_lengkap ?? 'Tanpa Ketua' }}
-                        </option>
-                    @endforeach
-                </optgroup>
-            </select>
-        </div>
-
-  @else
-        {{-- ===== USER: usaha miliknya sendiri, status "ditolak" disembunyikan ===== --}}
-        @php
-            $statusLabel = [
-                'pending'   => 'Pending',
-                'disetujui' => 'Disetujui',
-            ];
-
-            $myBusinesses = $myUeps->map(fn($u) => (object)[
-                    'value'    => 'uep_' . $u->id,
-                    'label'    => '[UEP] ' . $u->nama_usaha,
-                    'wa'       => $u->no_wa,
-                    'kategori' => $u->kategori_produk,
-                    'status'   => $u->status_verifikasi,
-                ])
-                ->concat($myKubes->map(fn($k) => (object)[
-                    'value'    => 'kube_' . $k->id,
-                    'label'    => '[KUBE] ' . $k->nama_kelompok_kube,
-                    'wa'       => $k->no_telp_kube,
-                    'kategori' => 'Kelompok Usaha',
-                    'status'   => $k->status_verifikasi,
-                ]));
-        @endphp
-
-        @if($myBusinesses->isEmpty())
-            <div class="flex items-start gap-3 p-4 rounded-xl border border-amber-200 bg-amber-50">
-                <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
-                <p class="text-sm text-amber-700">Anda belum punya usaha yang bisa dipakai untuk mendaftarkan produk. Ajukan UEP/KUBE baru, atau perbaiki pengajuan yang sebelumnya ditolak.</p>
+                </ul>
             </div>
-        @else
+        @endif
+
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-gray-900">Pemilik Produk</h3>
+                    <p class="text-xs text-gray-400">
+                        @if(in_array(auth()->user()->role, ['admin', 'super_admin']))
+                            Pilih mitra UEP atau kelompok KUBE sebagai pemilik
+                        @else
+                            Pilih dari usaha yang telah Anda daftarkan
+                        @endif
+                    </p>
+                </div>
+            </div>
+
             <div class="space-y-2">
                 <label class="text-xs font-bold text-gray-500 uppercase">Pilih Usaha Anda <span class="text-rose-500">*</span></label>
-                <select name="pemilik_id" id="pemilik_select" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
-                    <option value="" disabled selected>-- Pilih Usaha Anda --</option>
-                    @foreach($myBusinesses as $b)
-                        <option value="{{ $b->value }}" data-wa="{{ $b->wa }}" data-kategori="{{ $b->kategori }}" data-status="{{ $b->status }}">
-                            {{ $b->label }} ({{ $statusLabel[$b->status] ?? $b->status }})
-                        </option>
-                    @endforeach
+                <select name="pemilik_id" id="pemilik_select" class="w-full p-3 border {{ $errors->has('pemilik_id') ? 'border-red-400' : 'border-gray-200' }} rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
+                    <option value="" disabled {{ old('pemilik_id') ? '' : 'selected' }}>-- Pilih Usaha Anda --</option>
+
+                    @if(in_array(auth()->user()->role, ['admin', 'super_admin']))
+                        <optgroup label="Daftar UEP">
+                            @foreach($ueps as $uep)
+                                <option value="uep_{{ $uep->id }}" {{ old('pemilik_id') == 'uep_' . $uep->id ? 'selected' : '' }}
+                                    data-wa="{{ $uep->penerimaManfaat->whatsapp ?? '' }}"
+                                    data-kategori="{{ $uep->kategori_usaha ?? '' }}"
+                                    data-status="{{ $uep->status_verifikasi }}">
+                                    [UEP] {{ $uep->nama_usaha }} ({{ ucfirst($uep->status_verifikasi) }})
+                                </option>
+                            @endforeach
+                        </optgroup>
+                        <optgroup label="Daftar KUBE">
+                            @foreach($kubes as $kube)
+                                <option value="kube_{{ $kube->id }}" {{ old('pemilik_id') == 'kube_' . $kube->id ? 'selected' : '' }}
+                                    data-wa="{{ $kube->ketua->whatsapp ?? '' }}"
+                                    data-kategori="Kelompok Usaha"
+                                    data-status="{{ $kube->status_verifikasi }}">
+                                    [KUBE] {{ $kube->nama_kelompok_kube }} ({{ ucfirst($kube->status_verifikasi) }})
+                                </option>
+                            @endforeach
+                        </optgroup>
+                    @else
+                        @foreach($myUeps as $uep)
+                            <option value="uep_{{ $uep->id }}" {{ old('pemilik_id') == 'uep_' . $uep->id ? 'selected' : '' }}
+                                data-wa="{{ $uep->penerimaManfaat->whatsapp ?? '' }}"
+                                data-kategori="{{ $uep->kategori_usaha ?? '' }}"
+                                data-status="{{ $uep->status_verifikasi }}">
+                                [UEP] {{ $uep->nama_usaha }} ({{ ucfirst($uep->status_verifikasi) }})
+                            </option>
+                        @endforeach
+                        @foreach($myKubes as $kube)
+                            <option value="kube_{{ $kube->id }}" {{ old('pemilik_id') == 'kube_' . $kube->id ? 'selected' : '' }}
+                                data-wa="{{ $kube->ketua->whatsapp ?? '' }}"
+                                data-kategori="Kelompok Usaha"
+                                data-status="{{ $kube->status_verifikasi }}">
+                                [KUBE] {{ $kube->nama_kelompok_kube }} ({{ ucfirst($kube->status_verifikasi) }})
+                            </option>
+                        @endforeach
+                    @endif
                 </select>
+                @error('pemilik_id')
+                    <p class="text-red-600 text-xs font-semibold mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <div id="status_warning" class="hidden mt-3 flex items-start gap-3 p-4 rounded-xl border border-amber-200 bg-amber-50">
                 <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
                 <p class="text-sm text-amber-700">Usaha ini masih menunggu verifikasi admin. Anda belum bisa menyimpan produk sampai statusnya <strong>disetujui</strong>.</p>
             </div>
-        @endif
-    @endif
-</div>
+        </div>
+
         {{-- ================= SECTION: INFORMASI PRODUK ================= --}}
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
             <div class="flex items-center gap-3 mb-6">
@@ -128,32 +124,47 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-gray-500 uppercase">Nama Produk <span class="text-rose-500">*</span></label>
-                    <input type="text" name="nama_produk" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="Contoh: Keripik Singkong Original" required>
+                    <input type="text" name="nama_produk" value="{{ old('nama_produk') }}" class="w-full p-3 border {{ $errors->has('nama_produk') ? 'border-red-400' : 'border-gray-200' }} rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="Contoh: Keripik Singkong Original" required>
+                    @error('nama_produk')
+                        <p class="text-red-600 text-xs font-semibold mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="space-y-2">
-    <label class="text-xs font-bold text-gray-500 uppercase">Kategori <span class="text-rose-500">*</span></label>
-    <input type="text" name="kategori" id="kategori_input" readonly
-           class="w-full p-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-600 cursor-not-allowed outline-none transition-all"
-           placeholder="Terisi otomatis setelah memilih pemilik produk" required>
-</div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Kategori <span class="text-rose-500">*</span></label>
+                    <input type="text" name="kategori" id="kategori_input" value="{{ old('kategori') }}" readonly
+                           class="w-full p-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-600 cursor-not-allowed outline-none transition-all"
+                           placeholder="Terisi otomatis setelah memilih pemilik produk" required>
+                    @error('kategori')
+                        <p class="text-red-600 text-xs font-semibold mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
 
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-gray-500 uppercase">Harga Jual <span class="text-rose-500">*</span></label>
                     <div class="relative">
                         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold">Rp</span>
-                        <input type="number" name="harga_jual" class="w-full p-3 pl-10 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="0" required>
+                        <input type="number" name="harga_jual" value="{{ old('harga_jual') }}" class="w-full p-3 pl-10 border {{ $errors->has('harga_jual') ? 'border-red-400' : 'border-gray-200' }} rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="0" required>
                     </div>
+                    @error('harga_jual')
+                        <p class="text-red-600 text-xs font-semibold mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-gray-500 uppercase">Stok <span class="text-rose-500">*</span></label>
-                    <input type="number" name="stok" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="0" required>
+                    <input type="number" name="stok" value="{{ old('stok') }}" class="w-full p-3 border {{ $errors->has('stok') ? 'border-red-400' : 'border-gray-200' }} rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="0" required>
+                    @error('stok')
+                        <p class="text-red-600 text-xs font-semibold mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="space-y-2 md:col-span-2">
                     <label class="text-xs font-bold text-gray-500 uppercase">Deskripsi Produk</label>
-                    <textarea name="deskripsi_produk" rows="3" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="Ceritakan keunggulan produk ini..."></textarea>
+                    <textarea name="deskripsi_produk" rows="3" class="w-full p-3 border {{ $errors->has('deskripsi_produk') ? 'border-red-400' : 'border-gray-200' }} rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="Ceritakan keunggulan produk ini...">{{ old('deskripsi_produk') }}</textarea>
+                    @error('deskripsi_produk')
+                        <p class="text-red-600 text-xs font-semibold mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="space-y-2">
@@ -162,21 +173,27 @@
                         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.001 2.003c-5.523 0-9.999 4.476-9.999 9.999 0 1.762.464 3.484 1.346 5.001L2 22l5.109-1.334a9.958 9.958 0 004.892 1.246h.005c5.523 0 9.999-4.476 9.999-9.999 0-2.67-1.04-5.179-2.928-7.067A9.936 9.936 0 0012.001 2.003zm0 18.174h-.004a8.163 8.163 0 01-4.166-1.14l-.299-.177-3.03.792.809-2.954-.195-.303a8.156 8.156 0 01-1.256-4.396c0-4.516 3.674-8.19 8.19-8.19 2.187 0 4.243.852 5.79 2.401a8.13 8.13 0 012.399 5.792c-.001 4.516-3.675 8.19-8.191 8.19z"/></svg>
                         </span>
-                        <input type="text" name="whatsapp_sales" id="wa_input" readonly class="w-full p-3 pl-10 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="Contoh: 08123456789">
+                        <input type="text" name="whatsapp_sales" id="wa_input" value="{{ old('whatsapp_sales') }}" readonly class="w-full p-3 pl-10 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="Contoh: 08123456789">
                     </div>
+                    @error('whatsapp_sales')
+                        <p class="text-red-600 text-xs font-semibold mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-gray-500 uppercase">Status Publikasi <span class="text-rose-500">*</span></label>
                     <select name="status_publikasi" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
-                        <option value="Ditampilkan">Ditampilkan</option>
-                        <option value="Draft">Draft</option>
+                        <option value="Ditampilkan" {{ old('status_publikasi') == 'Ditampilkan' ? 'selected' : '' }}>Ditampilkan</option>
+                        <option value="Draft" {{ old('status_publikasi') == 'Draft' ? 'selected' : '' }}>Draft</option>
                     </select>
+                    @error('status_publikasi')
+                        <p class="text-red-600 text-xs font-semibold mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
         </div>
 
-        {{-- ================= SECTION: FOTO PRODUK (UPLOAD CANGGIH) ================= --}}
+        {{-- ================= SECTION: FOTO PRODUK ================= --}}
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
             <div class="flex items-center gap-3 mb-6">
                 <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
@@ -189,23 +206,21 @@
             </div>
 
             <div id="dropzone"
-                 class="relative rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200 cursor-pointer overflow-hidden"
+                 class="relative rounded-2xl border-2 {{ $errors->has('foto_produk') ? 'border-red-300 bg-red-50/40' : 'border-dashed border-gray-200 bg-gray-50/50' }} hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200 cursor-pointer overflow-hidden"
                  onclick="document.getElementById('foto_input').click()">
 
                 <input type="file" name="foto_produk" id="foto_input" accept="image/*" class="hidden">
 
-                {{-- State: belum ada gambar --}}
                 <div id="dropzone_placeholder" class="flex flex-col items-center justify-center gap-3 py-14 px-6 text-center">
                     <div class="w-14 h-14 rounded-2xl bg-white border border-gray-200 flex items-center justify-center shadow-sm">
                         <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M12 12v9m0-9l-3 3m3-3l3 3"/></svg>
                     </div>
                     <div>
                         <p class="text-sm font-semibold text-gray-700">Klik untuk unggah, atau seret foto ke sini</p>
-                        <p class="text-xs text-gray-400 mt-1">PNG, JPG, atau WEBP &middot; maks. 2MB &middot; rasio 1:1 direkomendasikan</p>
+                        <p class="text-xs text-gray-400 mt-1">PNG atau JPG &middot; maks. 2MB &middot; maks. 4000&times;4000px</p>
                     </div>
                 </div>
 
-                {{-- State: preview gambar terpilih --}}
                 <div id="dropzone_preview" class="hidden relative">
                     <img id="preview_img" src="" class="w-full max-h-80 object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
@@ -218,21 +233,31 @@
                     </div>
                 </div>
             </div>
+
+            {{-- 🔒 TAMBAHAN: pesan error khusus foto_produk --}}
+            @error('foto_produk')
+                <p class="text-red-600 text-xs font-semibold mt-3 flex items-center gap-1.5">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    {{ $message }}
+                </p>
+            @enderror
         </div>
 
         {{-- ================= ACTIONS ================= --}}
-       {{-- ================= ACTIONS ================= --}}
-<div class="sticky bottom-4 z-10">
-    <div class="bg-white/90 backdrop-blur border border-gray-100 shadow-lg shadow-black/5 rounded-2xl p-4 flex items-center gap-3">
-        <button type="submit" id="submit_btn" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold px-6 py-3 rounded-xl text-sm transition-all shadow-lg shadow-blue-600/20">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-            Simpan Baru
-        </button>
-        <a href="{{ route('produk.index') }}" class="bg-white hover:bg-gray-50 text-gray-500 font-semibold px-6 py-3 rounded-xl text-sm border border-gray-200 transition-all">
-            Batal
-        </a>
-    </div>
+        <div class="sticky bottom-4 z-10">
+            <div class="bg-white/90 backdrop-blur border border-gray-100 shadow-lg shadow-black/5 rounded-2xl p-4 flex items-center gap-3">
+                <button type="submit" id="submit_btn" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold px-6 py-3 rounded-xl text-sm transition-all shadow-lg shadow-blue-600/20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Simpan Baru
+                </button>
+                <a href="{{ route('produk.index') }}" class="bg-white hover:bg-gray-50 text-gray-500 font-semibold px-6 py-3 rounded-xl text-sm border border-gray-200 transition-all">
+                    Batal
+                </a>
+            </div>
+        </div>
+    </form>
 </div>
+
 <script>
 function isiOtomatis(wa, kategori, isKube) {
     const inputKategori = document.getElementById('kategori_input');
@@ -268,9 +293,23 @@ function tampilkanWarningStatus(status) {
 
 const pemilikSelect = document.getElementById('pemilik_select');
 if (pemilikSelect) {
-    // Kunci submit di awal selama belum ada pilihan valid dipilih
     const submitBtnInit = document.getElementById('submit_btn');
     if (submitBtnInit) submitBtnInit.disabled = true;
+
+    // Kalau ada pilihan lama (old('pemilik_id')) setelah validasi gagal,
+    // jalankan ulang isiOtomatis supaya kategori/WA/status ikut terisi lagi.
+    if (pemilikSelect.value) {
+        const selectedOption = pemilikSelect.options[pemilikSelect.selectedIndex];
+        if (selectedOption && selectedOption.value) {
+            isiOtomatis(
+                selectedOption.getAttribute('data-wa'),
+                selectedOption.getAttribute('data-kategori'),
+                selectedOption.value.startsWith('kube_')
+            );
+            tampilkanWarningStatus(selectedOption.getAttribute('data-status'));
+            if (submitBtnInit) submitBtnInit.disabled = (selectedOption.getAttribute('data-status') === 'pending');
+        }
+    }
 
     pemilikSelect.addEventListener('change', function () {
         const selectedOption = this.options[this.selectedIndex];

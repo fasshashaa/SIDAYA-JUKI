@@ -3,11 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Models\Uep;
+use App\Models\Kube;
+use App\Models\Activity;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use App\Models\ProdukUmkm;
+use App\Http\Requests\StoreProdukRequest;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class ProdukUmkmController extends Controller
 {
+    /**
+     * === KONFIGURASI HARDENING FILE UPLOAD (Kontrol A.8.24) ===
+     * Whitelist MIME type -> ekstensi yang diizinkan. HANYA ini yang boleh disimpan.
+     * MIME dideteksi dari ISI file (fileinfo), bukan dari nama/ekstensi yang dikirim client.
+     */
+    private const ALLOWED_MIME_TO_EXT = [
+        'image/jpeg' => 'jpg',
+        'image/png'  => 'png',
+    ];
+
+    private const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB, selaras dengan rule validator
+    private const MAX_DIMENSION_PX    = 4000;             // cegah "decompression bomb"
+    private const UPLOAD_DIR          = 'produk';         // satu folder konsisten untuk semua foto produk
+
     /**
      * Menampilkan daftar Usaha Ekonomi Produktif (UEP).
      */
@@ -17,10 +38,8 @@ class ProdukUmkmController extends Controller
         $status = $request->input('status', '');
         $page   = (int) $request->input('page', 1);
 
-        // Query dasar: admin/super_admin lihat semua, user biasa hanya lihat produk
-        // dari UEP/KUBE miliknya sendiri.
         $baseQuery = function () {
-            $q = \App\Models\ProdukUmkm::query();
+            $q = ProdukUmkm::query();
 
             if (!in_array(auth()->user()->role, ['super_admin', 'admin'])) {
                 $q->where(function ($qq) {
@@ -53,15 +72,12 @@ class ProdukUmkmController extends Controller
             ->paginate(12, ['*'], 'page', $page)
             ->withQueryString();
 
-        // Statistik selalu dihitung dari SELURUH data yang boleh dilihat user ini
-        // (tidak ikut kefilter pencarian, tapi tetap ikut scoping role)
         $allData        = $baseQuery()->get();
         $totalProduk    = $allData->count();
         $totalTampil    = $allData->where('status_publikasi', 'Ditampilkan')->count();
         $totalDraft     = $allData->where('status_publikasi', 'Draft')->count();
         $totalStokHabis = $allData->where('stok', 0)->count();
 
-        // Kalau dipanggil via fetch/AJAX (dari fitur auto search), balas JSON saja
         if ($request->ajax() || $request->wantsJson()) {
             $items = collect($produk->items())->map(function ($item) {
                 return [
@@ -71,7 +87,7 @@ class ProdukUmkmController extends Controller
                     'harga_jual'       => $item->harga_jual,
                     'stok'             => $item->stok,
                     'status_publikasi' => $item->status_publikasi,
-                    'foto_url'         => $item->foto_produk ? asset('storage/' . $item->foto_produk) : null,
+                    'foto_url'         => $item->foto_url,
                     'uep_id'           => $item->uep_id,
                     'kube_id'          => $item->kube_id,
                     'uep_nama'         => $item->uep->nama_usaha ?? null,
@@ -92,33 +108,36 @@ class ProdukUmkmController extends Controller
         return view('produk.index', compact('produk', 'totalProduk', 'totalTampil', 'totalDraft', 'totalStokHabis'));
     }
 
-    public function store(Request $request)
+    /**
+     * Simpan produk baru.
+     *
+     * CATATAN PERBAIKAN:
+     * - Versi sebelumnya punya `return` di awal method sehingga blok validasi
+     *   kepemilikan (uep/kube) & pengecekan status_verifikasi TIDAK PERNAH DIJALANKAN.
+     *   Ini bug otorisasi serius: user biasa bisa membuat produk atas nama usaha siapa pun.
+     *   Sekarang hanya ada SATU alur, dan otorisasi kepemilikan wajib lolos dulu.
+     */
+    public function store(StoreProdukRequest $request)
     {
-        $validated = $request->validate([
-            'pemilik_id'       => 'required',
-            'nama_produk'      => 'required|string|max:255',
-            'kategori'         => 'required|string|max:100',
-            'harga_jual'       => 'required|numeric|min:0',
-            'stok'             => 'required|integer|min:0',
-            'deskripsi_produk' => 'nullable|string',
-            'whatsapp_sales'   => 'nullable|string|max:20',
-            'status_publikasi' => 'required|in:Ditampilkan,Draft',
-            'foto_produk'      => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        // Validasi (termasuk seluruh hardening foto_produk: mimes, mimetypes,
+        // ukuran, dimensi) sudah dijalankan otomatis oleh StoreProdukRequest
+        // sebelum method ini dipanggil. Di sini kita cukup pakai hasilnya.
+        $validated = $request->validated();
 
-        // Pecah nilai pemilik_id (contoh: "uep_1" atau "kube_6")
-        [$jenis, $id] = explode('_', $request->pemilik_id);
+        // Format pemilik_id ("uep_<id>" / "kube_<id>") sudah dipastikan valid
+        // oleh rule regex di StoreProdukRequest, jadi explode() di sini aman.
+        [$jenis, $id] = explode('_', $validated['pemilik_id'], 2);
+
         if (!in_array(auth()->user()->role, ['admin', 'super_admin'])) {
-    $usaha = $jenis === 'uep'
-        ? \App\Models\Uep::where('id', $id)->where('user_id', auth()->id())->first()
-        : \App\Models\Kube::where('id', $id)->where('user_id', auth()->id())->first();
+            $usaha = $jenis === 'uep'
+                ? Uep::where('id', $id)->where('user_id', auth()->id())->first()
+                : Kube::where('id', $id)->where('user_id', auth()->id())->first();
 
-    abort_if(!$usaha, 403, 'Usaha tidak ditemukan atau bukan milik Anda.');
-    abort_if($usaha->status_verifikasi !== 'disetujui', 422, 'Usaha ini belum disetujui, produk belum bisa disimpan.');
-}
+            abort_if(!$usaha, 403, 'Usaha tidak ditemukan atau bukan milik Anda.');
+            abort_if($usaha->status_verifikasi !== 'disetujui', 422, 'Usaha ini belum disetujui, produk belum bisa disimpan.');
+        }
 
-        $data = $validated;
-        unset($data['pemilik_id']);
+        $data = collect($validated)->except(['pemilik_id', 'foto_produk'])->toArray();
 
         if ($jenis === 'uep') {
             $data['uep_id']  = $id;
@@ -129,12 +148,12 @@ class ProdukUmkmController extends Controller
         }
 
         if ($request->hasFile('foto_produk')) {
-            $data['foto_produk'] = $request->file('foto_produk')->store('produk', 'public');
+            $data['foto_produk'] = $this->secureStoreImage($request->file('foto_produk'));
         }
 
-        $produk = \App\Models\ProdukUmkm::create($data);
+        $produk = ProdukUmkm::create($data);
 
-        \App\Models\Activity::create([
+        Activity::create([
             'user_id'     => auth()->id(),
             'causer_name' => auth()->user()->name,
             'description' => 'Menambahkan data Produk UMKM baru: ' . $data['nama_produk'],
@@ -144,45 +163,63 @@ class ProdukUmkmController extends Controller
                          ->with('success', 'Produk berhasil ditambahkan!');
     }
 
- public function create()
-{
-    if (in_array(auth()->user()->role, ['admin', 'super_admin'])) {
-        $ueps  = \App\Models\Uep::all();
-        $kubes = \App\Models\Kube::all();
-        $myUeps  = collect();
-        $myKubes = collect();
-    } else {
-        $ueps  = collect();
-        $kubes = collect();
-        // Hanya usaha milik user yang belum ditolak (pending atau disetujui)
-        $myUeps  = \App\Models\Uep::where('user_id', auth()->id())
-                        ->where('status_verifikasi', '!=', 'ditolak')
-                        ->get();
-        $myKubes = \App\Models\Kube::where('user_id', auth()->id())
-                        ->where('status_verifikasi', '!=', 'ditolak')
-                        ->get();
+    public function create()
+    {
+        if (in_array(auth()->user()->role, ['admin', 'super_admin'])) {
+            $ueps    = Uep::all();
+            $kubes   = Kube::all();
+            $myUeps  = collect();
+            $myKubes = collect();
+        } else {
+            $ueps  = collect();
+            $kubes = collect();
+            $myUeps  = Uep::where('user_id', auth()->id())
+                            ->where('status_verifikasi', '!=', 'ditolak')
+                            ->get();
+            $myKubes = Kube::where('user_id', auth()->id())
+                            ->where('status_verifikasi', '!=', 'ditolak')
+                            ->get();
+        }
+
+        return view('produk.create', compact('ueps', 'kubes', 'myUeps', 'myKubes'));
     }
 
-    return view('produk.create', compact('ueps', 'kubes', 'myUeps', 'myKubes'));
-}
     public function edit($id)
     {
-        $produk = \App\Models\ProdukUmkm::findOrFail($id);
+        $produk = ProdukUmkm::findOrFail($id);
         $this->authorizeOwnership($produk);
 
-        $ueps  = \App\Models\Uep::all();
-        $kubes = \App\Models\Kube::all();
+        $ueps  = Uep::all();
+        $kubes = Kube::all();
 
         return view('produk.edit', compact('produk', 'ueps', 'kubes'));
     }
 
     public function update(Request $request, $id)
     {
-        $produk = \App\Models\ProdukUmkm::findOrFail($id);
+        $produk = ProdukUmkm::findOrFail($id);
         $this->authorizeOwnership($produk);
 
+        // 🔒 Pre-check SEBELUM masuk ke $request->validate().
+        // Laravel/Symfony membaca isi file tmp lewat finfo untuk mendeteksi
+        // MIME type di rule 'mimes'/'image'. Kalau file tmp itu sudah hilang
+        // atau tidak bisa dibaca di tengah proses (mis. dikarantina antivirus
+        // Windows karena isinya terdeteksi mencurigakan, atau disk penuh),
+        // finfo akan melempar ErrorException MENTAH yang tidak tertangkap
+        // validator -> muncul sebagai crash 500 (bocor stack trace & cookie
+        // kalau APP_DEBUG=true). Cek dulu manual di sini supaya kalau itu
+        // terjadi, yang muncul cuma pesan error validasi yang rapi.
+        if ($request->hasFile('foto_produk')) {
+            $file = $request->file('foto_produk');
+            if (!$file->isValid() || !is_readable($file->getRealPath())) {
+                return back()
+                    ->withErrors(['foto_produk' => 'File gagal diproses saat diunggah. Kemungkinan diblokir oleh antivirus/perangkat keamanan, atau file rusak saat proses upload. Silakan coba unggah ulang.'])
+                    ->withInput();
+            }
+        }
+
         $validated = $request->validate([
-            'pemilik_id'       => 'required',
+            'pemilik_id'       => 'required|string',
             'nama_produk'      => 'required|string|max:255',
             'kategori'         => 'required|string|max:100',
             'harga_jual'       => 'required|numeric|min:0',
@@ -190,13 +227,17 @@ class ProdukUmkmController extends Controller
             'deskripsi_produk' => 'nullable|string',
             'whatsapp_sales'   => 'nullable|string|max:20',
             'status_publikasi' => 'required|in:Ditampilkan,Draft',
-            'foto_produk'      => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto_produk'      => ['nullable', 'file', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
         ]);
 
-        [$jenis, $pemilikId] = explode('_', $request->pemilik_id);
+        [$jenis, $pemilikId] = array_pad(explode('_', $validated['pemilik_id'], 2), 2, null);
+        if (!in_array($jenis, ['uep', 'kube'], true) || !$pemilikId) {
+            throw ValidationException::withMessages([
+                'pemilik_id' => 'Format pemilik_id tidak valid.',
+            ]);
+        }
 
-        $data = $validated;
-        unset($data['pemilik_id'], $data['foto_produk']);
+        $data = collect($validated)->except(['pemilik_id', 'foto_produk'])->toArray();
 
         if ($jenis === 'uep') {
             $data['uep_id']  = $pemilikId;
@@ -207,10 +248,14 @@ class ProdukUmkmController extends Controller
         }
 
         if ($request->hasFile('foto_produk')) {
+            $newPath = $this->secureStoreImage($request->file('foto_produk'));
+
+            // Hapus file lama HANYA setelah file baru berhasil disimpan dengan aman
             if ($produk->foto_produk) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($produk->foto_produk);
+                Storage::disk('public')->delete($produk->foto_produk);
             }
-            $data['foto_produk'] = $request->file('foto_produk')->store('produk', 'public');
+
+            $data['foto_produk'] = $newPath;
         }
 
         $produk->update($data);
@@ -220,11 +265,11 @@ class ProdukUmkmController extends Controller
 
     public function destroy($id)
     {
-        $produk = \App\Models\ProdukUmkm::findOrFail($id);
+        $produk = ProdukUmkm::findOrFail($id);
         $this->authorizeOwnership($produk);
 
         if ($produk->foto_produk) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($produk->foto_produk);
+            Storage::disk('public')->delete($produk->foto_produk);
         }
 
         $produk->delete();
@@ -234,7 +279,7 @@ class ProdukUmkmController extends Controller
 
     public function show($id)
     {
-        $produk = \App\Models\ProdukUmkm::with(['uep', 'kube'])->findOrFail($id);
+        $produk = ProdukUmkm::with(['uep', 'kube'])->findOrFail($id);
         $this->authorizeOwnership($produk);
 
         return view('produk.show', compact('produk'));
@@ -254,5 +299,97 @@ class ProdukUmkmController extends Controller
             || ($produk->kube && $produk->kube->user_id === auth()->id());
 
         abort_unless($isOwner, 403, 'Anda tidak memiliki akses ke produk ini.');
+    }
+
+    /**
+     * === HARDENED FILE UPLOAD HANDLER (Kontrol A.8.24) ===
+     *
+     * Lapisan pertahanan yang diterapkan:
+     * 1. Batas ukuran fisik file (defense-in-depth di luar rule validator).
+     * 2. Deteksi MIME type dari ISI file (fileinfo), bukan dari ekstensi/nama
+     *    yang dikirim client -> mencegah spoofing ekstensi (mis. shell.php.jpg).
+     * 3. Verifikasi struktur gambar sesungguhnya via getimagesize() + batas dimensi
+     *    -> menolak file bukan-gambar & mencegah "decompression bomb".
+     * 4. RE-ENCODE gambar dari nol memakai GD -> membuang payload/metadata yang
+     *    mungkin disisipkan (teknik polyglot, EXIF berbahaya, dsb). Ini adalah
+     *    lapisan paling penting: walau header file lolos, byte hasil akhir yang
+     *    disimpan adalah gambar bersih hasil render ulang, bukan file asli.
+     * 5. Nama file baru 100% acak, ekstensi ditentukan dari MIME asli (bukan dari
+     *    nama file asli) -> mencegah path traversal & ekstensi ganda.
+     * 6. Disimpan ke satu folder tetap (produk) di disk "public".
+     *
+     * Rekomendasi tambahan di level server (tidak bisa diatur dari controller):
+     * - Pastikan folder storage/app/public/produk TIDAK BISA mengeksekusi PHP.
+     *   Apache (.htaccess di folder tsb.):
+     *       <FilesMatch "\.(php|phtml|php\d?|phar)$">
+     *           Require all denied
+     *       </FilesMatch>
+     *   Nginx:
+     *       location ~* /storage/produk/.*\.(php|phtml)$ { deny all; }
+     */
+    private function secureStoreImage(UploadedFile $file): string
+    {
+        if ($file->getSize() === false || $file->getSize() > self::MAX_FILE_SIZE_BYTES) {
+            throw ValidationException::withMessages([
+                'foto_produk' => 'Ukuran file melebihi batas yang diizinkan (maks 2MB).',
+            ]);
+        }
+
+        // MIME dideteksi dari isi file (fileinfo), tahan terhadap ekstensi palsu.
+        $realMime = $file->getMimeType();
+        if (!array_key_exists($realMime, self::ALLOWED_MIME_TO_EXT)) {
+            throw ValidationException::withMessages([
+                'foto_produk' => 'Tipe file tidak diizinkan. Hanya JPG dan PNG yang diperbolehkan.',
+            ]);
+        }
+
+        $imageInfo = @getimagesize($file->getRealPath());
+        if ($imageInfo === false) {
+            throw ValidationException::withMessages([
+                'foto_produk' => 'File yang diunggah bukan gambar yang valid.',
+            ]);
+        }
+
+        [$width, $height] = $imageInfo;
+        if ($width > self::MAX_DIMENSION_PX || $height > self::MAX_DIMENSION_PX) {
+            throw ValidationException::withMessages([
+                'foto_produk' => 'Dimensi gambar terlalu besar (maks ' . self::MAX_DIMENSION_PX . 'px).',
+            ]);
+        }
+
+        // Render ulang gambar dari nol untuk membuang payload tersembunyi.
+        $cleanImage = match ($realMime) {
+            'image/jpeg' => @imagecreatefromjpeg($file->getRealPath()),
+            'image/png'  => @imagecreatefrompng($file->getRealPath()),
+            default      => false,
+        };
+
+        if ($cleanImage === false) {
+            throw ValidationException::withMessages([
+                'foto_produk' => 'Gagal memproses gambar. Pastikan file tidak rusak.',
+            ]);
+        }
+
+        $extension    = self::ALLOWED_MIME_TO_EXT[$realMime];
+        $filename     = Str::random(40) . '.' . $extension;
+        $relativePath = self::UPLOAD_DIR . '/' . $filename;
+
+        if (!Storage::disk('public')->exists(self::UPLOAD_DIR)) {
+            Storage::disk('public')->makeDirectory(self::UPLOAD_DIR);
+        }
+
+        $absolutePath = Storage::disk('public')->path($relativePath);
+
+        $saved = $realMime === 'image/jpeg'
+            ? imagejpeg($cleanImage, $absolutePath, 85)
+            : imagepng($cleanImage, $absolutePath);
+
+        imagedestroy($cleanImage);
+
+        if (!$saved) {
+            abort(500, 'Gagal menyimpan gambar.');
+        }
+
+        return $relativePath;
     }
 }

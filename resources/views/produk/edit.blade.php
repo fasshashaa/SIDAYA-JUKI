@@ -18,6 +18,25 @@
         @csrf
         @method('PUT')
 
+        {{-- 🔒 TAMBAHAN: ringkasan semua pesan error validasi.
+             Sebelumnya form ini tidak menampilkan @error/errors sama sekali,
+             jadi kalau validasi gagal (mis. foto ditolak karena ukuran,
+             dimensi, tipe file, atau kasus antivirus/file rusak) halaman
+             cuma terlihat "reload diam-diam" tanpa penjelasan ke pengguna. --}}
+        @if ($errors->any())
+            <div class="rounded-2xl border border-red-200 bg-red-50 p-4">
+                <p class="text-sm font-bold text-red-700 mb-2 flex items-center gap-1.5">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Terjadi kesalahan saat menyimpan:
+                </p>
+                <ul class="list-disc list-inside text-sm text-red-600 space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         {{-- ================= SECTION: MITRA UEP ================= --}}
  <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-6">
     <div class="flex items-center gap-3 mb-6">
@@ -32,13 +51,13 @@
 
     <div class="space-y-2">
         <label class="text-xs font-bold text-gray-500 uppercase">Pilih Pemilik Produk <span class="text-rose-500">*</span></label>
-        
-        <select name="pemilik_id" id="pemilik_select" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
+
+        <select name="pemilik_id" id="pemilik_select" class="w-full p-3 border {{ $errors->has('pemilik_id') ? 'border-red-400' : 'border-gray-200' }} rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
             <option value="" disabled>-- Pilih UEP atau KUBE --</option>
-            
+
             <optgroup label="Daftar UEP">
                 @foreach($ueps as $uep)
-                    <option value="uep_{{ $uep->id }}" {{ ($produk->uep_id == $uep->id) ? 'selected' : '' }}>
+                    <option value="uep_{{ $uep->id }}" {{ (old('pemilik_id', 'uep_' . $produk->uep_id) == 'uep_' . $uep->id) ? 'selected' : '' }}>
                         [UEP] {{ $uep->nama_usaha }} - {{ $uep->penerimaManfaat->nama_lengkap ?? 'Tanpa Pemilik' }}
                     </option>
                 @endforeach
@@ -46,12 +65,15 @@
 
             <optgroup label="Daftar KUBE">
                 @foreach($kubes as $kube)
-                    <option value="kube_{{ $kube->id }}" {{ ($produk->kube_id == $kube->id) ? 'selected' : '' }}>
+                    <option value="kube_{{ $kube->id }}" {{ (old('pemilik_id', 'kube_' . $produk->kube_id) == 'kube_' . $kube->id) ? 'selected' : '' }}>
                         [KUBE] {{ $kube->nama_kelompok_kube }} - Ketua: {{ $kube->ketua->nama_lengkap ?? 'Tanpa Ketua' }}
                     </option>
                 @endforeach
             </optgroup>
         </select>
+        @error('pemilik_id')
+            <p class="text-red-600 text-xs font-semibold mt-1">{{ $message }}</p>
+        @enderror
     </div>
 </div>
 
@@ -70,25 +92,37 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-gray-500 uppercase">Nama Produk <span class="text-rose-500">*</span></label>
-                    <input type="text" name="nama_produk" value="{{ old('nama_produk', $produk->nama_produk) }}" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
+                    <input type="text" name="nama_produk" value="{{ old('nama_produk', $produk->nama_produk) }}" class="w-full p-3 border {{ $errors->has('nama_produk') ? 'border-red-400' : 'border-gray-200' }} rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
+                    @error('nama_produk')
+                        <p class="text-red-600 text-xs font-semibold mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-gray-500 uppercase">Kategori <span class="text-rose-500">*</span></label>
-                    <input type="text" name="kategori" value="{{ old('kategori', $produk->kategori) }}" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
+                    <input type="text" name="kategori" value="{{ old('kategori', $produk->kategori) }}" class="w-full p-3 border {{ $errors->has('kategori') ? 'border-red-400' : 'border-gray-200' }} rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
+                    @error('kategori')
+                        <p class="text-red-600 text-xs font-semibold mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-gray-500 uppercase">Harga Jual</label>
                     <div class="relative">
                         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold">Rp</span>
-                        <input type="number" name="harga_jual" value="{{ old('harga_jual', $produk->harga_jual) }}" class="w-full p-3 pl-10 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="0">
+                        <input type="number" name="harga_jual" value="{{ old('harga_jual', $produk->harga_jual) }}" class="w-full p-3 pl-10 border {{ $errors->has('harga_jual') ? 'border-red-400' : 'border-gray-200' }} rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="0">
                     </div>
+                    @error('harga_jual')
+                        <p class="text-red-600 text-xs font-semibold mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-gray-500 uppercase">Stok</label>
-                    <input type="number" name="stok" value="{{ old('stok', $produk->stok) }}" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="0">
+                    <input type="number" name="stok" value="{{ old('stok', $produk->stok) }}" class="w-full p-3 border {{ $errors->has('stok') ? 'border-red-400' : 'border-gray-200' }} rounded-xl bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" placeholder="0">
+                    @error('stok')
+                        <p class="text-red-600 text-xs font-semibold mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="md:col-span-2 space-y-2">
@@ -114,7 +148,7 @@
             </div>
 
             <div id="dropzone"
-                 class="relative rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200 cursor-pointer overflow-hidden"
+                 class="relative rounded-2xl border-2 {{ $errors->has('foto_produk') ? 'border-red-300 bg-red-50/40' : 'border-dashed border-gray-200 bg-gray-50/50' }} hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200 cursor-pointer overflow-hidden"
                  onclick="document.getElementById('foto_input').click()">
 
                 <input type="file" name="foto_produk" id="foto_input" accept="image/*" class="hidden">
@@ -126,13 +160,13 @@
                     </div>
                     <div>
                         <p class="text-sm font-semibold text-gray-700">Klik untuk unggah, atau seret foto ke sini</p>
-                        <p class="text-xs text-gray-400 mt-1">PNG, JPG, atau WEBP &middot; maks. 2MB &middot; rasio 1:1 direkomendasikan</p>
+                        <p class="text-xs text-gray-400 mt-1">PNG atau JPG &middot; maks. 2MB &middot; maks. 4000&times;4000px</p>
                     </div>
                 </div>
 
                 {{-- State: preview foto (foto lama ATAU foto baru yang baru dipilih) --}}
                 <div id="dropzone_preview" class="{{ $produk->foto_produk ? '' : 'hidden' }} relative">
-                    <img id="preview_img" src="{{ $produk->foto_produk ? asset('storage/' . $produk->foto_produk) : '' }}" class="w-full max-h-80 object-cover">
+                    <img id="preview_img" src="{{ $produk->foto_url ?? '' }}" class="w-full max-h-80 object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                     <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
                         <span id="preview_filename" class="text-xs font-medium text-white truncate bg-black/30 px-2.5 py-1 rounded-lg">
@@ -145,6 +179,16 @@
                     </div>
                 </div>
             </div>
+
+            {{-- 🔒 TAMBAHAN: pesan error khusus foto_produk, tepat di bawah kotak upload.
+                 Ini yang sebelumnya hilang total dari form, padahal backend
+                 sudah mengirim pesan error MIME/dimensi/ukuran/antivirus. --}}
+            @error('foto_produk')
+                <p class="text-red-600 text-xs font-semibold mt-3 flex items-center gap-1.5">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    {{ $message }}
+                </p>
+            @enderror
         </div>
 
         {{-- ================= ACTIONS ================= --}}
