@@ -169,13 +169,13 @@
                 </div>
             </div>
 
-            {{-- <a href="{{ route('uep.create') }}"
+            <!-- {{-- <a href="{{ route('uep.create') }}"
                class="group inline-flex items-center justify-center gap-2 bg-white hover:bg-cyan-50 text-slate-900 font-semibold px-6 py-3.5 rounded-2xl transition-all shadow-lg shadow-black/10 text-sm whitespace-nowrap">
                 Ajukan Usaha Baru
                 <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>
-            </a> --}}
+            </a> --}} -->
         </div>
     </div>
     @endif
@@ -388,7 +388,7 @@
                     <span class="text-sm font-medium" style="color: var(--text-body)">Tambah Produk</span>
                 </a>
 
-             {{-- Hanya muncul jika role-nya admin atau super_admin --}}
+             <!-- {{-- Hanya muncul jika role-nya admin atau super_admin --}} -->
 @if(in_array(auth()->user()->role, ['admin', 'super_admin']))
     <a href="{{ route($data['targetRoute'], ['status_verifikasi' => 'pending']) }}" class="flex items-center ...">
         <div class="w-9 h-9 rounded-lg bg-cyan-50 flex items-center justify-center">

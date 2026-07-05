@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk - SIDAYA Cilacap</title>
+   
+<link rel="icon" type="image/png" href="{{ asset('img/Logo_sdy.png') }}">
+<link rel="shortcut icon" type="image/png" href="{{ asset('img/Logo_sdy.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -138,10 +141,10 @@
         <!-- ── PANEL KIRI: BRAND & VALUE PROPS ── -->
         <div class="hidden md:flex flex-col justify-center items-start">
 
-            {{-- <div class="badge-pill mb-7">
+            <!-- {{-- <div class="badge-pill mb-7">
                 <span class="badge-dot"></span>
                 Platform Terintegrasi Pemerintah
-            </div> --}}
+            </div> --}} -->
 
             <div class="logo-glow-wrap mb-7">
                 <div class="logo-glow-ring"></div>
@@ -151,7 +154,7 @@
 
             <h1 class="text-[34px] font-extrabold text-white tracking-tight leading-tight">SIDAYA</h1>
             <p class="text-[14.5px] text-white/55 font-medium mt-1.5 max-w-sm">Sistem Informasi Pemberdayaan Masyarakat untuk monitoring, transparansi, dan pasar digital UEP.</p>
-            <p class="text-[11.5px] text-white/30 italic mt-1">Dinas Sosial PPPA Kabupaten Cilacap</p>
+            <p class="text-[11.5px] text-white/30 italic mt-1">Dinas Sosial PPPA Kabupaten Cilacap </p>
 
             <div class="w-full divider-line my-7"></div>
 
@@ -179,8 +182,8 @@
 
             <div class="w-full divider-line my-7"></div>
 
-            {{-- <!-- Mini stats -->
-            <div class="flex items-center gap-5">
+         
+            <!-- <div class="flex items-center gap-5">
                 <div class="stat-block">
                     <p class="stat-num-mini">248</p>
                     <p class="stat-lbl-mini">UEP Aktif</p>
@@ -195,26 +198,26 @@
                     <p class="stat-num-mini">1.2K</p>
                     <p class="stat-lbl-mini">Penerima Manfaat</p>
                 </div>
-            </div> --}}
+            </div>  -->
         </div>
 
         <!-- ── PANEL KANAN: FORM CARD ── -->
         <div class="login-card p-8 md:p-10 rounded-[28px] w-full">
 
-            <div class="md:hidden flex flex-col items-center mb-7">
+            <!-- <div class="md:hidden flex flex-col items-center mb-7">
                 <img src="{{ asset('img/Logo_sdy.png') }}" class="w-16 h-16 object-contain mb-3">
                 <h1 class="text-xl font-extrabold text-white tracking-tight">SIDAYA</h1>
-            </div>
+            </div> -->
 
             <div class="flex items-center justify-between mb-7">
                 <div>
                     <h2 class="text-[22px] font-extrabold text-white tracking-tight">Masuk ke Akun</h2>
                     <p class="text-[12.5px] text-white/40 mt-1">Kelola UEP dan pantau perkembangan usaha Anda</p>
                 </div>
-                {{-- <span class="card-header-tag hidden sm:inline-flex">
+                <!-- {{-- <span class="card-header-tag hidden sm:inline-flex">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
                     Aman
-                </span> --}}
+                </span> --}} -->
             </div>
 @if ($errors->any())
     <div class="mb-4 text-sm text-red-600">
@@ -250,13 +253,13 @@
                     </div>
                 </div>
 
-                {{-- <div class="flex items-center justify-between mb-7">
+                <!-- {{-- <div class="flex items-center justify-between mb-7">
                     <label class="flex items-center gap-2 cursor-pointer select-none">
                         <input type="checkbox" class="check-custom">
                         <span class="text-[12.5px] text-white/45">Ingat saya</span>
                     </label>
                     <a href="#" class="text-[12.5px] text-[#5FD9E8]/70 hover:text-[#5FD9E8] transition-colors">Lupa password?</a>
-                </div> --}}
+                </div> --}} -->
 
                 <button type="submit" class="btn-submit w-full font-bold py-3.5 rounded-xl text-[14.5px] flex items-center justify-center gap-2">
                     Masuk Sekarang

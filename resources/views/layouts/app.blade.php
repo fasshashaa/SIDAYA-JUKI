@@ -619,38 +619,84 @@
                     </svg>
                 </button>
 
-                <div x-show="openProfil"
-                     x-cloak
-                     @click.away="openProfil = false"
-                     x-transition:enter="transition ease-out duration-150"
-                     x-transition:enter-start="transform opacity-0 scale-95"
-                     x-transition:enter-end="transform opacity-100 scale-100"
-                     x-transition:leave="transition ease-in duration-100"
-                     x-transition:leave-start="transform opacity-100 scale-100"
-                     x-transition:leave-end="transform opacity-0 scale-95"
-                     class="dropdown-panel absolute right-0 mt-2 w-56 rounded-2xl z-50 py-1.5 overflow-hidden">
+               <div x-show="openProfil"
+     x-cloak
+     @click.away="openProfil = false"
+     x-transition:enter="transition ease-out duration-150"
+     x-transition:enter-start="transform opacity-0 scale-95 -translate-y-1"
+     x-transition:enter-end="transform opacity-100 scale-100 translate-y-0"
+     x-transition:leave="transition ease-in duration-100"
+     x-transition:leave-start="transform opacity-100 scale-100"
+     x-transition:leave-end="transform opacity-0 scale-95"
+     class="dropdown-panel absolute right-0 mt-2 w-64 rounded-2xl z-50 overflow-hidden">
 
-                    <div class="px-4 pt-2 pb-3">
-                        <p class="text-sm font-bold text-slate-700 dark:text-slate-100 truncate">{{ Auth::user()->name ?? 'Admin SIDAYA' }}</p>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 truncate">{{ Auth::user()->email ?? '-' }}</p>
-                    </div>
-                    <hr class="border-slate-100 dark:border-white/10">
+    <!-- Header profil -->
+    <div class="relative px-5 pt-5 pb-4"
+         style="background: linear-gradient(160deg, var(--navy-950) 0%, var(--navy-800) 60%, var(--teal-600) 130%);">
+        <div class="absolute inset-0 opacity-20"
+             style="background-image: radial-gradient(rgba(255,255,255,0.4) 1px, transparent 1px); background-size: 14px 14px;"></div>
+        <div class="relative flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0"
+                 style="background: linear-gradient(160deg, rgba(255,255,255,0.18), rgba(255,255,255,0.05)); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);">
+                {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
+            </div>
+            <div class="min-w-0">
+                <p class="text-sm font-bold text-white truncate">{{ Auth::user()->name ?? 'Admin SIDAYA' }}</p>
+                <p class="text-xs text-white/60 truncate">{{ Auth::user()->email ?? '-' }}</p>
+            </div>
+        </div>
+        <span class="relative inline-flex items-center gap-1.5 mt-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full"
+              style="background: rgba(95,217,232,0.15); color: var(--cyan-300); box-shadow: inset 0 0 0 1px rgba(95,217,232,0.3);">
+            <span class="w-1.5 h-1.5 rounded-full" style="background: var(--cyan-300); box-shadow: 0 0 6px var(--cyan-300);"></span>
+            {{ str_replace('_', ' ', Auth::user()->role ?? 'admin') }}
+        </span>
+    </div>
 
-                    <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-4 py-2.5 mt-1 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        Kelola Profil
-                    </a>
+    <!-- Menu items -->
+    <div class="py-1.5">
+        <a href="{{ route('profile.edit') }}"
+           class="flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+            <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style="background: rgba(14,124,158,0.1); color: var(--teal-600);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </span>
+            <span class="flex flex-col">
+                <span>Profil Saya</span>
+                <span class="text-[11px] font-normal text-slate-400 dark:text-slate-500">Lihat detail akun</span>
+            </span>
+        </a>
 
-                    <hr class="border-slate-100 dark:border-white/10 my-1">
+        <!-- @if(Auth::user()->role === 'super_admin')
+        <a href="{{ route('settings.index') }}"
+           class="flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+            <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style="background: rgba(14,124,158,0.1); color: var(--teal-600);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            </span>
+            <span class="flex flex-col">
+                <span>Pengaturan Sistem</span>
+                <span class="text-[11px] font-normal text-slate-400 dark:text-slate-500">Konfigurasi aplikasi</span>
+            </span>
+        </a>
+        @endif -->
+    </div>
 
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-rose-500 dark:text-rose-400 hover:bg-rose-50/60 dark:hover:bg-rose-500/10 transition-colors text-left">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                            Keluar Aplikasi
-                        </button>
-                    </form>
-                </div>
+    <hr class="border-slate-100 dark:border-white/10">
+
+   <div class="p-1.5">
+    <form method="POST" action="{{ route('logout') }}" id="logout-form">
+        @csrf
+        <button type="button"
+                onclick="confirmLogout()"
+                class="w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-semibold rounded-xl text-rose-500 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors text-left">
+            <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-rose-50 dark:bg-rose-500/10">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </span>
+            Keluar Aplikasi
+        </button>
+    </form>
+</div>
+</div>
             </div>
         </div>
     </header>
@@ -878,5 +924,55 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @include('components.alert')
+    <script>
+    function confirmLogout() {
+        const isDark = document.documentElement.classList.contains('dark');
+
+        Swal.fire({
+            title: 'Keluar Aplikasi?',
+           text: 'Sesi akan diakhiri dan halaman akan diarahkan ke login.',
+            icon: 'warning',
+            iconColor: '#0E7C9E',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Keluar',
+            cancelButtonText: 'Batal',
+            reverseButtons: true,
+            background: isDark ? '#0F2340' : '#ffffff',
+            color: isDark ? '#EAF3F8' : '#1E293B',
+            customClass: {
+                popup: 'rounded-3xl',
+                confirmButton: 'swal-btn-confirm',
+                cancelButton: 'swal-btn-cancel',
+            },
+            buttonsStyling: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('logout-form').submit();
+            }
+        });
+    }
+</script>
+
+<style>
+    .swal-btn-confirm {
+        background: linear-gradient(160deg, #DC2626, #B91C1C) !important;
+        color: #fff !important;
+        font-weight: 600;
+        font-size: 0.875rem;
+        padding: 0.6rem 1.4rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 8px 20px -6px rgba(220,38,38,0.45);
+        margin-left: 0.5rem;
+    }
+    .swal-btn-cancel {
+        background: transparent !important;
+        color: var(--text-body, #475569) !important;
+        font-weight: 600;
+        font-size: 0.875rem;
+        padding: 0.6rem 1.4rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--surface-border, rgba(15,23,42,0.08)) !important;
+    }
+</style>
 </body>
 </html>

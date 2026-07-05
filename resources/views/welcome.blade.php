@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIDAYA - Dinas Sosial PPPA Kabupaten Cilacap</title>
+<link rel="icon" type="image/png" href="{{ asset('img/Logo_sdy.png') }}">
+<link rel="shortcut icon" type="image/png" href="{{ asset('img/Logo_sdy.png') }}">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
